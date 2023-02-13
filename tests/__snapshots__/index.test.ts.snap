@@ -1,5 +1,14 @@
 // Vitest Snapshot v1
 
+exports[`minify > can minify GLSL ES 3.00 1`] = `
+"#version 300 es
+precision mediump float;
+#ifdef TEST
+const bool isTest=true;
+#endif
+uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+`;
+
 exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
 [
   {
@@ -31,8 +40,8 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   {
     "type": "comment",
     "value": "/*
-        multiline
-      */",
+    multiline
+  */",
   },
   {
     "type": "directive",
@@ -138,7 +147,19 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "identifier",
+    "value": "texture",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
     "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
   },
   {
     "type": "symbol",
