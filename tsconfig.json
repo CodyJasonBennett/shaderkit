@@ -8,6 +8,7 @@
     "strict": true,
     "pretty": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "glsl-tools": ["./src"]
