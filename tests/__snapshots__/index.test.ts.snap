@@ -1,21 +1,22 @@
 // Vitest Snapshot v1
 
-exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
+exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
 [
   {
     "type": "directive",
-    "value": "#version 300 es",
+    "value": "#version 300 es
+",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "precision",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "mediump",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "float",
   },
   {
@@ -24,7 +25,8 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "comment",
-    "value": "// single line",
+    "value": "// single line
+",
   },
   {
     "type": "comment",
@@ -34,14 +36,15 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "directive",
-    "value": "#ifdef TEST",
+    "value": "#ifdef TEST
+",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "const",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "bool",
   },
   {
@@ -53,7 +56,7 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": "=",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "true",
   },
   {
@@ -62,14 +65,15 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "directive",
-    "value": "#endif",
+    "value": "#endif
+",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "uniform",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "vec3",
   },
   {
@@ -81,11 +85,11 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": ";",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "out",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "vec4",
   },
   {
@@ -97,7 +101,7 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": ";",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "void",
   },
   {
@@ -125,7 +129,7 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": "=",
   },
   {
-    "type": "reserved",
+    "type": "identifier",
     "value": "vec4",
   },
   {
@@ -141,7 +145,7 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": ",",
   },
   {
-    "type": "identifier",
+    "type": "number",
     "value": "1",
   },
   {
@@ -149,7 +153,7 @@ exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
     "value": ".",
   },
   {
-    "type": "identifier",
+    "type": "number",
     "value": "0",
   },
   {

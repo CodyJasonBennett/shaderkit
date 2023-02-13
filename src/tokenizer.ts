@@ -1,8 +1,6 @@
-import { GLSL_SYMBOLS, GLSL_RESERVED } from './constants'
+export type TokenType = 'directive' | 'comment' | 'symbol' | 'number' | 'identifier'
 
-export type TokenType = 'reserved' | 'directive' | 'comment' | 'symbol' | 'number' | 'identifier'
-
-export interface Token<T extends TokenType = TokenType, V extends string = string> {
+export interface Token<T = TokenType, V = string> {
   type: T
   value: V
 }
@@ -17,58 +15,40 @@ export function tokenize(code: string, index: number = 0): Token[] {
     let char = code[index]
 
     // Preserve preprocessor directives and comments
+    // TODO: allow nested multi-line comments (e.g. /* /* ... */ */)
     const prefix = char + code[index + 1]
-    const special = /\#\w|\/[\/\*]/.test(prefix)
-    if (special) {
-      // TODO: allow nested multi-line comments (e.g. /* /* ... */ */)
-      const multiline = prefix === '/*'
+    const isSpecial = char === '#' || /\/[\/\*]/.test(prefix)
 
-      let value = ''
-      while (multiline ? char + code[index + 1] !== '*/' : char !== '\n') {
-        value += char
+    if (!isSpecial) {
+      // Skip whitespace
+      if (/\s/.test(char)) {
         index++
-        char = code[index]
-      }
-      if (multiline) {
-        value += '*/'
-        index += 2
+        continue
       }
 
-      if (value.startsWith('#')) {
-        tokens.push({ type: 'directive', value })
-      } else {
-        tokens.push({ type: 'comment', value })
+      // Parse symbols
+      // TODO: combine complex symbols (e.g. ==) and skip negative numbers
+      if (/[^\w]/.test(char)) {
+        tokens.push({ type: 'symbol', value: char })
+        index++
+        continue
       }
-
-      continue
     }
 
-    // Skip whitespace
-    if (/\s/.test(char)) {
-      index++
-      continue
-    }
-
-    // Parse symbols
-    const symbol = GLSL_SYMBOLS.find((symbol) => symbol === char)
-    if (symbol) {
-      tokens.push({ type: 'symbol', value: symbol })
-      index++
-      continue
-    }
-
-    // Parse identifiers and numbers, filter keywords
+    // Parse multi-line and multi-character tokens
     let value = ''
-    while (/\w/.test(char)) {
+    while (isSpecial ? !value.endsWith(prefix === '/*' ? '*/' : '\n') : /\w/.test(char)) {
       value += char
       index++
       char = code[index]
     }
 
-    if (/d/.test(value[0])) {
+    if (isSpecial && value.startsWith('#')) {
+      tokens.push({ type: 'directive', value })
+    } else if (isSpecial) {
+      tokens.push({ type: 'comment', value })
+    } else if (/\d/.test(value[0])) {
       tokens.push({ type: 'number', value })
-    } else if (value.startsWith('gl_') || GLSL_RESERVED.find((keyword) => keyword === value)) {
-      tokens.push({ type: 'reserved', value })
     } else {
       tokens.push({ type: 'identifier', value })
     }
