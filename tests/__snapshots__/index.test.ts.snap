@@ -1,0 +1,168 @@
+// Vitest Snapshot v1
+
+exports[`tokenizer > can tokenize GLSL ES 3.00 1`] = `
+[
+  {
+    "type": "directive",
+    "value": "#version 300 es",
+  },
+  {
+    "type": "reserved",
+    "value": "precision",
+  },
+  {
+    "type": "reserved",
+    "value": "mediump",
+  },
+  {
+    "type": "reserved",
+    "value": "float",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "comment",
+    "value": "// single line",
+  },
+  {
+    "type": "comment",
+    "value": "/*
+        multiline
+      */",
+  },
+  {
+    "type": "directive",
+    "value": "#ifdef TEST",
+  },
+  {
+    "type": "reserved",
+    "value": "const",
+  },
+  {
+    "type": "reserved",
+    "value": "bool",
+  },
+  {
+    "type": "identifier",
+    "value": "isTest",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "reserved",
+    "value": "true",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "directive",
+    "value": "#endif",
+  },
+  {
+    "type": "reserved",
+    "value": "uniform",
+  },
+  {
+    "type": "reserved",
+    "value": "vec3",
+  },
+  {
+    "type": "identifier",
+    "value": "color",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "out",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "identifier",
+    "value": "pc_FragColor",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "void",
+  },
+  {
+    "type": "identifier",
+    "value": "main",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "identifier",
+    "value": "pc_FragColor",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "color",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+]
+`;

@@ -1,0 +1,34 @@
+{
+  "name": "glsl-tools",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "Cody Bennett (https://github.com/CodyJasonBennett)",
+  "homepage": "https://github.com/CodyJasonBennett/glsl-tools",
+  "repository": "https://github.com/CodyJasonBennett/glsl-tools",
+  "license": "MIT",
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs"
+  },
+  "sideEffects": false,
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1",
+    "vitest": "^0.28.4"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "tsc",
+    "test": "vitest run"
+  }
+}
