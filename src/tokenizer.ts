@@ -15,39 +15,28 @@ export function tokenize(code: string, index: number = 0): Token[] {
     let char = code[index]
 
     // Preserve preprocessor directives and comments
-    // TODO: allow nested multi-line comments (e.g. /* /* ... */ */)
     const prefix = char + code[index + 1]
     const isSpecial = char === '#' || /\/[\/\*]/.test(prefix)
 
-    if (!isSpecial) {
-      // Skip whitespace
-      if (/\s/.test(char)) {
-        index++
-        continue
-      }
-
-      // Parse symbols
-      // TODO: combine complex symbols (e.g. ==) and skip negative numbers
-      if (/[^\w]/.test(char)) {
-        tokens.push({ type: 'symbol', value: char })
-        index++
-        continue
-      }
+    // Collapse white-space and parse symbols
+    if (!isSpecial && !/\w/.test(char)) {
+      if (!/\s/.test(char)) tokens.push({ type: 'symbol', value: char })
+      index++
+      continue
     }
 
     // Parse multi-line and multi-character tokens
     let value = ''
-    while (isSpecial ? !value.endsWith(prefix === '/*' ? '*/' : '\n') : /\w/.test(char)) {
-      value += char
+    while (isSpecial ? !value.endsWith(prefix === '/*' ? '*/' : '\n') : /\w/.test(code[index])) {
+      value += code[index]
       index++
-      char = code[index]
     }
 
-    if (isSpecial && value.startsWith('#')) {
+    if (isSpecial && char === '#') {
       tokens.push({ type: 'directive', value })
     } else if (isSpecial) {
       tokens.push({ type: 'comment', value })
-    } else if (/\d/.test(value[0])) {
+    } else if (/\d/.test(char)) {
       tokens.push({ type: 'number', value })
     } else {
       tokens.push({ type: 'identifier', value })

@@ -74,11 +74,11 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "identifier",
-    "value": "vec3",
+    "value": "sampler2D",
   },
   {
     "type": "identifier",
-    "value": "color",
+    "value": "map",
   },
   {
     "type": "symbol",
@@ -138,7 +138,15 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "identifier",
-    "value": "color",
+    "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "rgb",
   },
   {
     "type": "symbol",
@@ -146,7 +154,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "number",
-    "value": "1",
+    "value": "0",
   },
   {
     "type": "symbol",
@@ -159,6 +167,42 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   {
     "type": "symbol",
     "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "identifier",
+    "value": "pc_FragColor",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": "+",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "number",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "number",
+    "value": "0",
   },
   {
     "type": "symbol",

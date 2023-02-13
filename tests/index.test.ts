@@ -16,11 +16,12 @@ describe('tokenize', () => {
         const bool isTest = true;
       #endif
 
-      uniform vec3 color;
+      uniform sampler2D map;
       out vec4 pc_FragColor;
 
       void main() {
-        pc_FragColor = vec4(color, 1.0);
+        pc_FragColor = vec4(map.rgb, 0.0);
+        pc_FragColor.a += 1.0;
       }
     `
 
