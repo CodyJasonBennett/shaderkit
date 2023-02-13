@@ -12,17 +12,14 @@ export function minify(code: string): string {
     switch (token.type) {
       case 'comment':
         continue
-      case 'identifier': {
-        if (tokens[i - 1]?.type === 'identifier') minified += ' '
-        minified += token.value
-        continue
-      }
       case 'directive': {
         minified += `\n${token.value.trim()}\n`
         continue
       }
-      case 'number':
-      case 'symbol': {
+      case 'identifier': {
+        if (tokens[i - 1]?.type === 'identifier') minified += ' '
+      }
+      default: {
         minified += token.value
         continue
       }
