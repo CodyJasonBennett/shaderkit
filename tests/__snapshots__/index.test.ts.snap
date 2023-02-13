@@ -17,15 +17,15 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
 ",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "precision",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "mediump",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "float",
   },
   {
@@ -49,11 +49,11 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
 ",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "const",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "bool",
   },
   {
@@ -65,7 +65,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
     "value": "=",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "true",
   },
   {
@@ -78,11 +78,11 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
 ",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "uniform",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "sampler2D",
   },
   {
@@ -94,11 +94,11 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
     "value": ";",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "out",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "vec4",
   },
   {
@@ -110,7 +110,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
     "value": ";",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "void",
   },
   {
@@ -138,7 +138,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
     "value": "=",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "vec4",
   },
   {
@@ -146,7 +146,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
     "value": "(",
   },
   {
-    "type": "identifier",
+    "type": "reserved",
     "value": "texture",
   },
   {
@@ -207,11 +207,7 @@ exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
   },
   {
     "type": "symbol",
-    "value": "+",
-  },
-  {
-    "type": "symbol",
-    "value": "=",
+    "value": "+=",
   },
   {
     "type": "number",

@@ -1,4 +1,6 @@
-export type TokenType = 'directive' | 'comment' | 'symbol' | 'number' | 'identifier'
+import { GLSL_RESERVED, GLSL_SYMBOLS } from './constants'
+
+export type TokenType = 'directive' | 'comment' | 'symbol' | 'number' | 'identifier' | 'reserved'
 
 export interface Token<T = TokenType, V = string> {
   type: T
@@ -20,8 +22,19 @@ export function tokenize(code: string, index: number = 0): Token[] {
 
     // Collapse white-space and parse symbols
     if (!isSpecial && !/\w/.test(char)) {
-      if (!/\s/.test(char)) tokens.push({ type: 'symbol', value: char })
-      index++
+      // Skip whitespace
+      if (/\s/.test(char)) {
+        index++
+        continue
+      }
+
+      // Combine symbols if able
+      let value = char
+      for (const symbol of GLSL_SYMBOLS) {
+        if (symbol.length > value.length && code.startsWith(symbol, index)) value = symbol
+      }
+      index += value.length
+      tokens.push({ type: 'symbol', value })
       continue
     }
 
@@ -38,6 +51,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
       tokens.push({ type: 'comment', value })
     } else if (/\d/.test(char)) {
       tokens.push({ type: 'number', value })
+    } else if (GLSL_RESERVED.includes(value)) {
+      tokens.push({ type: 'reserved', value })
     } else {
       tokens.push({ type: 'identifier', value })
     }

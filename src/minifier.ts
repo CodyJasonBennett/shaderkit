@@ -16,8 +16,9 @@ export function minify(code: string): string {
         minified += `\n${token.value.trim()}\n`
         continue
       }
-      case 'identifier': {
-        if (tokens[i - 1]?.type === 'identifier') minified += ' '
+      case 'identifier':
+      case 'reserved': {
+        if (/identifier|reserved/.test(tokens[i - 1]?.type)) minified += ' '
       }
       default: {
         minified += token.value
