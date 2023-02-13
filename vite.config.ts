@@ -4,7 +4,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   resolve: {
     alias: {
-      'glsl-tools': path.resolve(__dirname, './src'),
+      shaderkit: path.resolve(__dirname, './src'),
     },
   },
   build: {

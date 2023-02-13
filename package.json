@@ -1,11 +1,11 @@
 {
-  "name": "glsl-tools",
+  "name": "shaderkit",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
   "author": "Cody Bennett (https://github.com/CodyJasonBennett)",
-  "homepage": "https://github.com/CodyJasonBennett/glsl-tools",
-  "repository": "https://github.com/CodyJasonBennett/glsl-tools",
+  "homepage": "https://github.com/CodyJasonBennett/shaderkit",
+  "repository": "https://github.com/CodyJasonBennett/shaderkit",
   "license": "MIT",
   "files": [
     "dist/*",

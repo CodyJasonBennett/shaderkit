@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { tokenize, minify } from 'glsl-tools'
+import { tokenize, minify } from 'shaderkit'
 
 const glsl = /* glsl */ `#version 300 es
   precision mediump float;
