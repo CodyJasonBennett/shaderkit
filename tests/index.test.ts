@@ -16,6 +16,7 @@ const glsl = /* glsl */ `#version 300 es
   #endif
 
   uniform sampler2D map;
+  in vec2 vUv;
   out vec4 pc_FragColor;
 
   layout(std140) uniform Uniforms1 {
@@ -33,7 +34,7 @@ const glsl = /* glsl */ `#version 300 es
   void main() {
     vec4 clipPosition = projectionMatrix * modelViewMatrix * vec4(0, 0, 0, 1);
     vec4 clipPositionGlobals = globals.projectionMatrix * globals.modelViewMatrix * vec4(0, 0, 0, 1);
-    pc_FragColor = vec4(texture(map).rgb, 0.0);
+    pc_FragColor = vec4(texture(map, vUv).rgb, 0.0);
     pc_FragColor.a += 1.0;
   }
 `

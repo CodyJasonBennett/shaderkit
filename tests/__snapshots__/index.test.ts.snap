@@ -5,9 +5,9 @@ exports[`minify > can mangle GLSL 1`] = `
 precision mediump float;
 #define TEST
 #if defined(TEST)
-const bool 84ea1fea=true;
+const bool a=true;
 #endif
-uniform sampler2D map;out vec4 pc_FragColor;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.projectionMatrix*274f2e9a.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;layout(std140)uniform b{mat4 c;mat4 d;mat3 e;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}f;void main(){vec4 g=c*d*vec4(0,0,0,1);vec4 h=f.projectionMatrix*f.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
@@ -15,9 +15,9 @@ exports[`minify > can mangle externals in GLSL 1`] = `
 precision mediump float;
 #define TEST
 #if defined(TEST)
-const bool 84ea1fea=true;
+const bool a=true;
 #endif
-uniform sampler2D 60be9861;out vec4 5f06d6bf;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.projectionMatrix*274f2e9a.modelViewMatrix*vec4(0,0,0,1);5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
+uniform sampler2D b;in vec2 c;out vec4 d;layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}i;void main(){vec4 j=f*g*vec4(0,0,0,1);vec4 k=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
 exports[`minify > can mangle properties in GLSL 1`] = `
@@ -25,9 +25,9 @@ exports[`minify > can mangle properties in GLSL 1`] = `
 precision mediump float;
 #define TEST
 #if defined(TEST)
-const bool 84ea1fea=true;
+const bool a=true;
 #endif
-uniform sampler2D 60be9861;out vec4 5f06d6bf;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform ee236847{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.ab791c27*274f2e9a.f0d09eeb*vec4(0,0,0,1);5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
+uniform sampler2D b;in vec2 c;out vec4 d;layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform i{mat4 j;mat4 k;mat3 l;}m;void main(){vec4 n=f*g*vec4(0,0,0,1);vec4 o=m.j*m.k*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
 exports[`minify > can minify GLSL 1`] = `
@@ -37,7 +37,7 @@ precision mediump float;
 #if defined(TEST)
 const bool isTest=true;
 #endif
-uniform sampler2D map;out vec4 pc_FragColor;layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}globals;void main(){vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}globals;void main(){vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`tokenize > can tokenize GLSL 1`] = `
@@ -185,6 +185,22 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "identifier",
     "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "in",
+  },
+  {
+    "type": "reserved",
+    "value": "vec2",
+  },
+  {
+    "type": "identifier",
+    "value": "vUv",
   },
   {
     "type": "symbol",
@@ -561,6 +577,14 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "identifier",
     "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "vUv",
   },
   {
     "type": "symbol",

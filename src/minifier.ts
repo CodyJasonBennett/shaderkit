@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { type Token, tokenize } from './tokenizer'
 
 export type MangleMatcher = (token: Token, index: number, tokens: Token[]) => boolean
@@ -28,6 +27,7 @@ export function minify(
 ): string {
   const tokens = tokenize(code).filter((token) => token.type !== 'comment')
 
+  let mangleIndex = 0
   let prefix: string | null = null
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
@@ -68,7 +68,15 @@ export function minify(
 
         // Skip struct properties when specified
         if (!prefix || mangleProperties) {
-          renamed = createHash('sha256').update(token.value).digest('hex').slice(0, 8)
+          renamed = ''
+          mangleIndex++
+
+          let j = mangleIndex
+          while (j > 0) {
+            renamed = String.fromCharCode(97 + ((j % 26) - 1)) + renamed
+            j = Math.floor(j / 26)
+          }
+
           mangleMap.set(key, renamed)
         }
 
