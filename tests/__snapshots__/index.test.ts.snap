@@ -4,7 +4,7 @@ exports[`minify > can mangle GLSL 1`] = `
 "#version 300 es
 precision mediump float;
 #define TEST
-#ifdef TEST
+#if defined(TEST)
 const bool 84ea1fea=true;
 #endif
 uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
@@ -14,7 +14,7 @@ exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
 #define TEST
-#ifdef TEST
+#if defined(TEST)
 const bool 84ea1fea=true;
 #endif
 uniform sampler2D 60be9861;out vec4 5f06d6bf;void main(){5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
@@ -24,7 +24,7 @@ exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
 #define TEST
-#ifdef TEST
+#if defined(TEST)
 const bool isTest=true;
 #endif
 uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
@@ -33,9 +33,24 @@ uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(textur
 exports[`tokenize > can tokenize GLSL 1`] = `
 [
   {
-    "type": "directive",
-    "value": "#version 300 es
-",
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "reserved",
+    "value": "version",
+  },
+  {
+    "type": "number",
+    "value": "300",
+  },
+  {
+    "type": "identifier",
+    "value": "es",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
   },
   {
     "type": "reserved",
@@ -65,14 +80,48 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   */",
   },
   {
-    "type": "directive",
-    "value": "#define TEST
-",
+    "type": "symbol",
+    "value": "#",
   },
   {
-    "type": "directive",
-    "value": "#ifdef TEST
-",
+    "type": "reserved",
+    "value": "define",
+  },
+  {
+    "type": "identifier",
+    "value": "TEST",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "reserved",
+    "value": "if",
+  },
+  {
+    "type": "identifier",
+    "value": "defined",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "TEST",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
   },
   {
     "type": "reserved",
@@ -99,9 +148,16 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
-    "type": "directive",
-    "value": "#endif
-",
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "reserved",
+    "value": "endif",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
   },
   {
     "type": "reserved",

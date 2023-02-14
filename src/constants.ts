@@ -99,6 +99,24 @@ export const GLSL_RESERVED = [
   'return',
   'struct',
 
+  // Preprocessor directives
+  'define',
+  'undef',
+  'if',
+  'ifdef',
+  'ifndef',
+  'else',
+  'elif',
+  'endif',
+  'error',
+  'pragma',
+  'extension',
+  'version',
+  'line',
+
+  // Additional directives
+  'include',
+
   // Methods
   'radians',
   'degrees',
@@ -222,7 +240,14 @@ export const GLSL_RESERVED = [
 ]
 
 export const GLSL_SYMBOLS = [
-  '\\', // TODO: replace with linefeed
+  // Preprocessor
+  '#',
+  '\\',
+
+  // Comments
+  '//',
+  '/*',
+  '*/',
 
   // Punctuation
   '.',

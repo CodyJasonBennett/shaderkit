@@ -11,7 +11,7 @@ const glsl = /* glsl */ `#version 300 es
   */
 
   #define TEST
-  #ifdef TEST
+  #if defined( TEST )
     const bool isTest = true;
   #endif
 

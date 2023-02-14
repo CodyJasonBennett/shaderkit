@@ -27,30 +27,47 @@ export function minify(
     switch (token.type) {
       case 'comment':
         continue
-      case 'directive': {
-        if (tokens[i - 1]?.type !== 'directive') minified += '\n'
-        minified += `${token.value.trim()}\n`
-        continue
-      }
       case 'identifier':
       case 'reserved': {
         if (/identifier|reserved/.test(tokens[i - 1]?.type)) minified += ' '
 
+        // Mangle declarations and their references
         let renamed = mangleMap.get(token.value)
         if (
+          // no-op
           token.value !== renamed &&
+          // Filter variable names
           token.value !== 'main' &&
           (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
+          // Is declaration or reference
           token.type === 'identifier' &&
           tokens[i - 1]?.type === 'reserved' &&
+          // Skip shader externals when disabled
           (mangleExternals || !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value))
         ) {
           renamed = createHash('sha256').update(token.value).digest('hex').slice(0, 8)
           mangleMap.set(token.value, renamed)
         }
-        token.value = renamed ?? token.value
+
+        minified += renamed ?? token.value
+        continue
       }
       default: {
+        // Join preprocessor directives
+        if (token.value === '#') {
+          // Don't pad consecutive directives
+          if (tokens[i - 1]?.value !== '\\') minified += '\n'
+
+          while (tokens[i].value !== '\\') {
+            if (tokens[i].type !== 'symbol' && tokens[i - 1]?.type !== 'symbol') minified += ' '
+            minified += tokens[i].value
+            i++
+          }
+
+          minified += '\n'
+          continue
+        }
+
         minified += token.value
         continue
       }
