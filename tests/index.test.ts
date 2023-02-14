@@ -18,7 +18,21 @@ const glsl = /* glsl */ `#version 300 es
   uniform sampler2D map;
   out vec4 pc_FragColor;
 
+  layout(std140) uniform Uniforms1 {
+    mat4 projectionMatrix;
+    mat4 modelViewMatrix;
+    mat3 normalMatrix;
+  };
+
+  layout(std140) uniform Uniforms2 {
+    mat4 projectionMatrix;
+    mat4 modelViewMatrix;
+    mat3 normalMatrix;
+  } globals;
+
   void main() {
+    vec4 clipPosition = projectionMatrix * modelViewMatrix * vec4(0, 0, 0, 1);
+    vec4 clipPositionGlobals = globals.projectionMatrix * globals.modelViewMatrix * vec4(0, 0, 0, 1);
     pc_FragColor = vec4(texture(map).rgb, 0.0);
     pc_FragColor.a += 1.0;
   }
@@ -41,5 +55,9 @@ describe('minify', () => {
 
   it('can mangle externals in GLSL', () => {
     expect(minify(glsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
+  })
+
+  it('can mangle properties in GLSL', () => {
+    expect(minify(glsl, { mangle: true, mangleExternals: true, mangleProperties: true })).toMatchSnapshot()
   })
 })

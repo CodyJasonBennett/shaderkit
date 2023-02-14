@@ -7,7 +7,7 @@ precision mediump float;
 #if defined(TEST)
 const bool 84ea1fea=true;
 #endif
-uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;out vec4 pc_FragColor;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.projectionMatrix*274f2e9a.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
@@ -17,7 +17,17 @@ precision mediump float;
 #if defined(TEST)
 const bool 84ea1fea=true;
 #endif
-uniform sampler2D 60be9861;out vec4 5f06d6bf;void main(){5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
+uniform sampler2D 60be9861;out vec4 5f06d6bf;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.projectionMatrix*274f2e9a.modelViewMatrix*vec4(0,0,0,1);5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
+`;
+
+exports[`minify > can mangle properties in GLSL 1`] = `
+"#version 300 es
+precision mediump float;
+#define TEST
+#if defined(TEST)
+const bool 84ea1fea=true;
+#endif
+uniform sampler2D 60be9861;out vec4 5f06d6bf;layout(std140)uniform a8309fdd{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;};layout(std140)uniform ee236847{mat4 ab791c27;mat4 f0d09eeb;mat3 f78493f1;}274f2e9a;void main(){vec4 b9d6cc4f=ab791c27*f0d09eeb*vec4(0,0,0,1);vec4 c9c9ad63=274f2e9a.ab791c27*274f2e9a.f0d09eeb*vec4(0,0,0,1);5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
 `;
 
 exports[`minify > can minify GLSL 1`] = `
@@ -27,7 +37,7 @@ precision mediump float;
 #if defined(TEST)
 const bool isTest=true;
 #endif
-uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;out vec4 pc_FragColor;layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}globals;void main(){vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`tokenize > can tokenize GLSL 1`] = `
@@ -198,6 +208,154 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "reserved",
+    "value": "layout",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "std140",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "reserved",
+    "value": "uniform",
+  },
+  {
+    "type": "identifier",
+    "value": "Uniforms1",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "reserved",
+    "value": "mat4",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "mat4",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "mat3",
+  },
+  {
+    "type": "identifier",
+    "value": "normalMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "layout",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "std140",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "reserved",
+    "value": "uniform",
+  },
+  {
+    "type": "identifier",
+    "value": "Uniforms2",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "reserved",
+    "value": "mat4",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "mat4",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "mat3",
+  },
+  {
+    "type": "identifier",
+    "value": "normalMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "identifier",
+    "value": "globals",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
     "value": "void",
   },
   {
@@ -215,6 +373,166 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "identifier",
+    "value": "clipPosition",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "identifier",
+    "value": "clipPositionGlobals",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "identifier",
+    "value": "globals",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "identifier",
+    "value": "globals",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "reserved",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "number",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
   },
   {
     "type": "identifier",
