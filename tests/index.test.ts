@@ -10,6 +10,7 @@ const glsl = /* glsl */ `#version 300 es
     multiline
   */
 
+  #define TEST
   #ifdef TEST
     const bool isTest = true;
   #endif

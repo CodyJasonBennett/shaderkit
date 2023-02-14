@@ -28,7 +28,8 @@ export function minify(
       case 'comment':
         continue
       case 'directive': {
-        minified += `\n${token.value.trim()}\n`
+        if (tokens[i - 1]?.type !== 'directive') minified += '\n'
+        minified += `${token.value.trim()}\n`
         continue
       }
       case 'identifier':
