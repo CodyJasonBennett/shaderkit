@@ -1,6 +1,24 @@
 // Vitest Snapshot v1
 
-exports[`minify > can minify GLSL ES 3.00 1`] = `
+exports[`minify > can mangle GLSL 1`] = `
+"#version 300 es
+precision mediump float;
+#ifdef TEST
+const bool 84ea1fea=true;
+#endif
+uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
+`;
+
+exports[`minify > can mangle externals in GLSL 1`] = `
+"#version 300 es
+precision mediump float;
+#ifdef TEST
+const bool 84ea1fea=true;
+#endif
+uniform sampler2D 60be9861;out vec4 5f06d6bf;void main(){5f06d6bf=vec4(texture(60be9861).rgb,0.0);5f06d6bf.a+=1.0;}"
+`;
+
+exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
 #ifdef TEST
@@ -9,7 +27,7 @@ const bool isTest=true;
 uniform sampler2D map;out vec4 pc_FragColor;void main(){pc_FragColor=vec4(texture(map).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
-exports[`tokenize > can tokenize GLSL ES 3.00 1`] = `
+exports[`tokenize > can tokenize GLSL 1`] = `
 [
   {
     "type": "directive",

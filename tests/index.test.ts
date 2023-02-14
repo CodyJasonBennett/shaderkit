@@ -24,13 +24,21 @@ const glsl = /* glsl */ `#version 300 es
 `
 
 describe('tokenize', () => {
-  it('can tokenize GLSL ES 3.00', () => {
+  it('can tokenize GLSL', () => {
     expect(tokenize(glsl)).toMatchSnapshot()
   })
 })
 
 describe('minify', () => {
-  it('can minify GLSL ES 3.00', () => {
+  it('can minify GLSL', () => {
     expect(minify(glsl)).toMatchSnapshot()
+  })
+
+  it('can mangle GLSL', () => {
+    expect(minify(glsl, { mangle: true })).toMatchSnapshot()
+  })
+
+  it('can mangle externals in GLSL', () => {
+    expect(minify(glsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
   })
 })
