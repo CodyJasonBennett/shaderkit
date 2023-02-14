@@ -96,6 +96,11 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "\\\\",
   },
   {
+    "type": "comment",
+    "value": "// inline comment
+",
+  },
+  {
     "type": "symbol",
     "value": "#",
   },

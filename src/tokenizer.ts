@@ -1,4 +1,4 @@
-import { GLSL_RESERVED, GLSL_SYMBOLS } from './constants'
+import { GLSL_SYMBOLS, GLSL_RESERVED } from './constants'
 
 export type TokenType = 'comment' | 'symbol' | 'number' | 'identifier' | 'reserved'
 
@@ -31,21 +31,19 @@ export function tokenize(code: string, index: number = 0): Token[] {
       index += value.length
 
       // Preserve whitespace in comments
-      const isComment = value === '//'
-      const isMultiline = value === '/*'
-      if (isComment || isMultiline) {
+      if (/\/[\/\*]/.test(value)) {
+        const isMultiline = value === '/*'
         while (!value.endsWith(isMultiline ? '*/' : '\n')) {
           value += code[index]
           index++
         }
         tokens.push({ type: 'comment', value })
       } else {
-        // Escape newlines after directives
-        // TODO: exclude inlined comments
+        // Escape newlines after directives, skip comments
         if (char === '#') {
           let i = index
-          while (char !== '\n') char = code[i++]
-          code = code.substring(0, i) + '\\' + code.substring(i + 1)
+          while (char !== '\n' && !/\/[\/\*]/.test(code[i] + code[i + 1])) char = code[i++]
+          code = code.substring(0, i - 1) + '\\' + code.substring(i)
         }
 
         tokens.push({ type: 'symbol', value })
