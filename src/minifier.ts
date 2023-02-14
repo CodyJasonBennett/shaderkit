@@ -32,15 +32,14 @@ export function minify(
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
-    if (token.type === 'identifier' || token.type === 'reserved') {
-      if (tokens[i - 1]?.type === 'identifier' || tokens[i - 1]?.type === 'reserved') minified += ' '
+    if (/reserved|identifier/.test(token.type)) {
+      if (/reserved|identifier/.test(tokens[i - 1]?.type)) minified += ' '
 
       // Resolve nested keys from members or accessors
-      // TODO: play nice with structs & array indexing
       let key = token.value
       if (prefix) {
         key = `${prefix}.${token.value}`
-      } else if (tokens[i - 1]?.value === '.' && mangleMap.has(tokens[i - 2]?.value)) {
+      } else if (tokens[i - 1]?.value === '.' && tokens[i - 2]?.type !== 'symbol') {
         key = `${tokens[i - 2]?.value}.${token.value}`
       }
 
@@ -48,17 +47,18 @@ export function minify(
       let renamed = mangleMap.get(key)
       if (
         // no-op
-        token.value !== renamed &&
+        !renamed &&
         // Filter variable names
         key !== 'main' &&
         (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, or namespace
         token.type === 'identifier' &&
-        (tokens[i - 1]?.type === 'reserved' || tokens[i - 1]?.value === '}') &&
+        (/reserved|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}') &&
         // Skip shader externals when disabled
         (mangleExternals || !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value))
       ) {
-        // Start capturing namespaces, prefer UBO suffix if specified
+        // Start capturing namespaces, prefer UBO suffix if specified.
+        // If UBOs don't specify a suffix, their inner declarations are global
         if (tokens[i + 1]?.value === '{') {
           let j = i
           while (tokens[j].value !== '}') j++

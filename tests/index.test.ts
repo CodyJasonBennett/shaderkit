@@ -31,7 +31,14 @@ const glsl = /* glsl */ `#version 300 es
     mat3 normalMatrix;
   } globals;
 
+  struct LightData {
+    float intensity;
+    vec3 position;
+  };
+  uniform LightData Light[4];
+
   void main() {
+    vec4 lightNormal = vec4(Light[0].position.xyz * Light[0].intensity, 0.0);
     vec4 clipPosition = projectionMatrix * modelViewMatrix * vec4(0, 0, 0, 1);
     vec4 clipPositionGlobals = globals.projectionMatrix * globals.modelViewMatrix * vec4(0, 0, 0, 1);
     pc_FragColor = vec4(texture(map, vUv).rgb, 0.0);
