@@ -217,7 +217,8 @@ export const GLSL_RESERVED = [
   'gl_TessLevelOuter',
   'gl_TessLevelInner',
   'gl_VertexID',
-  'gl_DrawID'
+  // GL_ANGLE_multi_draw
+  'gl_DrawID',
 ]
 
 export const GLSL_SYMBOLS = [
