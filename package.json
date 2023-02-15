@@ -1,8 +1,17 @@
 {
   "name": "shaderkit",
   "version": "0.0.0",
-  "description": "",
-  "keywords": [],
+  "description": "Lightweight compiler for GLSL and WGSL.",
+  "keywords": [
+    "shaders",
+    "glsl",
+    "wgsl",
+    "webgl",
+    "webgpu",
+    "compiler",
+    "parser",
+    "minifier"
+  ],
   "author": "Cody Bennett (https://github.com/CodyJasonBennett)",
   "homepage": "https://github.com/CodyJasonBennett/shaderkit",
   "repository": "https://github.com/CodyJasonBennett/shaderkit",
