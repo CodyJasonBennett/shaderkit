@@ -1,6 +1,6 @@
-import { GLSL_SYMBOLS, GLSL_RESERVED } from './constants'
+import { GLSL_SYMBOLS, GLSL_KEYWORDS } from './constants'
 
-export type TokenType = 'comment' | 'symbol' | 'number' | 'identifier' | 'reserved'
+export type TokenType = 'comment' | 'symbol' | 'number' | 'identifier' | 'keyword'
 
 export interface Token<T = TokenType, V = string> {
   type: T
@@ -51,8 +51,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
       tokens.push({ type: 'symbol', value })
     } else if (/\d/.test(char)) {
       tokens.push({ type: 'number', value })
-    } else if (GLSL_RESERVED.includes(value)) {
-      tokens.push({ type: 'reserved', value })
+    } else if (GLSL_KEYWORDS.includes(value)) {
+      tokens.push({ type: 'keyword', value })
     } else {
       tokens.push({ type: 'identifier', value })
     }

@@ -1,5 +1,5 @@
 // https://registry.khronos.org/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf
-export const GLSL_RESERVED = [
+export const GLSL_KEYWORDS = [
   // Literals
   'true',
   'false',

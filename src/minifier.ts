@@ -32,8 +32,8 @@ export function minify(
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
-    if (/reserved|identifier/.test(token.type)) {
-      if (/reserved|identifier/.test(tokens[i - 1]?.type)) minified += ' '
+    if (/keyword|identifier/.test(token.type)) {
+      if (/keyword|identifier/.test(tokens[i - 1]?.type)) minified += ' '
 
       // Resolve nested keys from members or accessors
       let key = token.value
@@ -53,7 +53,7 @@ export function minify(
         (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, or namespace
         token.type === 'identifier' &&
-        (/reserved|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}') &&
+        (/keyword|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}') &&
         // Skip shader externals when disabled
         (mangleExternals || !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value))
       ) {
