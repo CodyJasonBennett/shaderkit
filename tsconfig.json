@@ -8,8 +8,8 @@
     "strict": true,
     "pretty": true,
     "noEmit": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "shaderkit": ["./src"]
     }
