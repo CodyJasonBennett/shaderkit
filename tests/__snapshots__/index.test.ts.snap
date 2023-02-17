@@ -119,7 +119,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "if",
   },
   {
-    "type": "identifier",
+    "type": "keyword",
     "value": "defined",
   },
   {

@@ -51,7 +51,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       tokens.push({ type: 'symbol', value })
     } else if (/\d/.test(char)) {
       tokens.push({ type: 'number', value })
-    } else if (GLSL_KEYWORDS.includes(value)) {
+    } else if (GLSL_KEYWORDS.includes(tokens[tokens.length - 1]?.value === '#' ? `#${value}` : value)) {
       tokens.push({ type: 'keyword', value })
     } else {
       tokens.push({ type: 'identifier', value })
