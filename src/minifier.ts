@@ -94,7 +94,8 @@ export function minify(
 
       // Join preprocessor directives
       while (tokens[i].value !== '\\') {
-        if (tokens[i].type !== 'symbol' && tokens[i - 1]?.type !== 'symbol') minified += ' '
+        if ((tokens[i].type !== 'symbol' || tokens[i - 2]?.value === '#') && tokens[i - 1]?.type !== 'symbol')
+          minified += ' '
         minified += tokens[i].value
         i++
       }

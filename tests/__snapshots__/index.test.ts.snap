@@ -7,7 +7,9 @@ precision mediump float;
 #if defined(TEST)
 const bool a=true;
 #endif
-uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;layout(std140)uniform b{mat4 c;mat4 d;mat3 e;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}f;struct g{float h;vec3 i;};uniform g Light[4];void main(){vec4 j=vec4(Light[0].i.xyz*Light[0].h,0.0);vec4 k=c*d*vec4(0,0,0,1);vec4 l=f.projectionMatrix*f.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
+#include <three_test>
+layout(std140)uniform b{mat4 c;mat4 d;mat3 e;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}f;struct g{float h;vec3 i;};uniform g Light[4];void main(){vec4 j=vec4(Light[0].i.xyz*Light[0].h,0.0);vec4 k=c*d*vec4(0,0,0,1);vec4 l=f.projectionMatrix*f.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
@@ -17,7 +19,9 @@ precision mediump float;
 #if defined(TEST)
 const bool a=true;
 #endif
-uniform sampler2D b;in vec2 c;out vec4 d;layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}i;struct j{float k;vec3 l;};uniform j m[4];void main(){vec4 n=vec4(m[0].l.xyz*m[0].k,0.0);vec4 o=f*g*vec4(0,0,0,1);vec4 p=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
+uniform sampler2D b;in vec2 c;out vec4 d;
+#include <three_test>
+layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}i;struct j{float k;vec3 l;};uniform j m[4];void main(){vec4 n=vec4(m[0].l.xyz*m[0].k,0.0);vec4 o=f*g*vec4(0,0,0,1);vec4 p=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
 exports[`minify > can mangle multiple GLSL shaders 1`] = `
@@ -45,7 +49,9 @@ precision mediump float;
 #if defined(TEST)
 const bool a=true;
 #endif
-uniform sampler2D b;in vec2 c;out vec4 d;layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform i{mat4 j;mat4 k;mat3 l;}m;struct n{float o;vec3 p;};uniform n q[4];void main(){vec4 r=vec4(q[0].p.xyz*q[0].o,0.0);vec4 s=f*g*vec4(0,0,0,1);vec4 t=m.j*m.k*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
+uniform sampler2D b;in vec2 c;out vec4 d;
+#include <three_test>
+layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform i{mat4 j;mat4 k;mat3 l;}m;struct n{float o;vec3 p;};uniform n q[4];void main(){vec4 r=vec4(q[0].p.xyz*q[0].o,0.0);vec4 s=f*g*vec4(0,0,0,1);vec4 t=m.j*m.k*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
 exports[`minify > can minify GLSL 1`] = `
@@ -55,7 +61,9 @@ precision mediump float;
 #if defined(TEST)
 const bool isTest=true;
 #endif
-uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}globals;struct LightData{float intensity;vec3 position;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
+#include <three_test>
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}globals;struct LightData{float intensity;vec3 position;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`tokenize > can tokenize GLSL 1`] = `
@@ -239,6 +247,30 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "keyword",
+    "value": "include",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "identifier",
+    "value": "three_test",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
   },
   {
     "type": "keyword",

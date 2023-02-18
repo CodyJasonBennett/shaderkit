@@ -19,6 +19,8 @@ const glsl = /* glsl */ `#version 300 es
   in vec2 vUv;
   out vec4 pc_FragColor;
 
+  #include <three_test>
+
   layout(std140) uniform Uniforms1 {
     mat4 projectionMatrix;
     mat4 modelViewMatrix;
