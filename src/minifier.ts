@@ -25,6 +25,7 @@ export function minify(
     mangleProperties = false,
   }: Partial<MinifyOptions> = {},
 ): string {
+  const exclude = new Set(mangleMap.values())
   const tokens = tokenize(code).filter((token) => token.type !== 'comment')
 
   let mangleIndex = 0
@@ -68,13 +69,15 @@ export function minify(
 
         // Skip struct properties when specified
         if (!prefix || mangleProperties) {
-          renamed = ''
-          mangleIndex++
+          while (!renamed || exclude.has(renamed)) {
+            renamed = ''
+            mangleIndex++
 
-          let j = mangleIndex
-          while (j > 0) {
-            renamed = String.fromCharCode(97 + ((j % 26) - 1)) + renamed
-            j = Math.floor(j / 26)
+            let j = mangleIndex
+            while (j > 0) {
+              renamed = String.fromCharCode(97 + ((j % 26) - 1)) + renamed
+              j = Math.floor(j / 26)
+            }
           }
 
           mangleMap.set(key, renamed)

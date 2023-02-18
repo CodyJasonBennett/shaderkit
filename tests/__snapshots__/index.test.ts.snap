@@ -20,6 +20,24 @@ const bool a=true;
 uniform sampler2D b;in vec2 c;out vec4 d;layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}i;struct j{float k;vec3 l;};uniform j m[4];void main(){vec4 n=vec4(m[0].l.xyz*m[0].k,0.0);vec4 o=f*g*vec4(0,0,0,1);vec4 p=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
+exports[`minify > can mangle multiple GLSL shaders 1`] = `
+"#version 300 es
+in vec2 a;out vec2 b;void main(){b=a;}"
+`;
+
+exports[`minify > can mangle multiple GLSL shaders 2`] = `
+"#version 300 es
+in vec2 b;out vec4 c[gl_MaxDrawBuffers];void main(){c[0]=b.sstt;}"
+`;
+
+exports[`minify > can mangle multiple GLSL shaders 3`] = `
+Map {
+  "uv" => "a",
+  "c" => "b",
+  "data" => "c",
+}
+`;
+
 exports[`minify > can mangle properties in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
