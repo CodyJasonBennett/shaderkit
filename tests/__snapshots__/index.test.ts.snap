@@ -3,6 +3,7 @@
 exports[`minify > can mangle GLSL 1`] = `
 "#version 300 es
 precision mediump float;
+#define PLUS(n)n+=1;
 #define TEST
 #if defined(TEST)
 const bool a=true;
@@ -15,6 +16,7 @@ layout(std140)uniform b{mat4 c;mat4 d;mat3 e;};layout(std140)uniform Uniforms2{m
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
+#define PLUS(n)n+=1;
 #define TEST
 #if defined(TEST)
 const bool a=true;
@@ -45,6 +47,7 @@ Map {
 exports[`minify > can mangle properties in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
+#define PLUS(n)n+=1;
 #define TEST
 #if defined(TEST)
 const bool a=true;
@@ -57,6 +60,7 @@ layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform i{mat4 j;ma
 exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
+#define PLUS(n)n+=1;
 #define TEST
 #if defined(TEST)
 const bool isTest=true;
@@ -114,6 +118,50 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "/*
     multiline
   */",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "keyword",
+    "value": "define",
+  },
+  {
+    "type": "identifier",
+    "value": "PLUS",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "n",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "identifier",
+    "value": "n",
+  },
+  {
+    "type": "symbol",
+    "value": "+=",
+  },
+  {
+    "type": "number",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "\\\\",
   },
   {
     "type": "symbol",
