@@ -1,4 +1,5 @@
 // https://registry.khronos.org/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf
+// NOTE: restrictions from 5.25-5.26 apply https://registry.khronos.org/webgl/specs/latest/2.0
 export const GLSL_KEYWORDS = [
   // 3.8 Keywords
   'const',
