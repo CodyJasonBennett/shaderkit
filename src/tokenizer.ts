@@ -1,6 +1,6 @@
 import { GLSL_SYMBOLS, GLSL_KEYWORDS } from './constants'
 
-export type TokenType = 'comment' | 'symbol' | 'number' | 'identifier' | 'keyword'
+export type TokenType = 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'uint' | 'identifier' | 'keyword'
 
 export interface Token<T = TokenType, V = string> {
   type: T
@@ -31,7 +31,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
     }
 
     // Parse values and identifiers
-    while (/\w/.test(code[index])) value += code[index++]
+    while ((/\d/.test(char) ? /[\d\.\-\w]/ : /\w/).test(code[index])) value += code[index++]
 
     // Parse symbols, combine if able
     if (!value) {
@@ -50,7 +50,11 @@ export function tokenize(code: string, index: number = 0): Token[] {
     } else if (!/\w/.test(char)) {
       tokens.push({ type: 'symbol', value })
     } else if (/\d/.test(char)) {
-      tokens.push({ type: 'number', value })
+      if (/[uU]/.test(value)) tokens.push({ type: 'uint', value })
+      else if (/[\.eE]/.test(value)) tokens.push({ type: 'float', value })
+      else tokens.push({ type: 'int', value })
+    } else if (/true|false/.test(value)) {
+      tokens.push({ type: 'bool', value })
     } else if (GLSL_KEYWORDS.includes(tokens[tokens.length - 1]?.value === '#' ? `#${value}` : value)) {
       tokens.push({ type: 'keyword', value })
     } else {

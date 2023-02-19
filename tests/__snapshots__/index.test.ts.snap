@@ -81,7 +81,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "version",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "300",
   },
   {
@@ -152,7 +152,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "+=",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "1",
   },
   {
@@ -229,7 +229,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "=",
   },
   {
-    "type": "keyword",
+    "type": "bool",
     "value": "true",
   },
   {
@@ -529,7 +529,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "[",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "4",
   },
   {
@@ -589,7 +589,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "[",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -625,7 +625,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "[",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -645,16 +645,8 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
-    "value": "0",
-  },
-  {
-    "type": "symbol",
-    "value": ".",
-  },
-  {
-    "type": "number",
-    "value": "0",
+    "type": "float",
+    "value": "0.0",
   },
   {
     "type": "symbol",
@@ -701,7 +693,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "(",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -709,7 +701,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -717,7 +709,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -725,7 +717,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "1",
   },
   {
@@ -789,7 +781,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "(",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -797,7 +789,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -805,7 +797,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "0",
   },
   {
@@ -813,7 +805,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
+    "type": "int",
     "value": "1",
   },
   {
@@ -877,16 +869,8 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "number",
-    "value": "0",
-  },
-  {
-    "type": "symbol",
-    "value": ".",
-  },
-  {
-    "type": "number",
-    "value": "0",
+    "type": "float",
+    "value": "0.0",
   },
   {
     "type": "symbol",
@@ -913,16 +897,8 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "+=",
   },
   {
-    "type": "number",
-    "value": "1",
-  },
-  {
-    "type": "symbol",
-    "value": ".",
-  },
-  {
-    "type": "number",
-    "value": "0",
+    "type": "float",
+    "value": "1.0",
   },
   {
     "type": "symbol",
