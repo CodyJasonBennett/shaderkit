@@ -25,10 +25,11 @@ export function minify(
     mangleProperties = false,
   }: Partial<MinifyOptions> = {},
 ): string {
-  const exclude = new Set(mangleMap.values())
-  const tokens = tokenize(code).filter((token) => token.type !== 'comment')
+  const exclude = new Set<string>(mangleMap.values())
+  const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'comment')
 
-  let mangleIndex = 0
+  let mangleIndex: number = 0
+  let blockIndex: number | null = null
   let prefix: string | null = null
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
@@ -54,21 +55,21 @@ export function minify(
         (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, or namespace
         token.type === 'identifier' &&
-        (/keyword|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}') &&
-        // Skip shader externals when disabled
-        (mangleExternals || !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value))
+        (/keyword|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}')
       ) {
-        // Start capturing namespaces, prefer UBO suffix if specified.
-        // If UBOs don't specify a suffix, their inner declarations are global
-        if (tokens[i + 1]?.value === '{') {
-          let j = i
-          while (tokens[j].value !== '}') j++
-          const suffix = tokens[j + 1].value
-          if (suffix !== ';') prefix = suffix
-        }
-
-        // Skip struct properties when specified
-        if (!prefix || mangleProperties) {
+        if (
+          // Skip struct properties when specified
+          (!prefix || mangleProperties) &&
+          // Skip shader externals when disabled
+          (blockIndex != null
+            ? // Struct member
+              (mangleExternals && mangleProperties) ||
+              !/(struct|uniform|in|out|attribute|varying)/.test(tokens[blockIndex - 1]?.value)
+            : // Struct header or fully specified uniform
+              mangleExternals ||
+              (!/(uniform|in|out|attribute|varying)/.test(tokens[i - 1]?.value) &&
+                !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value)))
+        ) {
           while (!renamed || exclude.has(renamed)) {
             renamed = ''
             mangleIndex++
@@ -83,8 +84,18 @@ export function minify(
           mangleMap.set(key, renamed)
         }
 
-        // End capturing namespaces
-        if (tokens[i + 2]?.value === '}') prefix = null
+        // Start or stop capturing namespaces, prefer UBO suffix if specified.
+        // If UBOs don't specify a suffix, their inner declarations are global
+        if (tokens[i + 1]?.value === '{') {
+          let j = i
+          while (tokens[j].value !== '}') j++
+          const suffix = tokens[j + 1].value
+          if (suffix !== ';') prefix = suffix
+          blockIndex = i
+        } else if (tokens[i + 2]?.value === '}') {
+          prefix = null
+          blockIndex = null
+        }
       }
 
       minified += renamed ?? token.value

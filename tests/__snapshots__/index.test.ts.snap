@@ -10,7 +10,7 @@ const bool a=true;
 #endif
 uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform b{mat4 c;mat4 d;mat3 e;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}f;struct g{float h;vec3 i;};uniform g Light[4];void main(){vec4 j=vec4(Light[0].i.xyz*Light[0].h,0.0);vec4 k=c*d*vec4(0,0,0,1);vec4 l=f.projectionMatrix*f.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}b;struct c{float intensity;vec3 position;};uniform c Light[4];void main(){vec4 d=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 e=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 f=b.projectionMatrix*b.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
@@ -23,7 +23,7 @@ const bool a=true;
 #endif
 uniform sampler2D b;in vec2 c;out vec4 d;
 #include <three_test>
-layout(std140)uniform e{mat4 f;mat4 g;mat3 h;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}i;struct j{float k;vec3 l;};uniform j m[4];void main(){vec4 n=vec4(m[0].l.xyz*m[0].k,0.0);vec4 o=f*g*vec4(0,0,0,1);vec4 p=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
+layout(std140)uniform e{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;};layout(std140)uniform f{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;}g;struct h{float intensity;vec3 position;};uniform h i[4];void main(){vec4 j=vec4(i[0].position.xyz*i[0].intensity,0.0);vec4 k=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 l=g.projectionMatrix*g.modelViewMatrix*vec4(0,0,0,1);d=vec4(texture(b,c).rgb,0.0);d.a+=1.0;}"
 `;
 
 exports[`minify > can mangle multiple GLSL shaders 1`] = `
