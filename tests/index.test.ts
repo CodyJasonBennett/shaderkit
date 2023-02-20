@@ -18,6 +18,8 @@ const glsl = /* glsl */ `#version 300 es
     const bool isTest = true;
   #endif
 
+  uniform float foo, bar;
+
   uniform sampler2D map;
   in vec2 vUv;
   out vec4 pc_FragColor;
@@ -28,17 +30,20 @@ const glsl = /* glsl */ `#version 300 es
     mat4 projectionMatrix;
     mat4 modelViewMatrix;
     mat3 normalMatrix;
+    float one, two;
   };
 
   layout(std140) uniform Uniforms2 {
     mat4 projectionMatrix;
     mat4 modelViewMatrix;
     mat3 normalMatrix;
+    float one, two;
   } globals;
 
   struct LightData {
     float intensity;
     vec3 position;
+    float one, two;
   };
   uniform LightData Light[4];
 

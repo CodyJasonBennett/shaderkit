@@ -53,9 +53,9 @@ export function minify(
         // Filter variable names
         key !== 'main' &&
         (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
-        // Is declaration, reference, or namespace
+        // Is declaration, reference, namespace, or comma-separated list
         token.type === 'identifier' &&
-        (/keyword|identifier/.test(tokens[i - 1]?.type) || tokens[i - 1]?.value === '}')
+        (/keyword|identifier/.test(tokens[i - 1]?.type) || /}|,/.test(tokens[i - 1]?.value))
       ) {
         if (
           // Skip struct properties when specified
@@ -65,9 +65,9 @@ export function minify(
             ? // Struct member
               (mangleExternals && mangleProperties) ||
               !/(struct|uniform|in|out|attribute|varying)/.test(tokens[blockIndex - 1]?.value)
-            : // Struct header or fully specified uniform
+            : // Struct header, fully specified uniform, or comma-separated list
               mangleExternals ||
-              (!/(uniform|in|out|attribute|varying)/.test(tokens[i - 1]?.value) &&
+              (!/(uniform|in|out|attribute|varying|,)/.test(tokens[i - 1]?.value) &&
                 !/(uniform|in|out|attribute|varying)/.test(tokens[i - 2]?.value)))
         ) {
           while (!renamed || exclude.has(renamed)) {
