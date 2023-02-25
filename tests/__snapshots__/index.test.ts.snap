@@ -13,6 +13,8 @@ uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}b;struct c{float intensity;vec3 position;float one,two;};uniform c Light[4];void main(){vec4 d=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 e=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 f=b.projectionMatrix*b.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
+exports[`minify > can mangle WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn a(uv:vec2<f32>)->vec4<f32>{var b=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var c=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var d=textureSample(map,sample,uv);d.a+=1.0;return d;}"`;
+
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
@@ -25,6 +27,8 @@ uniform float b,c;uniform sampler2D d;in vec2 e;out vec4 f;
 #include <three_test>
 layout(std140)uniform g{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform h{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}i;struct j{float intensity;vec3 position;float one,two;};uniform j k[4];void main(){vec4 l=vec4(k[0].position.xyz*k[0].intensity,0.0);vec4 m=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 n=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);f=vec4(texture(d,e).rgb,0.0);f.a+=1.0;}"
 `;
+
+exports[`minify > can mangle externals in WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn b(uv:vec2<f32>)->vec4<f32>{var c=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var d=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var e=textureSample(map,sample,f);e.a+=1.0;return e;}"`;
 
 exports[`minify > can mangle multiple GLSL shaders 1`] = `
 "#version 300 es
@@ -57,6 +61,8 @@ uniform float b,c;uniform sampler2D d;in vec2 e;out vec4 f;
 layout(std140)uniform g{mat4 h;mat4 i;mat3 j;float k,l;};layout(std140)uniform m{mat4 n;mat4 o;mat3 p;float q,r;}s;struct t{float u;vec3 v;float k,l;};uniform t w[4];void main(){vec4 x=vec4(w[0].v.xyz*w[0].u,0.0);vec4 y=h*i*vec4(0,0,0,1);vec4 a\`=s.n*s.o*vec4(0,0,0,1);f=vec4(texture(d,e).rgb,0.0);f.a+=1.0;}"
 `;
 
+exports[`minify > can mangle properties in WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,b:f32,c:f32,};struct d{projectionMatrix:mat4x4<f32>,e:mat4x4<f32>,f:mat3x3<f32>,b:f32,c:f32,g:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:d;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var h:texture_2d<f32>;struct i{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct j{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn k(input:i)->j{var l:j;l.position=input.position;l.uv=input.uv;return l;}@fragment fn m(uv:vec2<f32>)->vec4<f32>{var n=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var o=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var p=textureSample(h,sample,q);p.a+=1.0;return p;}"`;
+
 exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
@@ -69,6 +75,8 @@ uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
 layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
+
+exports[`minify > can minify WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn frag_main(uv:vec2<f32>)->vec4<f32>{var lightNormal=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var clipPosition=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var color=textureSample(map,sample,uv);color.a+=1.0;return color;}"`;
 
 exports[`tokenize > can tokenize GLSL 1`] = `
 [
@@ -983,6 +991,1250 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "float",
     "value": "1.0",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+]
+`;
+
+exports[`tokenize > can tokenize WGSL 1`] = `
+[
+  {
+    "type": "comment",
+    "value": "// single line
+",
+  },
+  {
+    "type": "comment",
+    "value": "/*
+    multiline
+  */",
+  },
+  {
+    "type": "keyword",
+    "value": "struct",
+  },
+  {
+    "type": "identifier",
+    "value": "LightData",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "identifier",
+    "value": "intensity",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec3",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "one",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "two",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "struct",
+  },
+  {
+    "type": "identifier",
+    "value": "Uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "mat4x4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "mat4x4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "normalMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "mat3x3",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "one",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "two",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "lights",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "array",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "identifier",
+    "value": "LightData",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "int",
+    "value": "4",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "binding",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "group",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "uniform",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "identifier",
+    "value": "uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "identifier",
+    "value": "Uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "binding",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "group",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "keyword",
+    "value": "sample",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "sampler",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "binding",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "2",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "group",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "identifier",
+    "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "texture_2d",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "struct",
+  },
+  {
+    "type": "identifier",
+    "value": "VertexIn",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "location",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "location",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "1",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec2",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "struct",
+  },
+  {
+    "type": "identifier",
+    "value": "VertexOut",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "builtin",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "location",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec2",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "vertex",
+  },
+  {
+    "type": "keyword",
+    "value": "fn",
+  },
+  {
+    "type": "identifier",
+    "value": "vert_main",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "input",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "identifier",
+    "value": "VertexIn",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "->",
+  },
+  {
+    "type": "identifier",
+    "value": "VertexOut",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "identifier",
+    "value": "output",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "identifier",
+    "value": "VertexOut",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "identifier",
+    "value": "output",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "identifier",
+    "value": "input",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "identifier",
+    "value": "output",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "identifier",
+    "value": "input",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "return",
+  },
+  {
+    "type": "identifier",
+    "value": "output",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": "@",
+  },
+  {
+    "type": "keyword",
+    "value": "fragment",
+  },
+  {
+    "type": "keyword",
+    "value": "fn",
+  },
+  {
+    "type": "identifier",
+    "value": "frag_main",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": ":",
+  },
+  {
+    "type": "keyword",
+    "value": "vec2",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": "->",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "identifier",
+    "value": "lightNormal",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "lights",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "keyword",
+    "value": "position",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "identifier",
+    "value": "uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "lights",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "intensity",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "identifier",
+    "value": "clipPosition",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "identifier",
+    "value": "uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "projectionMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "identifier",
+    "value": "uniforms",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "modelViewMatrix",
+  },
+  {
+    "type": "symbol",
+    "value": "*",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "<",
+  },
+  {
+    "type": "keyword",
+    "value": "f32",
+  },
+  {
+    "type": "symbol",
+    "value": ">",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "float",
+    "value": "1.0",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "var",
+  },
+  {
+    "type": "identifier",
+    "value": "color",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "keyword",
+    "value": "textureSample",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "map",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "keyword",
+    "value": "sample",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "identifier",
+    "value": "uv",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "identifier",
+    "value": "color",
+  },
+  {
+    "type": "symbol",
+    "value": ".",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": "+=",
+  },
+  {
+    "type": "float",
+    "value": "1.0",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "keyword",
+    "value": "return",
+  },
+  {
+    "type": "identifier",
+    "value": "color",
   },
   {
     "type": "symbol",
