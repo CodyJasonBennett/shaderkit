@@ -14,7 +14,7 @@ export interface MinifyOptions {
 }
 
 /**
- * Minifies a string of GLSL code.
+ * Minifies a string of GLSL or WGSL code.
  */
 export function minify(
   code: string,

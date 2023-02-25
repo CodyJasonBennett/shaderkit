@@ -1,18 +1,22 @@
-import { GLSL_SYMBOLS, GLSL_KEYWORDS } from './constants'
+import { SYMBOLS, WGSL_KEYWORDS, GLSL_KEYWORDS } from './constants'
 
-export type TokenType = 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'uint' | 'identifier' | 'keyword'
+export type TokenType = 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
 
 export interface Token<T = TokenType, V = string> {
   type: T
   value: V
 }
 
+// Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
+const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/
+
 /**
- * Tokenizes a string of GLSL code.
+ * Tokenizes a string of GLSL or WGSL code.
  */
 export function tokenize(code: string, index: number = 0): Token[] {
   const tokens: Token[] = []
 
+  const KEYWORDS = WGSL_REGEX.test(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
   while (index < code.length) {
     let char = code[index]
     let value = ''
@@ -36,7 +40,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
     // Parse symbols, combine if able
     if (!value) {
       value = char
-      for (const symbol of GLSL_SYMBOLS) {
+      for (const symbol of SYMBOLS) {
         if (symbol.length > value.length && code.startsWith(symbol, index)) value = symbol
       }
       index += value.length
@@ -50,12 +54,11 @@ export function tokenize(code: string, index: number = 0): Token[] {
     } else if (!/\w/.test(char)) {
       tokens.push({ type: 'symbol', value })
     } else if (/\d/.test(char)) {
-      if (/[uU]/.test(value)) tokens.push({ type: 'uint', value })
-      else if (/\.|[eE]-?\d/.test(value)) tokens.push({ type: 'float', value })
+      if (/\.|[eEpP][-+]?\d|[fFhH]$/.test(value)) tokens.push({ type: 'float', value })
       else tokens.push({ type: 'int', value })
     } else if (/^(true|false)$/.test(value)) {
       tokens.push({ type: 'bool', value })
-    } else if (GLSL_KEYWORDS.includes(tokens[tokens.length - 1]?.value === '#' ? `#${value}` : value)) {
+    } else if (KEYWORDS.includes(value)) {
       tokens.push({ type: 'keyword', value })
     } else {
       tokens.push({ type: 'identifier', value })
