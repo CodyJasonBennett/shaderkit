@@ -144,7 +144,6 @@ describe('minify', () => {
   })
 
   it('can mangle externals in WGSL', () => {
-    // TODO: uv -> f breaks reference
     expect(minify(wgsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
   })
 

@@ -55,7 +55,9 @@ export function minify(
         (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, namespace, or comma-separated list
         token.type === 'identifier' &&
-        (/keyword|identifier/.test(tokens[i - 1]?.type) || /}|,/.test(tokens[i - 1]?.value))
+        (/keyword|identifier/.test(tokens[i - 1]?.type) ||
+          /}|,/.test(tokens[i - 1]?.value) ||
+          tokens[i + 1]?.value === ':')
       ) {
         if (
           // Skip struct properties when specified
