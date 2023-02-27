@@ -1,6 +1,6 @@
 import { SYMBOLS, WGSL_KEYWORDS, GLSL_KEYWORDS } from './constants'
 
-export type TokenType = 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
+export type TokenType = 'whitespace' | 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
 
 export interface Token<T = TokenType, V = string> {
   type: T
@@ -27,7 +27,6 @@ const DOT = 46
 const UNDERSCORE = 95
 const SLASH = 47
 const STAR = 42
-const HASH = 35
 
 const isDigit = (c: number) => ZERO <= c && c <= NINE
 const isAlpha = (c: number) => ((c &= ~32), A <= c && c <= Z)
@@ -48,7 +47,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
     const char = code.charCodeAt(index++)
 
     if (isSpace(char)) {
-      continue
+      while (isSpace(code.charCodeAt(index))) value += code[index++]
+      tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char)) {
       while (isNumber(code.charCodeAt(index))) value += code[index++]
       if (isFloat(value)) tokens.push({ type: 'float', value })
@@ -68,13 +68,6 @@ export function tokenize(code: string, index: number = 0): Token[] {
       }
       index += value.length - 1
       tokens.push({ type: 'symbol', value })
-
-      // Escape newlines after directives, skip comments
-      if (char === HASH) {
-        let j = index
-        while (!isLine(code.charCodeAt(j)) && code.charCodeAt(j) !== SLASH && code.charCodeAt(j + 1) !== STAR) j++
-        code = code.substring(0, j) + '\\' + code.substring(j)
-      }
     }
   }
 

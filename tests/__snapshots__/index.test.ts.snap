@@ -89,24 +89,41 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "version",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "int",
     "value": "300",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "es",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "keyword",
     "value": "precision",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "mediump",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -117,9 +134,20 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "comment",
     "value": "// single line
 ",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "comment",
@@ -128,12 +156,22 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   */",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "symbol",
     "value": "#",
   },
   {
     "type": "keyword",
     "value": "define",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -152,12 +190,24 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": "     ",
+  },
+  {
     "type": "identifier",
     "value": "n",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "+=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "int",
@@ -168,8 +218,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "symbol",
@@ -180,17 +232,25 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "define",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "TEST",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "comment",
     "value": "// inline comment
 ",
+  },
+  {
+    "type": "whitespace",
+    "value": "  ",
   },
   {
     "type": "symbol",
@@ -201,6 +261,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "if",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "defined",
   },
@@ -209,32 +273,57 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "(",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "TEST",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "symbol",
     "value": ")",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "keyword",
     "value": "const",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "bool",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "isTest",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "bool",
@@ -245,6 +334,11 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "#",
   },
@@ -253,16 +347,26 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "endif",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -273,6 +377,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "bar",
   },
@@ -281,12 +389,26 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "sampler2D",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -297,12 +419,25 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "keyword",
     "value": "in",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "vec2",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -313,12 +448,25 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "keyword",
     "value": "out",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "vec4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -329,12 +477,22 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "symbol",
     "value": "#",
   },
   {
     "type": "keyword",
     "value": "include",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "symbol",
@@ -349,8 +507,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ">",
   },
   {
-    "type": "symbol",
-    "value": "\\\\",
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "keyword",
@@ -369,20 +529,41 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "uniform",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "Uniforms1",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -393,8 +574,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -405,8 +595,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat3",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -417,8 +616,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -429,6 +637,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "two",
   },
@@ -437,12 +649,23 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "keyword",
@@ -461,20 +684,41 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "uniform",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "Uniforms2",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -485,8 +729,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -497,8 +750,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "mat3",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -509,8 +771,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -521,6 +792,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "two",
   },
@@ -529,8 +804,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -541,20 +825,43 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -565,8 +872,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "vec3",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -577,8 +893,17 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -589,12 +914,21 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "two",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "symbol",
@@ -605,12 +939,25 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "LightData",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -633,8 +980,18 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "void",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -649,20 +1006,41 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "lightNormal",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -705,8 +1083,16 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "xyz",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -737,6 +1123,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "float",
     "value": "0.0",
   },
@@ -749,32 +1139,65 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "vec4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "clipPosition",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -793,12 +1216,8 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "int",
-    "value": "0",
-  },
-  {
-    "type": "symbol",
-    "value": ",",
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "int",
@@ -807,6 +1226,22 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "int",
@@ -821,16 +1256,33 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "vec4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "clipPositionGlobals",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -845,8 +1297,16 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "projectionMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -861,8 +1321,16 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "modelViewMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -881,12 +1349,8 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
-    "type": "int",
-    "value": "0",
-  },
-  {
-    "type": "symbol",
-    "value": ",",
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "int",
@@ -895,6 +1359,22 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "int",
+    "value": "0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "int",
@@ -909,12 +1389,25 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "pc_FragColor",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -941,6 +1434,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "vUv",
   },
@@ -961,6 +1458,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "float",
     "value": "0.0",
   },
@@ -971,6 +1472,11 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -985,8 +1491,16 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "a",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "+=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "float",
@@ -997,8 +1511,18 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+",
   },
 ]
 `;
@@ -1006,9 +1530,19 @@ exports[`tokenize > can tokenize GLSL 1`] = `
 exports[`tokenize > can tokenize WGSL 1`] = `
 [
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "comment",
     "value": "// single line
 ",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "comment",
@@ -1017,16 +1551,35 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   */",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -1037,6 +1590,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "f32",
   },
@@ -1045,12 +1602,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "position",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1073,6 +1639,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "one",
   },
@@ -1081,12 +1652,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "f32",
   },
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -1097,12 +1677,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "f32",
   },
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "symbol",
@@ -1113,16 +1702,35 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "Uniforms",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -1133,6 +1741,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "mat4x4",
   },
@@ -1151,6 +1763,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -1161,6 +1778,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "mat4x4",
   },
@@ -1181,12 +1802,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "normalMatrix",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1209,6 +1839,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "one",
   },
@@ -1217,12 +1852,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "f32",
   },
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "identifier",
@@ -1233,6 +1877,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "f32",
   },
@@ -1241,12 +1889,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "lights",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1265,6 +1922,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "int",
     "value": "4",
   },
@@ -1277,12 +1938,22 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "symbol",
@@ -1305,6 +1976,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "@",
   },
@@ -1325,6 +2000,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "var",
   },
@@ -1341,6 +2020,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ">",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "uniforms",
   },
@@ -1349,12 +2032,22 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "Uniforms",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "symbol",
@@ -1377,6 +2070,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "@",
   },
@@ -1397,8 +2094,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "var",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1409,12 +2114,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "sampler",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
   },
   {
     "type": "symbol",
@@ -1437,6 +2151,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "@",
   },
@@ -1457,8 +2175,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "var",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1467,6 +2193,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1489,16 +2219,35 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "VertexIn",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "symbol",
@@ -1521,12 +2270,20 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "position",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1547,6 +2304,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "symbol",
@@ -1569,12 +2331,20 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "uv",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1597,6 +2367,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
   },
@@ -1605,16 +2380,35 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
     "type": "keyword",
     "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "VertexOut",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "symbol",
@@ -1637,12 +2431,20 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "position",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1663,6 +2465,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "symbol",
@@ -1685,12 +2492,20 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "uv",
   },
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1713,12 +2528,23 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
   },
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "symbol",
@@ -1729,8 +2555,17 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "vertex",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "keyword",
     "value": "fn",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1749,6 +2584,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "VertexIn",
   },
@@ -1757,20 +2596,41 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "->",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "VertexOut",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "var",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1781,6 +2641,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ":",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "VertexOut",
   },
@@ -1789,6 +2653,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "output",
   },
@@ -1801,8 +2670,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "position",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1821,6 +2698,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "output",
   },
@@ -1833,8 +2715,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "uv",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1851,12 +2741,21 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "keyword",
     "value": "return",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "output",
   },
@@ -1865,8 +2764,19 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
   },
   {
     "type": "symbol",
@@ -1877,8 +2787,17 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "fragment",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "keyword",
     "value": "fn",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -1895,6 +2814,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ":",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1917,8 +2840,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ")",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "->",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -1937,20 +2868,41 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ">",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
   },
   {
     "type": "keyword",
     "value": "var",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "identifier",
     "value": "lightNormal",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -2005,8 +2957,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "position",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -2045,6 +3005,10 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "float",
     "value": "0.0",
   },
@@ -2057,16 +3021,33 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "var",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "clipPosition",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -2081,8 +3062,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "projectionMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -2097,8 +3086,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "modelViewMatrix",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "*",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -2129,12 +3126,8 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
-    "type": "float",
-    "value": "0.0",
-  },
-  {
-    "type": "symbol",
-    "value": ",",
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "float",
@@ -2143,6 +3136,22 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "float",
@@ -2157,16 +3166,34 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+
+    ",
+  },
+  {
     "type": "keyword",
     "value": "var",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
     "value": "color",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "keyword",
@@ -2185,12 +3212,20 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ",",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "keyword",
     "value": "sample",
   },
   {
     "type": "symbol",
     "value": ",",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -2205,6 +3240,11 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "color",
   },
@@ -2217,8 +3257,16 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": "a",
   },
   {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
     "type": "symbol",
     "value": "+=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "float",
@@ -2229,8 +3277,17 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "keyword",
     "value": "return",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "identifier",
@@ -2241,8 +3298,18 @@ exports[`tokenize > can tokenize WGSL 1`] = `
     "value": ";",
   },
   {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
     "type": "symbol",
     "value": "}",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+",
   },
 ]
 `;
