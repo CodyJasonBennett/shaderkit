@@ -8,7 +8,33 @@ export interface Token<T = TokenType, V = string> {
 }
 
 // Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
-const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/
+const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/)
+
+// Checks for GLSL and WGSL abstract floats, hexadecimal, exp, half floats
+const isFloat = RegExp.prototype.test.bind(/\.|[eEpP][-+]?\d|[fFhH]$/)
+
+const ZERO = 48
+const NINE = 57
+const A = 65
+const Z = 90
+const LF = 10
+const CR = 13
+const TAB = 9
+const SPACE = 32
+const PLUS = 43
+const MINUS = 45
+const DOT = 46
+const UNDERSCORE = 95
+const SLASH = 47
+const STAR = 42
+const HASH = 35
+
+const isDigit = (c: number) => ZERO <= c && c <= NINE
+const isAlpha = (c: number) => ((c &= ~32), A <= c && c <= Z)
+const isLine = (c: number) => c === LF || c === CR
+const isSpace = (c: number) => isLine(c) || c === TAB || c === SPACE
+const isNumber = (c: number) => isAlpha(c) || isDigit(c) || c === PLUS || c === MINUS || c === DOT
+const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
 
 /**
  * Tokenizes a string of GLSL or WGSL code.
@@ -16,52 +42,39 @@ const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/
 export function tokenize(code: string, index: number = 0): Token[] {
   const tokens: Token[] = []
 
-  const KEYWORDS = WGSL_REGEX.test(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
+  const KEYWORDS = isWGSL(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
   while (index < code.length) {
-    let char = code[index]
-    let value = ''
+    let value = code[index]
+    const char = code.charCodeAt(index++)
 
-    // Skip whitespace
-    if (/\s/.test(char)) {
-      index++
+    if (isSpace(char)) {
       continue
-    }
-
-    // Escape newlines after directives, skip comments
-    if (char === '#') {
-      let j = index
-      while (code[j] !== '\n' && !/\/[\/\*]/.test(code[j] + code[j + 1])) j++
-      code = code.substring(0, j) + '\\' + code.substring(j)
-    }
-
-    // Parse values and identifiers
-    while ((/\d/.test(char) ? /[\d\.\-\w]/ : /\w/).test(code[index])) value += code[index++]
-
-    // Parse symbols, combine if able
-    if (!value) {
-      value = char
-      for (const symbol of SYMBOLS) {
-        if (symbol.length > value.length && code.startsWith(symbol, index)) value = symbol
-      }
-      index += value.length
-    }
-
-    // Label and add token
-    if (/\/[\/\*]/.test(value)) {
-      const isMultiline = value === '/*'
+    } else if (isDigit(char)) {
+      while (isNumber(code.charCodeAt(index))) value += code[index++]
+      if (isFloat(value)) tokens.push({ type: 'float', value })
+      else tokens.push({ type: 'int', value })
+    } else if (isAlpha(char)) {
+      while (isIdent(code.charCodeAt(index))) value += code[index++]
+      if (/^(true|false)$/.test(value)) tokens.push({ type: 'bool', value })
+      else if (KEYWORDS.includes(value)) tokens.push({ type: 'keyword', value })
+      else tokens.push({ type: 'identifier', value })
+    } else if ((char === SLASH && code.charCodeAt(index) === SLASH) || code.charCodeAt(index) === STAR) {
+      const isMultiline = code.charCodeAt(index) === STAR
       while (!value.endsWith(isMultiline ? '*/' : '\n')) value += code[index++]
       tokens.push({ type: 'comment', value })
-    } else if (!/\w/.test(char)) {
-      tokens.push({ type: 'symbol', value })
-    } else if (/\d/.test(char)) {
-      if (/\.|[eEpP][-+]?\d|[fFhH]$/.test(value)) tokens.push({ type: 'float', value })
-      else tokens.push({ type: 'int', value })
-    } else if (/^(true|false)$/.test(value)) {
-      tokens.push({ type: 'bool', value })
-    } else if (KEYWORDS.includes(value)) {
-      tokens.push({ type: 'keyword', value })
     } else {
-      tokens.push({ type: 'identifier', value })
+      for (const symbol of SYMBOLS) {
+        if (symbol.length > value.length && code.startsWith(symbol, index - 1)) value = symbol
+      }
+      index += value.length - 1
+      tokens.push({ type: 'symbol', value })
+
+      // Escape newlines after directives, skip comments
+      if (char === HASH) {
+        let j = index
+        while (!isLine(code.charCodeAt(j)) && code.charCodeAt(j) !== SLASH && code.charCodeAt(j + 1) !== STAR) j++
+        code = code.substring(0, j) + '\\' + code.substring(j)
+      }
     }
   }
 
