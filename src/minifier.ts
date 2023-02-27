@@ -26,13 +26,7 @@ export function minify(
   }: Partial<MinifyOptions> = {},
 ): string {
   // Escape newlines after directives, skip comments
-  for (let i = 0; i < code.length; i++) {
-    if (code[i] === '#') {
-      let j = i
-      while (code[j] !== '\n' && !/\/[\/\*]/.test(code[j] + code[j + 1])) j++
-      code = code.substring(0, j) + '\\' + code.substring(j)
-    }
-  }
+  code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
 
   const exclude = new Set<string>(mangleMap.values())
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
