@@ -10,8 +10,8 @@ export interface Token<T = TokenType, V = string> {
 // Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
 const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/)
 
-// Checks for GLSL and WGSL abstract floats, hexadecimal, exp, half floats
 const isFloat = RegExp.prototype.test.bind(/\.|[eEpP][-+]?\d|[fFhH]$/)
+const isBool = RegExp.prototype.test.bind(/^(true|false)$/)
 
 const ZERO = 48
 const NINE = 57
@@ -55,7 +55,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       else tokens.push({ type: 'int', value })
     } else if (isAlpha(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
-      if (/^(true|false)$/.test(value)) tokens.push({ type: 'bool', value })
+      if (isBool(value)) tokens.push({ type: 'bool', value })
       else if (KEYWORDS.includes(value)) tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
     } else if ((char === SLASH && code.charCodeAt(index) === SLASH) || code.charCodeAt(index) === STAR) {
