@@ -58,7 +58,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       if (isBool(value)) tokens.push({ type: 'bool', value })
       else if (KEYWORDS.includes(value)) tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
-    } else if ((char === SLASH && code.charCodeAt(index) === SLASH) || code.charCodeAt(index) === STAR) {
+    } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
       const isMultiline = code.charCodeAt(index) === STAR
       while (!value.endsWith(isMultiline ? '*/' : '\n')) value += code[index++]
       tokens.push({ type: 'comment', value })
