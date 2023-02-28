@@ -2,6 +2,7 @@ import * as path from 'node:path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  root: process.argv[2] ? undefined : 'demo',
   resolve: {
     alias: {
       shaderkit: path.resolve(__dirname, './src'),
