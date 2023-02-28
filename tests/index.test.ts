@@ -147,22 +147,13 @@ describe('minify', () => {
     expect(minify(wgsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
   })
 
-  it('can mangle properties in GLSL', () => {
-    expect(minify(glsl, { mangle: true, mangleExternals: true, mangleProperties: true })).toMatchSnapshot()
-  })
-
-  it('can mangle properties in WGSL', () => {
-    // TODO: uniforms.lights[0] -> d.g[0]
-    expect(minify(wgsl, { mangle: true, mangleExternals: true, mangleProperties: true })).toMatchSnapshot()
-  })
-
   it('can mangle multiple GLSL shaders', () => {
     const mangleMap = new Map()
     const vert = /* glsl */ `#version 300 es\nin vec2 uv;out vec2 c;void main(){c=uv;}`
     const frag = /* glsl */ `#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){data[0]=c.sstt;}`
 
-    expect(minify(vert, { mangle: true, mangleExternals: true, mangleProperties: true, mangleMap })).toMatchSnapshot()
-    expect(minify(frag, { mangle: true, mangleExternals: true, mangleProperties: true, mangleMap })).toMatchSnapshot()
+    expect(minify(vert, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(minify(frag, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
 })

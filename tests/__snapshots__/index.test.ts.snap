@@ -3,32 +3,32 @@
 exports[`minify > can mangle GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define PLUS(n)n+=1;
-#define TEST
-#if defined(TEST)
-const bool a=true;
+#define a(n)n+=1;
+#define b
+#if defined(b)
+const bool c=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}b;struct c{float intensity;vec3 position;float one,two;};uniform c Light[4];void main(){vec4 d=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 e=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 f=b.projectionMatrix*b.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
-exports[`minify > can mangle WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn a(uv:vec2<f32>)->vec4<f32>{var b=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var c=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var d=textureSample(map,sample,uv);d.a+=1.0;return d;}"`;
+exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var c:texture_2d<f32>;struct d{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct e{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn f(g:d)->e{var output:e;output.position=g.position;output.uv=g.uv;return output;}@fragment fn h(i:vec2<f32>)->vec4<f32>{var j=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var k=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var l=textureSample(c,sample,i);l.a+=1.0;return l;}"`;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define PLUS(n)n+=1;
-#define TEST
-#if defined(TEST)
-const bool a=true;
+#define a(n)n+=1;
+#define b
+#if defined(b)
+const bool c=true;
 #endif
-uniform float b,c;uniform sampler2D d;in vec2 e;out vec4 f;
+uniform float d,e;uniform sampler2D f;in vec2 g;out vec4 h;
 #include <three_test>
-layout(std140)uniform g{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform h{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}i;struct j{float intensity;vec3 position;float one,two;};uniform j k[4];void main(){vec4 l=vec4(k[0].position.xyz*k[0].intensity,0.0);vec4 m=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 n=i.projectionMatrix*i.modelViewMatrix*vec4(0,0,0,1);f=vec4(texture(d,e).rgb,0.0);f.a+=1.0;}"
+layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{float intensity;vec3 position;float one,two;};uniform l m[4];void main(){vec4 n=vec4(m[0].position.xyz*m[0].intensity,0.0);vec4 o=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 p=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);h=vec4(texture(f,g).rgb,0.0);h.a+=1.0;}"
 `;
 
-exports[`minify > can mangle externals in WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn b(c:vec2<f32>)->vec4<f32>{var d=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var e=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var f=textureSample(map,sample,c);f.a+=1.0;return f;}"`;
+exports[`minify > can mangle externals in WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>c:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var d:texture_2d<f32>;struct e{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct f{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn g(h:e)->f{var output:f;output.position=h.position;output.uv=h.uv;return output;}@fragment fn i(j:vec2<f32>)->vec4<f32>{var k=vec4<f32>(c.lights[0].position*c.lights[0].intensity,0.0);var l=c.projectionMatrix*c.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var m=textureSample(d,sample,j);m.a+=1.0;return m;}"`;
 
 exports[`minify > can mangle multiple GLSL shaders 1`] = `
 "#version 300 es
@@ -47,21 +47,6 @@ Map {
   "data" => "c",
 }
 `;
-
-exports[`minify > can mangle properties in GLSL 1`] = `
-"#version 300 es
-precision mediump float;
-#define PLUS(n)n+=1;
-#define TEST
-#if defined(TEST)
-const bool a=true;
-#endif
-uniform float b,c;uniform sampler2D d;in vec2 e;out vec4 f;
-#include <three_test>
-layout(std140)uniform g{mat4 h;mat4 i;mat3 j;float k,l;};layout(std140)uniform m{mat4 n;mat4 o;mat3 p;float q,r;}s;struct t{float u;vec3 v;float k,l;};uniform t w[4];void main(){vec4 x=vec4(w[0].v.xyz*w[0].u,0.0);vec4 y=h*i*vec4(0,0,0,1);vec4 a\`=s.n*s.o*vec4(0,0,0,1);f=vec4(texture(d,e).rgb,0.0);f.a+=1.0;}"
-`;
-
-exports[`minify > can mangle properties in WGSL 1`] = `"struct a{b:f32,position:vec3<f32>,c:f32,d:f32,};struct e{f:mat4x4<f32>,g:mat4x4<f32>,h:mat3x3<f32>,c:f32,d:f32,i:array<a,4>,};@binding(0)@group(0)var<uniform>j:e;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var k:texture_2d<f32>;struct l{@location(0)position:vec4<f32>,@location(1)m:vec2<f32>,};struct n{@builtin(position)position:vec4<f32>,@location(0)m:vec2<f32>,};@vertex fn o(p:l)->n{var q:n;q.position=p.position;q.uv=p.uv;return q;}@fragment fn r(m:vec2<f32>)->vec4<f32>{var s=vec4<f32>(j.lights[0].position*j.lights[0].b,0.0);var t=j.projectionMatrix*j.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var u=textureSample(k,sample,m);u.a+=1.0;return u;}"`;
 
 exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
