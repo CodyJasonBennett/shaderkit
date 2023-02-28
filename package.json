@@ -1,7 +1,7 @@
 {
   "name": "shaderkit",
   "version": "0.0.2",
-  "description": "Lightweight compiler for GLSL and WGSL.",
+  "description": "Tools and IntelliSense for GLSL and WGSL.",
   "keywords": [
     "shaders",
     "glsl",
