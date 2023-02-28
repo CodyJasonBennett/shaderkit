@@ -10,7 +10,8 @@
     "webgpu",
     "compiler",
     "parser",
-    "minifier"
+    "minifier",
+    "intellisense"
   ],
   "author": "Cody Bennett (https://github.com/CodyJasonBennett)",
   "homepage": "https://github.com/CodyJasonBennett/shaderkit",
