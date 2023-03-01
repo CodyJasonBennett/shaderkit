@@ -27,6 +27,8 @@ const DOT = 46
 const UNDERSCORE = 95
 const SLASH = 47
 const STAR = 42
+const HASH = 35
+const AT = 64
 
 const isDigit = (c: number) => ZERO <= c && c <= NINE
 const isAlpha = (c: number) => ((c &= ~32), A <= c && c <= Z)
@@ -34,6 +36,7 @@ const isLine = (c: number) => c === LF || c === CR
 const isSpace = (c: number) => isLine(c) || c === TAB || c === SPACE
 const isNumber = (c: number) => isAlpha(c) || isDigit(c) || c === PLUS || c === MINUS || c === DOT
 const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
+const isMacro = (c: number) => c === HASH || c === AT
 
 /**
  * Tokenizes a string of GLSL or WGSL code.
@@ -41,6 +44,7 @@ const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
 export function tokenize(code: string, index: number = 0): Token[] {
   const tokens: Token[] = []
 
+  let prev: number = -1
   const KEYWORDS = isWGSL(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
   while (index < code.length) {
     let value = code[index]
@@ -56,7 +60,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
     } else if (isAlpha(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
       if (isBool(value)) tokens.push({ type: 'bool', value })
-      else if (KEYWORDS.includes(value)) tokens.push({ type: 'keyword', value })
+      else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value))
+        tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
     } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
       const isMultiline = code.charCodeAt(index) === STAR
@@ -69,6 +74,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       index += value.length - 1
       tokens.push({ type: 'symbol', value })
     }
+    prev = char
   }
 
   return tokens

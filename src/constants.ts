@@ -272,20 +272,20 @@ export const WGSL_KEYWORDS = [
   'yield',
 
   // 15.4 Context-Dependent Name Tokens - Attributes
-  'align',
-  'binding',
-  'builtin',
-  'compute',
-  'const',
-  'fragment',
-  'group',
-  'id',
-  'interpolate',
-  'invariant',
-  'location',
-  'size',
-  'vertex',
-  'workgroup_size',
+  '@align',
+  '@binding',
+  '@builtin',
+  '@compute',
+  '@const',
+  '@fragment',
+  '@group',
+  '@id',
+  '@interpolate',
+  '@invariant',
+  '@location',
+  '@size',
+  '@vertex',
+  '@workgroup_size',
 
   // 15.4 Context-Dependent Name Tokens - Interpolation Types
   'perspective',
@@ -653,19 +653,19 @@ export const GLSL_KEYWORDS = [
   'using',
 
   // 3.5 Preprocessor
-  'define',
-  'undef',
-  'if',
-  'ifdef',
-  'ifndef',
-  'else',
-  'elif',
-  'endif',
-  'error',
-  'pragma',
-  'extension',
-  'version',
-  'line',
+  '#define',
+  '#undef',
+  '#if',
+  '#ifdef',
+  '#ifndef',
+  '#else',
+  '#elif',
+  '#endif',
+  '#error',
+  '#pragma',
+  '#extension',
+  '#version',
+  '#line',
 
   // 3.5 Preprocessor - Operators
   'defined',
@@ -811,7 +811,7 @@ export const GLSL_KEYWORDS = [
   'fwidth',
 
   // Additional directives
-  'include',
+  '#include',
 
   // WEBGL_multi_draw https://registry.khronos.org/webgl/extensions/WEBGL_multi_draw
   'gl_DrawID', // vertex only
