@@ -8,7 +8,7 @@ export interface Token<T = TokenType, V = string> {
 }
 
 // Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
-const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*=/)
+const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\b/)
 
 const isFloat = RegExp.prototype.test.bind(/\.|[eEpP][-+]?\d|[fFhH]$/)
 const isBool = RegExp.prototype.test.bind(/^(true|false)$/)
