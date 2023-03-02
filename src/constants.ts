@@ -822,15 +822,7 @@ export const GLSL_KEYWORDS = [
   'GL_OVR_multiview2',
 ]
 
-// GLSL 3.2 Character Set, 5.1 Operators
-// WGSL 15.3 Syntactic Tokens
-export const SYMBOLS = [
-  // Preprocessor (GLSL)
-  '#',
-
-  // Function arrow (WGSL)
-  '->',
-
+const SYMBOLS = [
   // Comments
   '//',
   '/*',
@@ -885,4 +877,20 @@ export const SYMBOLS = [
   '%=',
   '<<=',
   '>>=',
+]
+
+// GLSL 3.2 Character Set, 5.1 Operators
+export const GLSL_SYMBOLS = [
+  ...SYMBOLS,
+  // Preprocessor
+  '#',
+]
+
+// WGSL 15.3 Syntactic Tokens
+export const WGSL_SYMBOLS = [
+  ...SYMBOLS,
+  // Function arrow
+  '->',
+  // Attribute
+  '@',
 ]

@@ -1,4 +1,4 @@
-import { SYMBOLS, WGSL_KEYWORDS, GLSL_KEYWORDS } from './constants'
+import { WGSL_KEYWORDS, WGSL_SYMBOLS, GLSL_KEYWORDS, GLSL_SYMBOLS } from './constants'
 
 export type TokenType = 'whitespace' | 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
 
@@ -45,7 +45,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
   const tokens: Token[] = []
 
   let prev: number = -1
-  const KEYWORDS = isWGSL(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
+  const [KEYWORDS, SYMBOLS] = isWGSL(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
   while (index < code.length) {
     let value = code[index]
     const char = code.charCodeAt(index++)
