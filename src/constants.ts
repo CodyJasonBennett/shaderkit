@@ -855,6 +855,7 @@ const SYMBOLS = [
   '!',
   '+',
   '-',
+  '*',
   '/',
   '&',
   '|',
@@ -870,6 +871,7 @@ const SYMBOLS = [
   '!=',
   '+=',
   '-=',
+  '*=',
   '/=',
   '&=',
   '|=',
@@ -884,6 +886,8 @@ export const GLSL_SYMBOLS = [
   ...SYMBOLS,
   // Preprocessor
   '#',
+  // Line continuation
+  '\\',
 ]
 
 // WGSL 15.3 Syntactic Tokens
