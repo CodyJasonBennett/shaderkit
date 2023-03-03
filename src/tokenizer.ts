@@ -64,8 +64,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
         tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
     } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
-      const isMultiline = code.charCodeAt(index) === STAR
-      while (!value.endsWith(isMultiline ? '*/' : '\n')) value += code[index++]
+      const terminator = code.charCodeAt(index) === STAR ? '*/' : '\n'
+      while (!value.endsWith(terminator)) value += code[index++]
       tokens.push({ type: 'comment', value })
     } else {
       for (const symbol of SYMBOLS) {
