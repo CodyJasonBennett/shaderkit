@@ -57,7 +57,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       while (isNumber(code.charCodeAt(index))) value += code[index++]
       if (isFloat(value)) tokens.push({ type: 'float', value })
       else tokens.push({ type: 'int', value })
-    } else if (isAlpha(char)) {
+    } else if (isIdent(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
       if (isBool(value)) tokens.push({ type: 'bool', value })
       else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value))
