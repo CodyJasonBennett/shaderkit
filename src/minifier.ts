@@ -12,7 +12,7 @@ export interface MinifyOptions {
 }
 
 const isWord = RegExp.prototype.test.bind(/^\w/)
-const isName = RegExp.prototype.test.bind(/^[A-Za-z]/)
+const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
 const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying|,)$/)
 
 /**
