@@ -12,6 +12,7 @@ export interface MinifyOptions {
 }
 
 const isWord = RegExp.prototype.test.bind(/^\w/)
+const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
 const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying|,)$/)
 
@@ -40,6 +41,14 @@ export function minify(
     // Mark enter/leave block-scope
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
     else if (token.value === '}') blockIndex = null
+
+    // Pad symbols around #define and three.js #include (white-space sensitive)
+    if (
+      isSymbol(token.value) &&
+      ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
+        (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
+    )
+      minified += ' '
 
     // Mangle declarations and their references
     if (isName(token.value)) {
@@ -73,10 +82,6 @@ export function minify(
       }
 
       minified += renamed ?? token.value
-
-      // three.js has a white-space sensitive RegExp
-      // https://github.com/mrdoob/three.js/blob/dev/src/renderers/webgl/WebGLProgram.js#L206
-      if (token.value === 'include') minified += ' '
     } else {
       if (token.value === '#' && tokens[i - 1]?.value !== '\\') minified += '\n#'
       else if (token.value === '\\') minified += '\n'

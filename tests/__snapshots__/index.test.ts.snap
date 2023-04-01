@@ -3,7 +3,7 @@
 exports[`minify > can mangle GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define a(n)n+=1;
+#define a (n)n+=1;
 #define b
 #if defined(b)
 const bool c=true;
@@ -18,7 +18,7 @@ exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define a(n)n+=1;
+#define a (n)n+=1;
 #define b
 #if defined(b)
 const bool c=true;
@@ -51,7 +51,7 @@ Map {
 exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define PLUS(n)n+=1;
+#define PLUS (n)n+=1;
 #define TEST
 #if defined(TEST)
 const bool isTest=true;
@@ -161,6 +161,10 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "identifier",
     "value": "PLUS",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
   },
   {
     "type": "symbol",
