@@ -147,13 +147,20 @@ describe('minify', () => {
     expect(minify(wgsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
   })
 
-  it('can mangle multiple GLSL shaders', () => {
+  it('can mangle multiple GLSL shaders with collisions', () => {
     const mangleMap = new Map()
     const vert = /* glsl */ `#version 300 es\nin vec2 uv;out vec2 c;void main(){c=uv;}`
     const frag = /* glsl */ `#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){data[0]=c.sstt;}`
 
     expect(minify(vert, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(minify(frag, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
+  })
+
+  it('can wrap large mangle indices', () => {
+    const mangleMap = new Map()
+    const shader = /* glsl */ `float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
+    expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
 })
