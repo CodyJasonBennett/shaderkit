@@ -74,7 +74,7 @@ export function minify(
 
           let j = mangleIndex
           while (j > 0) {
-            renamed = String.fromCharCode(96 + (j % 27)) + renamed
+            renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
             j = Math.floor(j / 26)
           }
         }
