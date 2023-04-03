@@ -51,18 +51,19 @@ export function minify(
       minified += ' '
 
     // Mangle declarations and their references
-    if (isName(token.value)) {
+    if (
+      token.type === 'identifier' &&
+      // Filter variable names
+      token.value !== 'main' &&
+      (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
+    ) {
       let renamed = mangleMap.get(token.value)
       if (
         // no-op
         !renamed &&
         // Skip struct properties
         blockIndex == null &&
-        // Filter variable names
-        token.value !== 'main' &&
-        (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, namespace, or comma-separated list
-        token.type === 'identifier' &&
         (isName(tokens[i - 1]?.value) || /}|,/.test(tokens[i - 1]?.value) || tokens[i + 1]?.value === ':') &&
         // Skip shader externals when disabled
         (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
