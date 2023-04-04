@@ -14,7 +14,7 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying|,)$/)
+const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying)$/)
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -52,44 +52,37 @@ export function minify(
     // Mangle declarations and their references
     if (
       token.type === 'identifier' &&
+      // Skip shader externals when disabled
+      (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value))) &&
+      // Is reference, declaration, namespace, or comma-separated list
+      (mangleMap.has(token.value) ||
+        // Skip struct properties
+        (blockIndex == null &&
+          (isName(tokens[i - 1]?.value) ||
+            // uniform Type { ... } name;
+            (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
+            // float foo, bar;
+            tokens[i - 1]?.value === ',' ||
+            // fn (arg: type) -> void
+            tokens[i + 1]?.value === ':'))) &&
       // Filter variable names
       token.value !== 'main' &&
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
       let renamed = mangleMap.get(token.value)
-      if (
-        // no-op
-        !renamed &&
-        // Skip struct properties
-        blockIndex == null &&
-        // Is declaration, reference, namespace, or comma-separated list
-        (isName(tokens[i - 1]?.value) ||
-          // uniform Type { ... } name;
-          (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
-          // float foo, bar;
-          tokens[i - 1]?.value === ',' ||
-          // fn (arg: type) -> void
-          tokens[i + 1]?.value === ':') &&
-        // Skip shader externals when disabled
-        (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
-      ) {
-        while (!renamed) {
-          renamed = ''
-          mangleIndex++
+      while (!renamed || mangleMap.has(renamed)) {
+        renamed = ''
+        mangleIndex++
 
-          let j = mangleIndex
-          while (j > 0) {
-            renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
-            j = Math.floor(j / 26)
-          }
-
-          if (!mangleMap.has(renamed)) break
+        let j = mangleIndex
+        while (j > 0) {
+          renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
+          j = Math.floor(j / 26)
         }
-
-        mangleMap.set(token.value, renamed)
       }
 
-      minified += renamed ?? token.value
+      mangleMap.set(token.value, renamed)
+      minified += renamed
     } else {
       if (token.value === '#' && tokens[i - 1]?.value !== '\\') minified += '\n#'
       else if (token.value === '\\') minified += '\n'
