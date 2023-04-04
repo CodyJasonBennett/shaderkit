@@ -64,7 +64,13 @@ export function minify(
         // Skip struct properties
         blockIndex == null &&
         // Is declaration, reference, namespace, or comma-separated list
-        (isName(tokens[i - 1]?.value) || /}|,/.test(tokens[i - 1]?.value) || tokens[i + 1]?.value === ':') &&
+        (isName(tokens[i - 1]?.value) ||
+          // uniform Type { ... } name;
+          (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
+          // float foo, bar;
+          tokens[i - 1]?.value === ',' ||
+          // fn (arg: type) -> void
+          tokens[i + 1]?.value === ':') &&
         // Skip shader externals when disabled
         (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
       ) {
