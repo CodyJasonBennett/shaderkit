@@ -106,14 +106,14 @@ in vec2 a;out vec2 b;void main(){b=a;}"
 
 exports[`minify > can mangle multiple GLSL shaders 2`] = `
 "#version 300 es
-in vec2 b;out vec4 c[gl_MaxDrawBuffers];void main(){c[0]=b.sstt;}"
+in vec2 b;out vec4 a[gl_MaxDrawBuffers];void main(){a[0]=b.sstt;}"
 `;
 
 exports[`minify > can mangle multiple GLSL shaders 3`] = `
 Map {
   "uv" => "a",
   "c" => "b",
-  "data" => "c",
+  "data" => "a",
 }
 `;
 

@@ -26,7 +26,6 @@ export function minify(
   // Escape newlines after directives, skip comments
   code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
 
-  const exclude = new Set<string>(mangleMap.values())
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
   let mangleIndex: number = 0
@@ -74,7 +73,7 @@ export function minify(
         // Skip shader externals when disabled
         (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
       ) {
-        while (!renamed || exclude.has(renamed)) {
+        while (!renamed) {
           renamed = ''
           mangleIndex++
 
@@ -83,6 +82,8 @@ export function minify(
             renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
             j = Math.floor(j / 26)
           }
+
+          if (!mangleMap.has(renamed)) break
         }
 
         mangleMap.set(token.value, renamed)
