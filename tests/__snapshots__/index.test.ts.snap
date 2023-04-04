@@ -99,17 +99,17 @@ Map {
 }
 `;
 
-exports[`minify > can mangle multiple GLSL shaders with collisions 1`] = `
+exports[`minify > can mangle multiple GLSL shaders 1`] = `
 "#version 300 es
 in vec2 a;out vec2 b;void main(){b=a;}"
 `;
 
-exports[`minify > can mangle multiple GLSL shaders with collisions 2`] = `
+exports[`minify > can mangle multiple GLSL shaders 2`] = `
 "#version 300 es
 in vec2 b;out vec4 c[gl_MaxDrawBuffers];void main(){c[0]=b.sstt;}"
 `;
 
-exports[`minify > can mangle multiple GLSL shaders with collisions 3`] = `
+exports[`minify > can mangle multiple GLSL shaders 3`] = `
 Map {
   "uv" => "a",
   "c" => "b",
@@ -189,6 +189,16 @@ Map {
   "u50" => "ay",
   "u51" => "bz",
   "u52" => "ba",
+}
+`;
+
+exports[`minify > handles mangleMap collisions 1`] = `"uniform float a;c.xyz=vec3(0);"`;
+
+exports[`minify > handles mangleMap collisions 2`] = `
+Map {
+  "a" => "b",
+  "c" => "d",
+  "xyz" => "e",
 }
 `;
 
