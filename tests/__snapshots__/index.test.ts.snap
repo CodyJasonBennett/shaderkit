@@ -26,22 +26,21 @@ Map {
 }
 `;
 
-exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var c:texture_2d<f32>;struct d{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct e{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn f(g:d)->e{var output:e;output.position=g.position;output.uv=g.uv;return output;}@fragment fn h(i:vec2<f32>)->vec4<f32>{var j=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var k=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var l=textureSample(c,sample,i);l.a+=1.0;return l;}"`;
+exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct c{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct d{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn e(f:c)->d{var output:d;output.position=f.position;output.uv=f.uv;return output;}@fragment fn g(h:vec2<f32>)->vec4<f32>{var i=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var j=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var k=textureSample(map,sample,h);k.a+=1.0;return k;}"`;
 
 exports[`minify > can mangle WGSL 2`] = `
 Map {
   "LightData" => "a",
   "Uniforms" => "b",
-  "map" => "c",
-  "VertexIn" => "d",
-  "VertexOut" => "e",
-  "vert_main" => "f",
-  "input" => "g",
-  "frag_main" => "h",
-  "uv" => "i",
-  "lightNormal" => "j",
-  "clipPosition" => "k",
-  "color" => "l",
+  "VertexIn" => "c",
+  "VertexOut" => "d",
+  "vert_main" => "e",
+  "input" => "f",
+  "frag_main" => "g",
+  "uv" => "h",
+  "lightNormal" => "i",
+  "clipPosition" => "j",
+  "color" => "k",
 }
 `;
 

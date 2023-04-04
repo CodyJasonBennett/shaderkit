@@ -14,7 +14,7 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying)$/)
+const isStorage = RegExp.prototype.test.bind(/^(@|layout|uniform|in|out|attribute|varying)$/)
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -28,18 +28,22 @@ export function minify(
 
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
-  let mangleIndex: number = 0
-  let blockIndex: number | null = null
+  let mangleIndex: number = -1
+  let lineIndex: number = -1
+  let blockIndex: number = -1
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
 
-    // Pad alphanumeric tokens
-    if (isWord(token.value) && isWord(tokens[i - 1]?.value)) minified += ' '
+    // Track newlines' offsets
+    if (/[;{}\\]|^fn$/.test(token.value)) lineIndex = i + 1
 
     // Mark enter/leave block-scope
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
-    else if (token.value === '}') blockIndex = null
+    else if (token.value === '}') blockIndex = -1
+
+    // Pad alphanumeric tokens
+    if (isWord(token.value) && isWord(tokens[i - 1]?.value)) minified += ' '
 
     // Pad symbols around #define and three.js #include (white-space sensitive)
     if (
@@ -53,11 +57,11 @@ export function minify(
     if (
       token.type === 'identifier' &&
       // Skip shader externals when disabled
-      (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value))) &&
+      (mangleExternals || !isStorage(tokens[lineIndex]?.value) || isWord(tokens[i + 1]?.value)) &&
       // Is reference, declaration, namespace, or comma-separated list
       (mangleMap.has(token.value) ||
         // Skip struct properties
-        (blockIndex == null &&
+        (blockIndex === -1 &&
           (isName(tokens[i - 1]?.value) ||
             // uniform Type { ... } name;
             (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
