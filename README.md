@@ -180,6 +180,6 @@ const programOpts = { mangle: true, mangleExternals: true, mangleMap: new Map() 
 // #version 300 es\nin vec2 a;out vec2 b;void main(){b=a;}
 minify(`#version 300 es\nin vec2 uv;out vec2 c;void main(){c=uv;}`, programOpts)
 
-// #version 300 es\nin vec2 b;out vec4 c[gl_MaxDrawBuffers];void main(){c[0]=b.sstt;}
+// #version 300 es\nin vec2 b;out vec4 a[gl_MaxDrawBuffers];void main(){a[0]=b.sstt;}
 minify(`#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){data[0]=c.sstt;}`, programOpts)
 ```
