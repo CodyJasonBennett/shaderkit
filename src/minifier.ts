@@ -53,13 +53,18 @@ export function minify(
     )
       minified += ' '
 
+    let prefix = token.value
+    if (tokens[i - 1]?.value === '.') {
+      prefix = `${tokens[i - 2]?.value}.` + prefix
+    }
+
     // Mangle declarations and their references
     if (
       token.type === 'identifier' &&
       // Skip shader externals when disabled
       (mangleExternals || !isStorage(tokens[lineIndex]?.value) || isWord(tokens[i + 1]?.value)) &&
       // Is reference, declaration, namespace, or comma-separated list
-      (mangleMap.has(token.value) ||
+      (mangleMap.has(prefix) ||
         // Skip struct properties
         (blockIndex === -1 &&
           (isName(tokens[i - 1]?.value) ||
@@ -70,10 +75,10 @@ export function minify(
             // fn (arg: type) -> void
             tokens[i + 1]?.value === ':'))) &&
       // Filter variable names
-      token.value !== 'main' &&
+      prefix !== 'main' &&
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
-      let renamed = mangleMap.get(token.value)
+      let renamed = mangleMap.get(prefix)
       while (!renamed || mangleMap.has(renamed)) {
         renamed = ''
         mangleIndex++
@@ -85,7 +90,7 @@ export function minify(
         }
       }
 
-      mangleMap.set(token.value, renamed)
+      mangleMap.set(prefix, renamed)
       minified += renamed
     } else {
       if (token.value === '#' && tokens[i - 1]?.value !== '\\') minified += '\n#'
