@@ -14,7 +14,7 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isStorage = RegExp.prototype.test.bind(/^(@|layout|uniform|in|out|attribute|varying)$/)
+const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying)$/)
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -36,7 +36,7 @@ export function minify(
     const token = tokens[i]
 
     // Track newlines' offsets
-    if (/[;{}\\]|^fn$/.test(token.value)) lineIndex = i + 1
+    if (/[;{}\\@]/.test(token.value)) lineIndex = i + 1
 
     // Mark enter/leave block-scope
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
