@@ -13,7 +13,37 @@ uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
 `;
 
+exports[`minify > can mangle GLSL 2`] = `
+Map {
+  "PLUS" => "a",
+  "TEST" => "b",
+  "isTest" => "c",
+  "globals" => "d",
+  "LightData" => "e",
+  "lightNormal" => "f",
+  "clipPosition" => "g",
+  "clipPositionGlobals" => "h",
+}
+`;
+
 exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var c:texture_2d<f32>;struct d{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct e{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn f(g:d)->e{var output:e;output.position=g.position;output.uv=g.uv;return output;}@fragment fn h(i:vec2<f32>)->vec4<f32>{var j=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var k=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var l=textureSample(c,sample,i);l.a+=1.0;return l;}"`;
+
+exports[`minify > can mangle WGSL 2`] = `
+Map {
+  "LightData" => "a",
+  "Uniforms" => "b",
+  "map" => "c",
+  "VertexIn" => "d",
+  "VertexOut" => "e",
+  "vert_main" => "f",
+  "input" => "g",
+  "frag_main" => "h",
+  "uv" => "i",
+  "lightNormal" => "j",
+  "clipPosition" => "k",
+  "color" => "l",
+}
+`;
 
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
@@ -28,7 +58,46 @@ uniform float d,e;uniform sampler2D f;in vec2 g;out vec4 h;
 layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{float intensity;vec3 position;float one,two;};uniform l m[4];void main(){vec4 n=vec4(m[0].position.xyz*m[0].intensity,0.0);vec4 o=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 p=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);h.a+=1.0;}"
 `;
 
+exports[`minify > can mangle externals in GLSL 2`] = `
+Map {
+  "PLUS" => "a",
+  "TEST" => "b",
+  "isTest" => "c",
+  "foo" => "d",
+  "bar" => "e",
+  "map" => "f",
+  "vUv" => "g",
+  "pc_FragColor" => "h",
+  "Uniforms1" => "i",
+  "Uniforms2" => "j",
+  "globals" => "k",
+  "LightData" => "l",
+  "Light" => "m",
+  "lightNormal" => "n",
+  "clipPosition" => "o",
+  "clipPositionGlobals" => "p",
+}
+`;
+
 exports[`minify > can mangle externals in WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>c:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var d:texture_2d<f32>;struct e{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct f{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn g(h:e)->f{var output:f;output.position=h.position;output.uv=h.uv;return output;}@fragment fn i(j:vec2<f32>)->vec4<f32>{var k=vec4<f32>(c.lights[0].position*c.lights[0].intensity,0.0);var l=c.projectionMatrix*c.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var m=textureSample(d,sample,j);m.a+=1.0;return m;}"`;
+
+exports[`minify > can mangle externals in WGSL 2`] = `
+Map {
+  "LightData" => "a",
+  "Uniforms" => "b",
+  "uniforms" => "c",
+  "map" => "d",
+  "VertexIn" => "e",
+  "VertexOut" => "f",
+  "vert_main" => "g",
+  "input" => "h",
+  "frag_main" => "i",
+  "uv" => "j",
+  "lightNormal" => "k",
+  "clipPosition" => "l",
+  "color" => "m",
+}
+`;
 
 exports[`minify > can mangle multiple GLSL shaders with collisions 1`] = `
 "#version 300 es

@@ -133,19 +133,27 @@ describe('minify', () => {
   })
 
   it('can mangle GLSL', () => {
-    expect(minify(glsl, { mangle: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(glsl, { mangle: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle WGSL', () => {
-    expect(minify(wgsl, { mangle: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(wgsl, { mangle: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle externals in GLSL', () => {
-    expect(minify(glsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(glsl, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle externals in WGSL', () => {
-    expect(minify(wgsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(wgsl, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle multiple GLSL shaders with collisions', () => {
