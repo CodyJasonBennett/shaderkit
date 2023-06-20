@@ -79,7 +79,7 @@ export interface StructDeclaration extends Node {
 }
 
 export interface ReturnStatement extends Node {
-  argument: Node | null
+  argument: Literal | Identifier | UnaryExpression | null
 }
 
 export interface UnaryExpression extends Node {
@@ -102,7 +102,5 @@ export interface TernaryExpression extends Node {
 export interface ContinueStatement extends Node {}
 
 export interface BreakStatement extends Node {}
-
-export interface ReturnStatement extends Node {}
 
 export interface DiscardStatement extends Node {}
