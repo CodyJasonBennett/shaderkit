@@ -10,7 +10,7 @@ const glsl = /* glsl */ `#version 300 es
     multiline
   */
 
-  #define PLUS(n) \
+  #define PLUS (n) \
     n += 1;
 
   #define TEST // inline comment
@@ -51,8 +51,10 @@ const glsl = /* glsl */ `#version 300 es
     vec4 lightNormal = vec4(Light[0].position.xyz * Light[0].intensity, 0.0);
     vec4 clipPosition = projectionMatrix * modelViewMatrix * vec4(0, 0, 0, 1);
     vec4 clipPositionGlobals = globals.projectionMatrix * globals.modelViewMatrix * vec4(0, 0, 0, 1);
+    if (false) {}
     pc_FragColor = vec4(texture(map, vUv).rgb, 0.0);
-    pc_FragColor.a += 1.0;
+    float bar = 0.0;
+    pc_FragColor.a += 1.0+bar;
   }
 `
 
@@ -132,28 +134,43 @@ describe('minify', () => {
   })
 
   it('can mangle GLSL', () => {
-    expect(minify(glsl, { mangle: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(glsl, { mangle: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle WGSL', () => {
-    expect(minify(wgsl, { mangle: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(wgsl, { mangle: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle externals in GLSL', () => {
-    expect(minify(glsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(glsl, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
   it('can mangle externals in WGSL', () => {
-    expect(minify(wgsl, { mangle: true, mangleExternals: true })).toMatchSnapshot()
+    const mangleMap = new Map()
+    expect(minify(wgsl, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
   })
 
-  it('can mangle multiple GLSL shaders', () => {
+  it('can mangle multiple GLSL shaders with collisions', () => {
     const mangleMap = new Map()
     const vert = /* glsl */ `#version 300 es\nin vec2 uv;out vec2 c;void main(){c=uv;}`
     const frag = /* glsl */ `#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){data[0]=c.sstt;}`
 
     expect(minify(vert, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(minify(frag, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
+  })
+
+  it('can wrap large mangle indices', () => {
+    const mangleMap = new Map()
+    const shader = /* glsl */ `float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
+    expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
 })

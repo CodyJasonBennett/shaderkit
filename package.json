@@ -1,6 +1,6 @@
 {
   "name": "shaderkit",
-  "version": "0.1.5",
+  "version": "0.1.10",
   "description": "Tools and IntelliSense for GLSL and WGSL.",
   "keywords": [
     "shaders",

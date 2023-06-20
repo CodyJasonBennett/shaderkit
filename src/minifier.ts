@@ -12,6 +12,7 @@ export interface MinifyOptions {
 }
 
 const isWord = RegExp.prototype.test.bind(/^\w/)
+const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
 const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying|,)$/)
 
@@ -41,20 +42,35 @@ export function minify(
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
     else if (token.value === '}') blockIndex = null
 
+    // Pad symbols around #define and three.js #include (white-space sensitive)
+    if (
+      isSymbol(token.value) &&
+      ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
+        (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
+    )
+      minified += ' '
+
     // Mangle declarations and their references
-    if (isName(token.value)) {
+    if (
+      token.type === 'identifier' &&
+      // Filter variable names
+      token.value !== 'main' &&
+      (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
+    ) {
       let renamed = mangleMap.get(token.value)
       if (
         // no-op
         !renamed &&
         // Skip struct properties
         blockIndex == null &&
-        // Filter variable names
-        token.value !== 'main' &&
-        (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens)) &&
         // Is declaration, reference, namespace, or comma-separated list
-        token.type === 'identifier' &&
-        (isName(tokens[i - 1]?.value) || /}|,/.test(tokens[i - 1]?.value) || tokens[i + 1]?.value === ':') &&
+        (isName(tokens[i - 1]?.value) ||
+          // uniform Type { ... } name;
+          (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
+          // float foo, bar;
+          tokens[i - 1]?.value === ',' ||
+          // fn (arg: type) -> void
+          tokens[i + 1]?.value === ':') &&
         // Skip shader externals when disabled
         (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
       ) {
@@ -64,7 +80,7 @@ export function minify(
 
           let j = mangleIndex
           while (j > 0) {
-            renamed = String.fromCharCode(97 + ((j % 26) - 1)) + renamed
+            renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
             j = Math.floor(j / 26)
           }
         }
@@ -73,10 +89,6 @@ export function minify(
       }
 
       minified += renamed ?? token.value
-
-      // three.js has a white-space sensitive RegExp
-      // https://github.com/mrdoob/three.js/blob/dev/src/renderers/webgl/WebGLProgram.js#L206
-      if (token.value === 'include') minified += ' '
     } else {
       if (token.value === '#' && tokens[i - 1]?.value !== '\\') minified += '\n#'
       else if (token.value === '\\') minified += '\n'
