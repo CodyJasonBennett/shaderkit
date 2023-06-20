@@ -10,7 +10,8 @@ export interface Token<T = TokenType, V = string> {
 // Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
 const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*[:=]/)
 
-const isFloat = RegExp.prototype.test.bind(/\.|[eEpP][-+]?\d|[fFhH]$/)
+const isFloat = RegExp.prototype.test.bind(/^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/)
+const isInt = RegExp.prototype.test.bind(/^(0[xX][\w\d]+|\d+)[iIuU]?$/)
 const isBool = RegExp.prototype.test.bind(/^(true|false)$/)
 
 const ZERO = 48
@@ -21,9 +22,6 @@ const LF = 10
 const CR = 13
 const TAB = 9
 const SPACE = 32
-const PLUS = 43
-const MINUS = 45
-const DOT = 46
 const UNDERSCORE = 95
 const SLASH = 47
 const STAR = 42
@@ -34,7 +32,6 @@ const isDigit = (c: number) => ZERO <= c && c <= NINE
 const isAlpha = (c: number) => ((c &= ~32), A <= c && c <= Z)
 const isLine = (c: number) => c === LF || c === CR
 const isSpace = (c: number) => isLine(c) || c === TAB || c === SPACE
-const isNumber = (c: number) => isAlpha(c) || isDigit(c) || c === PLUS || c === MINUS || c === DOT
 const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
 const isMacro = (c: number) => c === HASH || c === AT
 
@@ -54,7 +51,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
       while (isSpace(code.charCodeAt(index))) value += code[index++]
       tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char)) {
-      while (isNumber(code.charCodeAt(index))) value += code[index++]
+      while (isFloat(value + code[index]) || isInt(value + code[index])) value += code[index++]
       if (isFloat(value)) tokens.push({ type: 'float', value })
       else tokens.push({ type: 'int', value })
     } else if (isIdent(char)) {
