@@ -1,7 +1,7 @@
 import * as path from 'node:path'
-import { defineConfig } from 'vite'
+import * as vite from 'vite'
 
-export default defineConfig({
+export default vite.defineConfig({
   root: process.argv[2] ? undefined : 'demo',
   resolve: {
     alias: {
@@ -9,7 +9,6 @@ export default defineConfig({
     },
   },
   build: {
-    minify: false,
     target: 'es2018',
     sourcemap: true,
     lib: {
@@ -27,8 +26,18 @@ export default defineConfig({
   plugins: [
     {
       name: 'vite-tsc',
-      generateBundle() {
-        this.emitFile({ type: 'asset', fileName: 'index.d.ts', source: `export * from '../src'` })
+      generateBundle(options) {
+        const ext = options.format === 'cjs' ? 'cts' : 'ts'
+        this.emitFile({ type: 'asset', fileName: `index.d.${ext}`, source: `export * from '../src'` })
+      },
+    },
+    {
+      name: 'vite-minify',
+      renderChunk: {
+        order: 'post',
+        handler(code, { fileName }) {
+          return vite.transformWithEsbuild(code, fileName, { minify: true, target: 'es2018' })
+        },
       },
     },
   ],
