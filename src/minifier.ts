@@ -14,6 +14,7 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
+const isScoped = RegExp.prototype.test.bind(/[;{}\\@]/)
 const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying)$/)
 
 /**
@@ -36,8 +37,8 @@ export function minify(
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
 
-    // Track newlines' offsets
-    if (/[;{}\\@]/.test(token.value)) lineIndex = i + 1
+    // Track possibly external scopes
+    if (isStorage(token.value) || isScoped(tokens[i - 1]?.value)) lineIndex = i
 
     // Mark enter/leave block-scope
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
@@ -67,7 +68,8 @@ export function minify(
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
       const namespace = tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';'
-      const storage = isStorage(tokens[lineIndex]?.value) && !isWord(tokens[i + 1]?.value)
+      const storage = isStorage(tokens[lineIndex]?.value)
+      const list = storage && tokens[i - 1]?.value === ','
       let renamed = mangleMap.get(prefix) ?? mangleCache.get(prefix)
       if (
         // no-op
@@ -78,8 +80,8 @@ export function minify(
         (isName(tokens[i - 1]?.value) ||
           // uniform Type { ... } name;
           namespace ||
-          // float foo, bar;
-          tokens[i - 1]?.value === ',' ||
+          // uniform float foo, bar;
+          list ||
           // fn (arg: type) -> void
           tokens[i + 1]?.value === ':') &&
         // Skip shader externals when disabled
@@ -94,6 +96,8 @@ export function minify(
           tokens[i - 2]?.value === '#' ||
           // Namespaced uniform structs
           namespace ||
+          // Comma-separated list of uniforms
+          list ||
           // WGSL entrypoints via @stage or @workgroup_size(...)
           (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
         const cache = isExternal ? mangleMap : mangleCache

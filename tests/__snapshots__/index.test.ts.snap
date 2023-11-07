@@ -10,7 +10,7 @@ const bool c=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,i).rgb,0.0);float j=0.0;pc_FragColor.a+=1.0+j;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float i=0.0;pc_FragColor.a+=1.0+i;}"
 `;
 
 exports[`minify > can mangle GLSL 2`] = `
@@ -105,7 +105,63 @@ exports[`minify > can minify WGSL 1`] = `"struct LightData{intensity:f32,positio
 
 exports[`minify > can wrap large mangle indices 1`] = `"uniform float a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,az,aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,an,ao,ap,aq,ar,as,at,au,av,aw,ax,ay,bz,ba"`;
 
-exports[`minify > can wrap large mangle indices 2`] = `Map {}`;
+exports[`minify > can wrap large mangle indices 2`] = `
+Map {
+  "u0" => "a",
+  "u1" => "b",
+  "u2" => "c",
+  "u3" => "d",
+  "u4" => "e",
+  "u5" => "f",
+  "u6" => "g",
+  "u7" => "h",
+  "u8" => "i",
+  "u9" => "j",
+  "u10" => "k",
+  "u11" => "l",
+  "u12" => "m",
+  "u13" => "n",
+  "u14" => "o",
+  "u15" => "p",
+  "u16" => "q",
+  "u17" => "r",
+  "u18" => "s",
+  "u19" => "t",
+  "u20" => "u",
+  "u21" => "v",
+  "u22" => "w",
+  "u23" => "x",
+  "u24" => "y",
+  "u25" => "az",
+  "u26" => "aa",
+  "u27" => "ab",
+  "u28" => "ac",
+  "u29" => "ad",
+  "u30" => "ae",
+  "u31" => "af",
+  "u32" => "ag",
+  "u33" => "ah",
+  "u34" => "ai",
+  "u35" => "aj",
+  "u36" => "ak",
+  "u37" => "al",
+  "u38" => "am",
+  "u39" => "an",
+  "u40" => "ao",
+  "u41" => "ap",
+  "u42" => "aq",
+  "u43" => "ar",
+  "u44" => "as",
+  "u45" => "at",
+  "u46" => "au",
+  "u47" => "av",
+  "u48" => "aw",
+  "u49" => "ax",
+  "u50" => "ay",
+  "u51" => "bz",
+  "u52" => "ba",
+}
+`;
 
 exports[`tokenize > can tokenize GLSL 1`] = `
 [
