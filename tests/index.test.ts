@@ -159,7 +159,7 @@ describe('minify', () => {
 
   it('can mangle multiple GLSL shaders with collisions', () => {
     const mangleMap = new Map()
-    const vert = /* glsl */ `#version 300 es\nin vec2 uv;out vec2 c;void main(){c=uv;}`
+    const vert = /* glsl */ `#version 300 es\nin vec2 sstt;out vec2 c;void main(){c=sstt;}`
     const frag = /* glsl */ `#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){data[0]=c.sstt;}`
 
     expect(minify(vert, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()

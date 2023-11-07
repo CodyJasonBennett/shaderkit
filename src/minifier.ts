@@ -14,7 +14,8 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying|,)$/)
+const isScoped = RegExp.prototype.test.bind(/[;{}\\@]/)
+const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying)$/)
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -27,21 +28,24 @@ export function minify(
   code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
 
   const mangleCache = new Map()
-  const exclude = new Set<string>(mangleMap.values())
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
-  let mangleIndex: number = 0
-  let blockIndex: number | null = null
+  let mangleIndex: number = -1
+  let lineIndex: number = -1
+  let blockIndex: number = -1
   let minified: string = ''
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
 
-    // Pad alphanumeric tokens
-    if (isWord(token.value) && isWord(tokens[i - 1]?.value)) minified += ' '
+    // Track possibly external scopes
+    if (isStorage(token.value) || isScoped(tokens[i - 1]?.value)) lineIndex = i
 
     // Mark enter/leave block-scope
     if (token.value === '{' && isName(tokens[i - 1]?.value)) blockIndex = i - 1
-    else if (token.value === '}') blockIndex = null
+    else if (token.value === '}') blockIndex = -1
+
+    // Pad alphanumeric tokens
+    if (isWord(token.value) && isWord(tokens[i - 1]?.value)) minified += ' '
 
     // Pad symbols around #define and three.js #include (white-space sensitive)
     if (
@@ -51,33 +55,54 @@ export function minify(
     )
       minified += ' '
 
+    let prefix = token.value
+    if (tokens[i - 1]?.value === '.') {
+      prefix = `${tokens[i - 2]?.value}.` + prefix
+    }
+
     // Mangle declarations and their references
     if (
       token.type === 'identifier' &&
       // Filter variable names
-      token.value !== 'main' &&
+      prefix !== 'main' &&
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
       const namespace = tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';'
-      const storage = isStorage(tokens[i - 1]?.value) || isStorage(tokens[i - 2]?.value)
-      let renamed = mangleMap.get(token.value) ?? mangleCache.get(token.value)
+      const storage = isStorage(tokens[lineIndex]?.value)
+      const list = storage && tokens[i - 1]?.value === ','
+      let renamed = mangleMap.get(prefix) ?? mangleCache.get(prefix)
       if (
         // no-op
         !renamed &&
         // Skip struct properties
-        blockIndex == null &&
+        blockIndex === -1 &&
         // Is declaration, reference, namespace, or comma-separated list
         (isName(tokens[i - 1]?.value) ||
           // uniform Type { ... } name;
           namespace ||
-          // float foo, bar;
-          tokens[i - 1]?.value === ',' ||
+          // uniform float foo, bar;
+          list ||
           // fn (arg: type) -> void
-          tokens[i + 1]?.value === ':') &&
+          (tokens[i - 1]?.type === 'symbol' && tokens[i + 1]?.value === ':')) &&
         // Skip shader externals when disabled
         (mangleExternals || !storage)
       ) {
-        while (!renamed || exclude.has(renamed)) {
+        // Write shader externals and preprocessor defines to mangleMap for multiple passes
+        // TODO: do so via scope tracking
+        const isExternal =
+          // Shader externals
+          (mangleExternals && storage) ||
+          // Defines
+          tokens[i - 2]?.value === '#' ||
+          // Namespaced uniform structs
+          namespace ||
+          // Comma-separated list of uniforms
+          list ||
+          // WGSL entrypoints via @stage or @workgroup_size(...)
+          (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
+        const cache = isExternal ? mangleMap : mangleCache
+
+        while (!renamed || cache.has(renamed)) {
           renamed = ''
           mangleIndex++
 
@@ -88,19 +113,7 @@ export function minify(
           }
         }
 
-        // Write shader externals and preprocessor defines to mangleMap for multiple passes
-        // TODO: do so via scope tracking
-        const isExternal =
-          // Shader externals
-          (mangleExternals && storage) ||
-          // Defines
-          tokens[i - 2]?.value === '#' ||
-          // Namespaced uniform structs
-          namespace ||
-          // WGSL entrypoints via @stage or @workgroup_size(...)
-          (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
-        const cache = isExternal ? mangleMap : mangleCache
-        cache.set(token.value, renamed)
+        cache.set(prefix, renamed)
       }
 
       minified += renamed ?? token.value
