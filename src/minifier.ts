@@ -83,7 +83,7 @@ export function minify(
           // uniform float foo, bar;
           list ||
           // fn (arg: type) -> void
-          tokens[i + 1]?.value === ':') &&
+          (tokens[i - 1]?.type === 'symbol' && tokens[i + 1]?.value === ':')) &&
         // Skip shader externals when disabled
         (mangleExternals || !storage)
       ) {
