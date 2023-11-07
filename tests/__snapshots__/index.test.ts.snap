@@ -10,7 +10,7 @@ const bool c=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float i=0.0;pc_FragColor.a+=1.0+i;}"
 `;
 
 exports[`minify > can mangle GLSL 2`] = `
@@ -23,6 +23,7 @@ Map {
   "lightNormal" => "f",
   "clipPosition" => "g",
   "clipPositionGlobals" => "h",
+  "bar" => "i",
 }
 `;
 
@@ -54,7 +55,7 @@ const bool c=true;
 #endif
 uniform float d,e;uniform sampler2D f;in vec2 g;out vec4 h;
 #include <three_test>
-layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{float intensity;vec3 position;float one,two;};uniform l m[4];void main(){vec4 n=vec4(m[0].position.xyz*m[0].intensity,0.0);vec4 o=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 p=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);h.a+=1.0;}"
+layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{float intensity;vec3 position;float one,two;};uniform l m[4];void main(){vec4 n=vec4(m[0].position.xyz*m[0].intensity,0.0);vec4 o=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 p=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 2`] = `
@@ -126,7 +127,7 @@ const bool isTest=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);pc_FragColor.a+=1.0;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}"
 `;
 
 exports[`minify > can minify WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn frag_main(uv:vec2<f32>)->vec4<f32>{var lightNormal=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var clipPosition=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var color=textureSample(map,sample,uv);color.a+=1.0;return color;}"`;
@@ -1643,6 +1644,43 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     ",
   },
   {
+    "type": "keyword",
+    "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "bar",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "float",
+    "value": "0.0",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
     "type": "identifier",
     "value": "pc_FragColor",
   },
@@ -1669,6 +1707,14 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "float",
     "value": "1.0",
+  },
+  {
+    "type": "symbol",
+    "value": "+",
+  },
+  {
+    "type": "identifier",
+    "value": "bar",
   },
   {
     "type": "symbol",
