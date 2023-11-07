@@ -14,7 +14,7 @@ export interface MinifyOptions {
 const isWord = RegExp.prototype.test.bind(/^\w/)
 const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying|,)$/)
+const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying|,)$/)
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -57,6 +57,7 @@ export function minify(
       token.value !== 'main' &&
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
+      const storage = isStorage(tokens[i - 1]?.value) || isStorage(tokens[i - 2]?.value)
       let renamed = mangleMap.get(token.value)
       if (
         // no-op
@@ -72,7 +73,7 @@ export function minify(
           // fn (arg: type) -> void
           tokens[i + 1]?.value === ':') &&
         // Skip shader externals when disabled
-        (mangleExternals || (!isStorage(tokens[i - 1]?.value) && !isStorage(tokens[i - 2]?.value)))
+        (mangleExternals || !storage)
       ) {
         while (!renamed || exclude.has(renamed)) {
           renamed = ''
