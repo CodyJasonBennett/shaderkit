@@ -26,6 +26,7 @@ export function minify(
   // Escape newlines after directives, skip comments
   code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
 
+  const mangleCache = new Map()
   const exclude = new Set<string>(mangleMap.values())
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
@@ -57,8 +58,9 @@ export function minify(
       token.value !== 'main' &&
       (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
     ) {
+      const namespace = tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';'
       const storage = isStorage(tokens[i - 1]?.value) || isStorage(tokens[i - 2]?.value)
-      let renamed = mangleMap.get(token.value)
+      let renamed = mangleMap.get(token.value) ?? mangleCache.get(token.value)
       if (
         // no-op
         !renamed &&
@@ -67,7 +69,7 @@ export function minify(
         // Is declaration, reference, namespace, or comma-separated list
         (isName(tokens[i - 1]?.value) ||
           // uniform Type { ... } name;
-          (tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';') ||
+          namespace ||
           // float foo, bar;
           tokens[i - 1]?.value === ',' ||
           // fn (arg: type) -> void
@@ -86,7 +88,19 @@ export function minify(
           }
         }
 
-        mangleMap.set(token.value, renamed)
+        // Write shader externals and preprocessor defines to mangleMap for multiple passes
+        // TODO: do so via scope tracking
+        const isExternal =
+          // Shader externals
+          (mangleExternals && storage) ||
+          // Defines
+          tokens[i - 2]?.value === '#' ||
+          // Namespaced uniform structs
+          namespace ||
+          // WGSL entrypoints via @stage or @workgroup_size(...)
+          (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
+        const cache = isExternal ? mangleMap : mangleCache
+        cache.set(token.value, renamed)
       }
 
       minified += renamed ?? token.value

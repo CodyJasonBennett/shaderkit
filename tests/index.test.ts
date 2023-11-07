@@ -169,7 +169,7 @@ describe('minify', () => {
 
   it('can wrap large mangle indices', () => {
     const mangleMap = new Map()
-    const shader = /* glsl */ `float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
+    const shader = /* glsl */ `uniform float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
