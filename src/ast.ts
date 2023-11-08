@@ -1,131 +1,131 @@
-export interface Node {}
+export interface AST {}
 
-export interface Literal extends Node {
+export interface Literal extends AST {
   __brand: 'Literal'
   value: string | number | boolean
 }
 
-export interface Identifier extends Node {
+export interface Identifier extends AST {
   __brand: 'Identifier'
   value: string
 }
 
-export interface VariableDeclaration extends Node {
+export interface VariableDeclaration extends AST {
   __brand: 'VariableDeclaration'
   name: string
-  type: Node
-  value: Node | null
-  qualifiers: Node[]
+  type: AST
+  value: AST | null
+  qualifiers: AST[]
 }
 
-export interface BlockStatement extends Node {
+export interface BlockStatement extends AST {
   __brand: 'BlockStatement'
-  body: Node[]
+  body: AST[]
 }
 
-export interface FunctionDeclaration extends Node {
+export interface FunctionDeclaration extends AST {
   __brand: 'FunctionDeclaration'
   name: string
-  type: Node | null
+  type: AST | null
   args: VariableDeclaration[]
   body: BlockStatement
 }
 
-export interface CallExpression extends Node {
+export interface CallExpression extends AST {
   __brand: 'CallExpression'
-  callee: Node
-  args: Node[]
+  callee: AST
+  args: AST[]
 }
 
-export interface MemberExpression extends Node {
+export interface MemberExpression extends AST {
   __brand: 'MemberExpression'
-  object: Node
-  property: Node
+  object: AST
+  property: AST
 }
 
-export interface ArrayExpression extends Node {
+export interface ArrayExpression extends AST {
   __brand: 'ArrayExpression'
-  members: Node[]
+  members: AST[]
 }
 
-export interface IfStatement extends Node {
+export interface IfStatement extends AST {
   __brand: 'IfStatement'
-  test: Node
-  consequent: Node
-  alternate: Node | null
+  test: AST
+  consequent: AST
+  alternate: AST | null
 }
 
-export interface WhileStatement extends Node {
+export interface WhileStatement extends AST {
   __brand: 'WhileStatement'
-  test: Node
-  body: Node
+  test: AST
+  body: AST
 }
 
-export interface ForStatement extends Node {
+export interface ForStatement extends AST {
   __brand: 'ForStatement'
-  init: Node | null
-  test: Node | null
-  update: Node | null
-  body: Node
+  init: AST | null
+  test: AST | null
+  update: AST | null
+  body: AST
 }
 
-export interface DoWhileStatement extends Node {
+export interface DoWhileStatement extends AST {
   __brand: 'DoWhileStatement'
-  test: Node
-  body: Node
+  test: AST
+  body: AST
 }
 
-export interface SwitchCase extends Node {
+export interface SwitchCase extends AST {
   __brand: 'SwitchCase'
-  test: Node | null
-  consequent: Node[]
+  test: AST | null
+  consequent: AST[]
 }
 
-export interface SwitchStatement extends Node {
+export interface SwitchStatement extends AST {
   __brand: 'SwitchStatement'
-  discriminant: Node
+  discriminant: AST
   cases: SwitchCase[]
 }
 
-export interface StructDeclaration extends Node {
+export interface StructDeclaration extends AST {
   __brand: 'StructDeclaration'
   name: string
   members: VariableDeclaration[]
 }
 
-export interface UnaryExpression extends Node {
+export interface UnaryExpression extends AST {
   __brand: 'UnaryExpression'
   operator: string
-  argument: Node
+  argument: AST
 }
 
-export interface BinaryExpression extends Node {
+export interface BinaryExpression extends AST {
   __brand: 'BinaryExpression'
   operator: string
-  left: Node
-  right: Node
+  left: AST
+  right: AST
 }
 
-export interface TernaryExpression extends Node {
+export interface TernaryExpression extends AST {
   __brand: 'TernaryExpression'
-  test: Node
-  consequent: Node
-  alternate: Node
+  test: AST
+  consequent: AST
+  alternate: AST
 }
 
-export interface ReturnStatement extends Node {
+export interface ReturnStatement extends AST {
   __brand: 'ReturnStatement'
   argument: Literal | Identifier | UnaryExpression | null
 }
 
-export interface ContinueStatement extends Node {
+export interface ContinueStatement extends AST {
   __brand: 'ContinueStatement'
 }
 
-export interface BreakStatement extends Node {
+export interface BreakStatement extends AST {
   __brand: 'BreakStatement'
 }
 
-export interface DiscardStatement extends Node {
+export interface DiscardStatement extends AST {
   __brand: 'DiscardStatement'
 }

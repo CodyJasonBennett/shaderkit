@@ -1,5 +1,5 @@
 import {
-  type Node,
+  type AST,
   type Literal,
   type Identifier,
   type VariableDeclaration,
@@ -25,30 +25,30 @@ import {
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
-const isLiteral = (node: Node): node is Literal => (node as any).__brand === 'Literal'
-const isIdentifier = (node: Node): node is Identifier => (node as any).__brand === 'Identifier'
-const isVariableDeclaration = (node: Node): node is VariableDeclaration =>
+const isLiteral = (node: AST): node is Literal => (node as any).__brand === 'Literal'
+const isIdentifier = (node: AST): node is Identifier => (node as any).__brand === 'Identifier'
+const isVariableDeclaration = (node: AST): node is VariableDeclaration =>
   (node as any).__brand === 'VariableDeclaration'
-const isBlockStatement = (node: Node): node is BlockStatement => (node as any).__brand === 'BlockStatement'
-const isFunctionDeclaration = (node: Node): node is FunctionDeclaration =>
+const isBlockStatement = (node: AST): node is BlockStatement => (node as any).__brand === 'BlockStatement'
+const isFunctionDeclaration = (node: AST): node is FunctionDeclaration =>
   (node as any).__brand === 'FunctionDeclaration'
-const isCallExpression = (node: Node): node is CallExpression => (node as any).__brand === 'CallExpression'
-const isMemberExpression = (node: Node): node is MemberExpression => (node as any).__brand === 'MemberExpression'
-const isArrayExpression = (node: Node): node is ArrayExpression => (node as any).__brand === 'ArrayExpression'
-const isIfStatement = (node: Node): node is IfStatement => (node as any).__brand === 'IfStatement'
-const isWhileStatement = (node: Node): node is WhileStatement => (node as any).__brand === 'WhileStatement'
-const isForStatement = (node: Node): node is ForStatement => (node as any).__brand === 'ForStatement'
-const isDoWhileStatement = (node: Node): node is DoWhileStatement => (node as any).__brand === 'DoWhileStatement'
-const isSwitchCase = (node: Node): node is SwitchCase => (node as any).__brand === 'SwitchCase'
-const isSwitchStatement = (node: Node): node is SwitchStatement => (node as any).__brand === 'SwitchStatement'
-const isStructDeclaration = (node: Node): node is StructDeclaration => (node as any).__brand === 'StructDeclaration'
-const isUnaryExpression = (node: Node): node is UnaryExpression => (node as any).__brand === 'UnaryExpression'
-const isBinaryExpression = (node: Node): node is BinaryExpression => (node as any).__brand === 'BinaryExpression'
-const isTernaryExpression = (node: Node): node is TernaryExpression => (node as any).__brand === 'TernaryExpression'
-const isReturnStatement = (node: Node): node is ReturnStatement => (node as any).__brand === 'ReturnStatement'
-const isContinueStatement = (node: Node): node is ContinueStatement => (node as any).__brand === 'ContinueStatement'
-const isBreakStatement = (node: Node): node is BreakStatement => (node as any).__brand === 'BreakStatement'
-const isDiscardStatement = (node: Node): node is DiscardStatement => (node as any).__brand === 'DiscardStatement'
+const isCallExpression = (node: AST): node is CallExpression => (node as any).__brand === 'CallExpression'
+const isMemberExpression = (node: AST): node is MemberExpression => (node as any).__brand === 'MemberExpression'
+const isArrayExpression = (node: AST): node is ArrayExpression => (node as any).__brand === 'ArrayExpression'
+const isIfStatement = (node: AST): node is IfStatement => (node as any).__brand === 'IfStatement'
+const isWhileStatement = (node: AST): node is WhileStatement => (node as any).__brand === 'WhileStatement'
+const isForStatement = (node: AST): node is ForStatement => (node as any).__brand === 'ForStatement'
+const isDoWhileStatement = (node: AST): node is DoWhileStatement => (node as any).__brand === 'DoWhileStatement'
+const isSwitchCase = (node: AST): node is SwitchCase => (node as any).__brand === 'SwitchCase'
+const isSwitchStatement = (node: AST): node is SwitchStatement => (node as any).__brand === 'SwitchStatement'
+const isStructDeclaration = (node: AST): node is StructDeclaration => (node as any).__brand === 'StructDeclaration'
+const isUnaryExpression = (node: AST): node is UnaryExpression => (node as any).__brand === 'UnaryExpression'
+const isBinaryExpression = (node: AST): node is BinaryExpression => (node as any).__brand === 'BinaryExpression'
+const isTernaryExpression = (node: AST): node is TernaryExpression => (node as any).__brand === 'TernaryExpression'
+const isReturnStatement = (node: AST): node is ReturnStatement => (node as any).__brand === 'ReturnStatement'
+const isContinueStatement = (node: AST): node is ContinueStatement => (node as any).__brand === 'ContinueStatement'
+const isBreakStatement = (node: AST): node is BreakStatement => (node as any).__brand === 'BreakStatement'
+const isDiscardStatement = (node: AST): node is DiscardStatement => (node as any).__brand === 'DiscardStatement'
 
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
@@ -62,7 +62,7 @@ function getScopeIndex(token: Token): number {
 /**
  * Parses a string of GLSL or WGSL code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
-export function parse(code: string): Node[] {
+export function parse(code: string): AST[] {
   // TODO: preserve
   const tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   let i = 0
@@ -98,7 +98,7 @@ export function parse(code: string): Node[] {
       scopeIndex += getScopeIndex(token)
       if (scopeIndex < 0) break // skip }
 
-      let statement: Node | null = null
+      let statement: AST | null = null
 
       if (token.type === 'keyword') {
         if (isQualifier(token.value) || isStorage(token.value) || isType(token.value) || token.value === 'const') {
