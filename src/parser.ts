@@ -156,4 +156,5 @@ const glsl = /* glsl */ `
   }
 `
 
+console.log(glsl)
 console.log(...parse(glsl))
