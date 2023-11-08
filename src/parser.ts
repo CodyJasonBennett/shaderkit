@@ -19,7 +19,7 @@ const isQualifier = RegExp.prototype.test.bind(/^(in|out|inout|centroid|flat|smo
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
 
-function getScopeIndex(token: Token): number {
+function getScopeDelta(token: Token): number {
   if (isOpen(token.value)) return 1
   if (isClose(token.value)) return -1
   return 0
@@ -36,7 +36,7 @@ function getTokensUntil(value: string): Token[] {
     const token = tokens[i++]
     output.push(token)
 
-    scopeIndex += getScopeIndex(token)
+    scopeIndex += getScopeDelta(token)
     if (scopeIndex === 0 && token.value === value) break
   }
 
@@ -130,16 +130,14 @@ function parseFor(): ForStatement {
   return new ForStatement(init, test, update, body)
 }
 
-function parseBlock(): BlockStatement {
-  const body: AST[] = []
-
+function parseBody(body: AST[]): AST[] {
   if (tokens[i].value === '{') i++
   let scopeIndex = 0
 
   while (i < tokens.length) {
     const token = tokens[i++]
 
-    scopeIndex += getScopeIndex(token)
+    scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0) break
 
     let statement: AST | null = null
@@ -169,6 +167,11 @@ function parseBlock(): BlockStatement {
     if (statement) body.push(statement)
   }
 
+  return body
+}
+
+function parseBlock(): BlockStatement {
+  const body = parseBody([])
   return new BlockStatement(body)
 }
 
@@ -180,8 +183,7 @@ export function parse(code: string): AST[] {
   tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   i = 0
 
-  const program = parseBlock()
-  return program.body
+  return parseBody([])
 }
 
 const glsl = /* glsl */ `
@@ -192,7 +194,7 @@ const glsl = /* glsl */ `
   } else if (false) {
     //
   } else {
-
+    //
   }
 
   for (int i = 0; i < 10; i++) {
