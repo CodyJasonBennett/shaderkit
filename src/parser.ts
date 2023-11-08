@@ -19,8 +19,14 @@ const isQualifier = RegExp.prototype.test.bind(/^(in|out|inout|centroid|flat|smo
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
 
+function getScopeIndex(token: Token): number {
+  if (isOpen(token.value)) return 1
+  if (isClose(token.value)) return -1
+  return 0
+}
+
 let tokens: Token[] = []
-let i = 0
+let i: number = 0
 
 function getTokensUntil(value: string): Token[] {
   const output: Token[] = []
@@ -30,16 +36,14 @@ function getTokensUntil(value: string): Token[] {
     const token = tokens[i++]
     output.push(token)
 
-    if (isOpen(token.value)) scopeIndex++
-    if (isClose(token.value)) scopeIndex--
-
+    scopeIndex += getScopeIndex(token)
     if (scopeIndex === 0 && token.value === value) break
   }
 
   return output
 }
 
-function parseFunction() {
+function parseFunction(): FunctionDeclaration {
   const type = tokens[i].value
   const name = tokens[i++].value
   // TODO: parse
@@ -48,7 +52,7 @@ function parseFunction() {
   return new FunctionDeclaration(name, type, args, body)
 }
 
-function parseVariable() {
+function parseVariable(): VariableDeclaration {
   const qualifiers: string[] = []
   while (tokens[i].type !== 'identifier') qualifiers.push(tokens[i++].value)
   const type = qualifiers.pop()!
@@ -65,7 +69,7 @@ function parseVariable() {
   return new VariableDeclaration(name, type, value, qualifiers)
 }
 
-function parseReturn() {
+function parseReturn(): ReturnStatement {
   const body = getTokensUntil(';')
   body.pop() // skip ;
 
@@ -77,16 +81,27 @@ function parseReturn() {
   return new ReturnStatement(argument)
 }
 
-function parseIf() {
+function parseIf(): IfStatement {
   // TODO: parse expression
   const test = getTokensUntil(')')
   const consequent = getTokensUntil('}')
-  const alternate = null
+
+  let alternate = null
+  if (tokens[i].value === 'else') {
+    i++
+
+    if (tokens[i].value === 'if') {
+      i++
+      alternate = parseIf()
+    } else {
+      alternate = parseBlock()
+    }
+  }
 
   return new IfStatement(test, consequent, alternate)
 }
 
-function parseFor() {
+function parseFor(): ForStatement {
   const tests: (AST | null)[] = [null, null, null]
   let j = 0
 
@@ -115,9 +130,17 @@ function parseFor() {
   return new ForStatement(init, test, update, body)
 }
 
-function parseBlock<T extends BlockStatement>(node: T): T {
+function parseBlock(): BlockStatement {
+  const body: AST[] = []
+
+  if (tokens[i].value === '{') i++
+  let scopeIndex = 0
+
   while (i < tokens.length) {
     const token = tokens[i++]
+
+    scopeIndex += getScopeIndex(token)
+    if (scopeIndex < 0) break
 
     let statement: AST | null = null
 
@@ -143,10 +166,10 @@ function parseBlock<T extends BlockStatement>(node: T): T {
       }
     }
 
-    if (statement) node.body.push(statement)
+    if (statement) body.push(statement)
   }
 
-  return node
+  return new BlockStatement(body)
 }
 
 /**
@@ -157,9 +180,7 @@ export function parse(code: string): AST[] {
   tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   i = 0
 
-  const program = new BlockStatement([])
-  parseBlock(program)
-
+  const program = parseBlock()
   return program.body
 }
 
@@ -168,6 +189,10 @@ const glsl = /* glsl */ `
 
   if (true) {
     discard;
+  } else if (false) {
+    //
+  } else {
+
   }
 
   for (int i = 0; i < 10; i++) {
