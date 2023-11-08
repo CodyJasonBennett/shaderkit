@@ -7,8 +7,8 @@ export interface Token<T = TokenType, V = string> {
   value: V
 }
 
-// Checks for WGSL-specific `fn foo(`, `var bar =`, and `let baz =`
-const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let)\s+\w+\s*[:=]/)
+// Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
+const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/)
 
 const isFloat = RegExp.prototype.test.bind(/^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/)
 const isInt = RegExp.prototype.test.bind(/^(0[xX][\w\d]+|\d+)[iIuU]?$/)
