@@ -1,10 +1,14 @@
 import {
   type AST,
   BlockStatement,
+  FunctionDeclaration,
   VariableDeclaration,
   ContinueStatement,
   BreakStatement,
   DiscardStatement,
+  ReturnStatement,
+  IfStatement,
+  ForStatement,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
@@ -48,9 +52,13 @@ export function parse(code: string): AST[] {
 
       if (token.type === 'keyword') {
         if (isQualifier(token.value) || isType(token.value) || token.value === 'const' || token.value === 'uniform') {
-          if (tokens[i + 2]?.value === '(') {
-            const body = getTokensUntil('}')
-            statement = { __brand: 'FunctionDeclaration', body }
+          if (tokens[i + 1]?.value === '(') {
+            const type = token.value
+            const name = tokens[i++].value
+            // TODO: parse
+            const args = getTokensUntil(')') as any
+            const body = getTokensUntil('}') as any
+            statement = new FunctionDeclaration(name, type, args, body)
           } else {
             const qualifiers: string[] = []
             while (tokens[i].type !== 'identifier') qualifiers.push(tokens[i++].value)
@@ -75,13 +83,48 @@ export function parse(code: string): AST[] {
           statement = new DiscardStatement()
         } else if (token.value === 'return') {
           const body = getTokensUntil(';')
-          statement = { __brand: 'ReturnStatement', body }
+          body.pop() // skip;
+
+          let argument = null
+          if (body.length) {
+            // TODO: parse expression
+          }
+
+          statement = new ReturnStatement(argument)
         } else if (token.value === 'if') {
-          const body = getTokensUntil('}')
-          statement = { __brand: 'IfStatement', body }
+          // TODO: parse expression
+          const test = getTokensUntil(')')
+          const consequent = getTokensUntil('}')
+          const alternate = null
+
+          statement = new IfStatement(test, consequent, alternate)
         } else if (token.value === 'for') {
+          const tests: (AST | null)[] = [null, null, null]
+          let j = 0
+
+          const loop = getTokensUntil(')')
+          loop.shift() // skip (
+          loop.pop() // skip )
+
+          let next = loop.shift()
+          while (next) {
+            if (next.value === ';') {
+              j++
+            } else {
+              // TODO: parse expressions
+              // @ts-ignore
+              tests[j] ??= []
+              // @ts-ignore
+              tests[j].push(next)
+            }
+
+            next = loop.shift()
+          }
+
+          const [init, test, update] = tests
           const body = getTokensUntil('}')
-          statement = { __brand: 'ForStatement', body }
+
+          statement = new ForStatement(init, test, update, body)
         }
       }
 
@@ -101,6 +144,14 @@ const glsl = /* glsl */ `
   flat in mat4 test;
 
   if (true) {
+    discard;
+  }
+
+  for (int i = 0; i < 10; i++) {
+    //
+  }
+
+  void main() {
     gl_FragColor = vec4(1, 0, 0, 1); // red
   }
 `
