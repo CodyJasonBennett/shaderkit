@@ -1,54 +1,12 @@
 import {
   type AST,
-  type Literal,
-  type Identifier,
-  type VariableDeclaration,
-  type BlockStatement,
-  type FunctionDeclaration,
-  type CallExpression,
-  type MemberExpression,
-  type ArrayExpression,
-  type IfStatement,
-  type WhileStatement,
-  type ForStatement,
-  type DoWhileStatement,
-  type SwitchCase,
-  type SwitchStatement,
-  type StructDeclaration,
-  type UnaryExpression,
-  type BinaryExpression,
-  type TernaryExpression,
-  type ReturnStatement,
-  type ContinueStatement,
-  type BreakStatement,
-  type DiscardStatement,
+  BlockStatement,
+  VariableDeclaration,
+  ContinueStatement,
+  BreakStatement,
+  DiscardStatement,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
-
-const isLiteral = (node: AST): node is Literal => (node as any).__brand === 'Literal'
-const isIdentifier = (node: AST): node is Identifier => (node as any).__brand === 'Identifier'
-const isVariableDeclaration = (node: AST): node is VariableDeclaration =>
-  (node as any).__brand === 'VariableDeclaration'
-const isBlockStatement = (node: AST): node is BlockStatement => (node as any).__brand === 'BlockStatement'
-const isFunctionDeclaration = (node: AST): node is FunctionDeclaration =>
-  (node as any).__brand === 'FunctionDeclaration'
-const isCallExpression = (node: AST): node is CallExpression => (node as any).__brand === 'CallExpression'
-const isMemberExpression = (node: AST): node is MemberExpression => (node as any).__brand === 'MemberExpression'
-const isArrayExpression = (node: AST): node is ArrayExpression => (node as any).__brand === 'ArrayExpression'
-const isIfStatement = (node: AST): node is IfStatement => (node as any).__brand === 'IfStatement'
-const isWhileStatement = (node: AST): node is WhileStatement => (node as any).__brand === 'WhileStatement'
-const isForStatement = (node: AST): node is ForStatement => (node as any).__brand === 'ForStatement'
-const isDoWhileStatement = (node: AST): node is DoWhileStatement => (node as any).__brand === 'DoWhileStatement'
-const isSwitchCase = (node: AST): node is SwitchCase => (node as any).__brand === 'SwitchCase'
-const isSwitchStatement = (node: AST): node is SwitchStatement => (node as any).__brand === 'SwitchStatement'
-const isStructDeclaration = (node: AST): node is StructDeclaration => (node as any).__brand === 'StructDeclaration'
-const isUnaryExpression = (node: AST): node is UnaryExpression => (node as any).__brand === 'UnaryExpression'
-const isBinaryExpression = (node: AST): node is BinaryExpression => (node as any).__brand === 'BinaryExpression'
-const isTernaryExpression = (node: AST): node is TernaryExpression => (node as any).__brand === 'TernaryExpression'
-const isReturnStatement = (node: AST): node is ReturnStatement => (node as any).__brand === 'ReturnStatement'
-const isContinueStatement = (node: AST): node is ContinueStatement => (node as any).__brand === 'ContinueStatement'
-const isBreakStatement = (node: AST): node is BreakStatement => (node as any).__brand === 'BreakStatement'
-const isDiscardStatement = (node: AST): node is DiscardStatement => (node as any).__brand === 'DiscardStatement'
 
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
@@ -108,8 +66,14 @@ export function parse(code: string): AST[] {
               // TODO: parse expression
             }
 
-            statement = { __brand: 'VariableDeclaration', name, type, value, qualifiers } satisfies VariableDeclaration
+            statement = new VariableDeclaration(name, type, value, qualifiers)
           }
+        } else if (token.value === 'continue') {
+          statement = new ContinueStatement()
+        } else if (token.value === 'break') {
+          statement = new BreakStatement()
+        } else if (token.value === 'discard') {
+          statement = new DiscardStatement()
         } else if (token.value === 'return') {
           const body = getTokensUntil(';')
           statement = { __brand: 'ReturnStatement', body }
@@ -128,7 +92,7 @@ export function parse(code: string): AST[] {
     return node
   }
 
-  const program: BlockStatement = { __brand: 'BlockStatement', body: [] }
+  const program = new BlockStatement([])
   parseBlock(program)
 
   return program.body

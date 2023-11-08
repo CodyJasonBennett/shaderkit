@@ -1,131 +1,126 @@
-export interface AST {}
+export abstract class AST {}
 
-export interface Literal extends AST {
-  __brand: 'Literal'
-  value: string | number | boolean
+export class Literal extends AST {
+  constructor(public value: string | number | boolean) {
+    super()
+  }
 }
 
-export interface Identifier extends AST {
-  __brand: 'Identifier'
-  value: string
+export class Identifier extends AST {
+  constructor(public value: string) {
+    super()
+  }
 }
 
-export interface VariableDeclaration extends AST {
-  __brand: 'VariableDeclaration'
-  name: string
-  type: AST
-  value: AST | null
-  qualifiers: AST[]
+export class VariableDeclaration extends AST {
+  constructor(public name: string, public type: AST, public value: AST | null, public qualifiers: AST[]) {
+    super()
+  }
 }
 
-export interface BlockStatement extends AST {
-  __brand: 'BlockStatement'
-  body: AST[]
+export class BlockStatement extends AST {
+  constructor(public body: AST[]) {
+    super()
+  }
 }
 
-export interface FunctionDeclaration extends AST {
-  __brand: 'FunctionDeclaration'
-  name: string
-  type: AST | null
-  args: VariableDeclaration[]
-  body: BlockStatement
+export class FunctionDeclaration extends AST {
+  constructor(
+    public name: string,
+    public type: AST | null,
+    public args: VariableDeclaration[],
+    public body: BlockStatement,
+  ) {
+    super()
+  }
 }
 
-export interface CallExpression extends AST {
-  __brand: 'CallExpression'
-  callee: AST
-  args: AST[]
+export class CallExpression extends AST {
+  constructor(public callee: AST, public args: AST[]) {
+    super()
+  }
 }
 
-export interface MemberExpression extends AST {
-  __brand: 'MemberExpression'
-  object: AST
-  property: AST
+export class MemberExpression extends AST {
+  constructor(public object: AST, public property: AST) {
+    super()
+  }
 }
 
-export interface ArrayExpression extends AST {
-  __brand: 'ArrayExpression'
-  members: AST[]
+export class ArrayExpression extends AST {
+  constructor(public members: AST[]) {
+    super()
+  }
 }
 
-export interface IfStatement extends AST {
-  __brand: 'IfStatement'
-  test: AST
-  consequent: AST
-  alternate: AST | null
+export class IfStatement extends AST {
+  constructor(public test: AST, public consequent: AST, public alternate: AST | null) {
+    super()
+  }
 }
 
-export interface WhileStatement extends AST {
-  __brand: 'WhileStatement'
-  test: AST
-  body: AST
+export class WhileStatement extends AST {
+  constructor(public test: AST, public body: AST) {
+    super()
+  }
 }
 
-export interface ForStatement extends AST {
-  __brand: 'ForStatement'
-  init: AST | null
-  test: AST | null
-  update: AST | null
-  body: AST
+export class ForStatement extends AST {
+  constructor(public init: AST | null, public test: AST | null, public update: AST | null, public body: AST) {
+    super()
+  }
 }
 
-export interface DoWhileStatement extends AST {
-  __brand: 'DoWhileStatement'
-  test: AST
-  body: AST
+export class DoWhileStatement extends AST {
+  constructor(public test: AST, public body: AST) {
+    super()
+  }
 }
 
-export interface SwitchCase extends AST {
-  __brand: 'SwitchCase'
-  test: AST | null
-  consequent: AST[]
+export class SwitchCase extends AST {
+  constructor(public test: AST | null, public consequent: AST[]) {
+    super()
+  }
 }
 
-export interface SwitchStatement extends AST {
-  __brand: 'SwitchStatement'
-  discriminant: AST
-  cases: SwitchCase[]
+export class SwitchStatement extends AST {
+  constructor(public discriminant: AST, public cases: SwitchCase[]) {
+    super()
+  }
 }
 
-export interface StructDeclaration extends AST {
-  __brand: 'StructDeclaration'
-  name: string
-  members: VariableDeclaration[]
+export class StructDeclaration extends AST {
+  constructor(public name: string, public members: VariableDeclaration[]) {
+    super()
+  }
 }
 
-export interface UnaryExpression extends AST {
-  __brand: 'UnaryExpression'
-  operator: string
-  argument: AST
+export class UnaryExpression extends AST {
+  constructor(public operator: string, public argument: AST) {
+    super()
+  }
 }
 
-export interface BinaryExpression extends AST {
-  __brand: 'BinaryExpression'
-  operator: string
-  left: AST
-  right: AST
+export class BinaryExpression extends AST {
+  constructor(public operator: string, public left: AST, public right: AST) {
+    super()
+  }
 }
 
-export interface TernaryExpression extends AST {
-  __brand: 'TernaryExpression'
-  test: AST
-  consequent: AST
-  alternate: AST
+export class TernaryExpression extends AST {
+  constructor(public test: AST, public consequent: AST, public alternate: AST) {
+    super()
+  }
 }
 
-export interface ReturnStatement extends AST {
-  __brand: 'ReturnStatement'
-  argument: Literal | Identifier | UnaryExpression | null
+export class ReturnStatement extends AST {
+  constructor(public argument: Literal | Identifier | UnaryExpression | null) {
+    super()
+  }
 }
 
-export interface ContinueStatement extends AST {
-  __brand: 'ContinueStatement'
-}
+export class ContinueStatement extends AST {}
 
-export interface BreakStatement extends AST {
-  __brand: 'BreakStatement'
-}
+export class BreakStatement extends AST {}
 
-export interface DiscardStatement extends AST {
-  __brand: 'DiscardStatement'
-}
+export class DiscardStatement extends AST {}
