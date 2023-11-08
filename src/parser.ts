@@ -172,7 +172,9 @@ function parseSwitch(): SwitchStatement {
   return new SwitchStatement(discriminant, cases)
 }
 
-function parseBody(body: AST[]): AST[] {
+function parseStatements(): AST[] {
+  const body: AST[] = []
+
   if (tokens[i].value === '{') i++
   let scopeIndex = 0
 
@@ -219,7 +221,7 @@ function parseBody(body: AST[]): AST[] {
 }
 
 function parseBlock(): BlockStatement {
-  const body = parseBody([])
+  const body = parseStatements()
   return new BlockStatement(body)
 }
 
@@ -231,7 +233,7 @@ export function parse(code: string): AST[] {
   tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   i = 0
 
-  return parseBody([])
+  return parseStatements()
 }
 
 const glsl = /* glsl */ `
