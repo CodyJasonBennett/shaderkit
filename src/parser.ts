@@ -53,12 +53,6 @@ const isDiscardStatement = (node: AST): node is DiscardStatement => (node as any
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
 
-function getScopeIndex(token: Token): number {
-  if (isOpen(token.value)) return 1
-  if (isClose(token.value)) return -1
-  return 0
-}
-
 /**
  * Parses a string of GLSL or WGSL code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
@@ -80,7 +74,9 @@ export function parse(code: string): AST[] {
       const token = tokens[i++]
       output.push(token)
 
-      scopeIndex += getScopeIndex(token)
+      if (isOpen(token.value)) scopeIndex++
+      if (isClose(token.value)) scopeIndex--
+
       if (scopeIndex === 0 && token.value === value) break
     }
 
@@ -88,15 +84,8 @@ export function parse(code: string): AST[] {
   }
 
   function parseBlock<T extends BlockStatement>(node: T): T {
-    if (tokens[i].value === '{') i++
-
-    let scopeIndex = 0
-
     while (i < tokens.length) {
       const token = tokens[i++]
-
-      scopeIndex += getScopeIndex(token)
-      if (scopeIndex < 0) break // skip }
 
       let statement: AST | null = null
 
