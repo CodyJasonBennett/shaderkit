@@ -8,7 +8,11 @@ import {
   DiscardStatement,
   ReturnStatement,
   IfStatement,
+  WhileStatement,
   ForStatement,
+  DoWhileStatement,
+  SwitchStatement,
+  SwitchCase,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
@@ -101,6 +105,14 @@ function parseIf(): IfStatement {
   return new IfStatement(test, consequent, alternate)
 }
 
+function parseWhile(): WhileStatement {
+  // TODO: parse expression
+  const test = getTokensUntil(')')
+  const body = getTokensUntil('}')
+
+  return new WhileStatement(test, body)
+}
+
 function parseFor(): ForStatement {
   const tests: (AST | null)[] = [null, null, null]
   let j = 0
@@ -128,6 +140,53 @@ function parseFor(): ForStatement {
   const body = getTokensUntil('}')
 
   return new ForStatement(init, test, update, body)
+}
+
+function parseDoWhile() {
+  // TODO: parse expression
+  const body = getTokensUntil('}')
+  i++ // skip while
+  const test = getTokensUntil(')')
+
+  return new DoWhileStatement(test, body)
+}
+
+function parseSwitch() {
+  const discriminant = getTokensUntil(')')
+  const body = getTokensUntil('}').slice(1, -1)
+
+  let j = -1
+  const cases: SwitchCase[] = []
+  while (body.length) {
+    const token = body.shift()!
+    if (token.value === 'case') {
+      const test = body.shift()!
+      body.shift() // skip :
+      cases.push(new SwitchCase(test, []))
+      j++
+    } else {
+      cases[j].consequent.push(token)
+    }
+  }
+
+  return new SwitchStatement(discriminant, cases)
+}
+
+function parseCase() {
+  const test = tokens[i++]
+  i++ // skip :
+
+  let consequent: AST[] = []
+  if (tokens[i].value === '{') {
+    parseBody(consequent)
+  } else {
+    // TODO: handle fall-through and unscoped
+    // while (i < tokens.length && tokens[i].value !== 'case') {
+    //   consequent.push(tokens[i++])
+    // }
+  }
+
+  return new SwitchCase(test, consequent)
 }
 
 function parseBody(body: AST[]): AST[] {
@@ -159,8 +218,14 @@ function parseBody(body: AST[]): AST[] {
         statement = parseReturn()
       } else if (token.value === 'if') {
         statement = parseIf()
+      } else if (token.value === 'while') {
+        statement = parseWhile()
       } else if (token.value === 'for') {
         statement = parseFor()
+      } else if (token.value === 'do') {
+        statement = parseDoWhile()
+      } else if (token.value === 'switch') {
+        statement = parseSwitch()
       }
     }
 
@@ -199,6 +264,21 @@ const glsl = /* glsl */ `
 
   for (int i = 0; i < 10; i++) {
     //
+  }
+
+  while(true) {
+    //
+  }
+
+  do {
+    //
+  } while (true);
+
+  switch(true) {
+    case 0:
+      break;
+    case 1:
+      break;
   }
 
   void main() {
