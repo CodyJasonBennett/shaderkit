@@ -1,33 +1,33 @@
-export abstract class AST {}
+export abstract class Node {}
 
-export class Literal extends AST {
+export class Literal extends Node {
   constructor(public value: string | number | boolean) {
     super()
   }
 }
 
-export class Identifier extends AST {
+export class Identifier extends Node {
   constructor(public value: string) {
     super()
   }
 }
 
-export class VariableDeclaration extends AST {
-  constructor(public name: string, public type: AST, public value: AST | null, public qualifiers: AST[]) {
+export class VariableDeclaration extends Node {
+  constructor(public name: string, public type: Node, public value: Node | null, public qualifiers: Node[]) {
     super()
   }
 }
 
-export class BlockStatement extends AST {
-  constructor(public body: AST[]) {
+export class BlockStatement extends Node {
+  constructor(public body: Node[]) {
     super()
   }
 }
 
-export class FunctionDeclaration extends AST {
+export class FunctionDeclaration extends Node {
   constructor(
     public name: string,
-    public type: AST | null,
+    public type: Node | null,
     public args: VariableDeclaration[],
     public body: BlockStatement,
   ) {
@@ -35,92 +35,116 @@ export class FunctionDeclaration extends AST {
   }
 }
 
-export class CallExpression extends AST {
-  constructor(public callee: AST, public args: AST[]) {
+export class CallExpression extends Node {
+  constructor(public callee: Node, public args: Node[]) {
     super()
   }
 }
 
-export class MemberExpression extends AST {
-  constructor(public object: AST, public property: AST) {
+export class MemberExpression extends Node {
+  constructor(public object: Node, public property: Node) {
     super()
   }
 }
 
-export class ArrayExpression extends AST {
-  constructor(public members: AST[]) {
+export class ArrayExpression extends Node {
+  constructor(public members: Node[]) {
     super()
   }
 }
 
-export class IfStatement extends AST {
-  constructor(public test: AST, public consequent: AST, public alternate: AST | null) {
+export class IfStatement extends Node {
+  constructor(public test: Node, public consequent: Node, public alternate: Node | null) {
     super()
   }
 }
 
-export class WhileStatement extends AST {
-  constructor(public test: AST, public body: AST) {
+export class WhileStatement extends Node {
+  constructor(public test: Node, public body: Node) {
     super()
   }
 }
 
-export class ForStatement extends AST {
-  constructor(public init: AST | null, public test: AST | null, public update: AST | null, public body: AST) {
+export class ForStatement extends Node {
+  constructor(public init: Node | null, public test: Node | null, public update: Node | null, public body: Node) {
     super()
   }
 }
 
-export class DoWhileStatement extends AST {
-  constructor(public test: AST, public body: AST) {
+export class DoWhileStatement extends Node {
+  constructor(public test: Node, public body: Node) {
     super()
   }
 }
 
-export class SwitchCase extends AST {
-  constructor(public test: AST | null, public consequent: AST[]) {
+export class SwitchCase extends Node {
+  constructor(public test: Node | null, public consequent: Node[]) {
     super()
   }
 }
 
-export class SwitchStatement extends AST {
-  constructor(public discriminant: AST, public cases: SwitchCase[]) {
+export class SwitchStatement extends Node {
+  constructor(public discriminant: Node, public cases: SwitchCase[]) {
     super()
   }
 }
 
-export class StructDeclaration extends AST {
+export class StructDeclaration extends Node {
   constructor(public name: string, public members: VariableDeclaration[]) {
     super()
   }
 }
 
-export class UnaryExpression extends AST {
-  constructor(public operator: string, public argument: AST) {
+export class UnaryExpression extends Node {
+  constructor(public operator: string, public argument: Node) {
     super()
   }
 }
 
-export class BinaryExpression extends AST {
-  constructor(public operator: string, public left: AST, public right: AST) {
+export class BinaryExpression extends Node {
+  constructor(public operator: string, public left: Node, public right: Node) {
     super()
   }
 }
 
-export class TernaryExpression extends AST {
-  constructor(public test: AST, public consequent: AST, public alternate: AST) {
+export class TernaryExpression extends Node {
+  constructor(public test: Node, public consequent: Node, public alternate: Node) {
     super()
   }
 }
 
-export class ReturnStatement extends AST {
+export class ReturnStatement extends Node {
   constructor(public argument: Literal | Identifier | UnaryExpression | null) {
     super()
   }
 }
 
-export class ContinueStatement extends AST {}
+export class ContinueStatement extends Node {}
 
-export class BreakStatement extends AST {}
+export class BreakStatement extends Node {}
 
-export class DiscardStatement extends AST {}
+export class DiscardStatement extends Node {}
+
+export type AST =
+  | Literal
+  | Identifier
+  | VariableDeclaration
+  | BlockStatement
+  | FunctionDeclaration
+  | CallExpression
+  | MemberExpression
+  | ArrayExpression
+  | IfStatement
+  | WhileStatement
+  | ForStatement
+  | DoWhileStatement
+  | SwitchCase
+  | SwitchStatement
+  | StructDeclaration
+  | UnaryExpression
+  | BinaryExpression
+  | TernaryExpression
+  | ReturnStatement
+  | ContinueStatement
+  | BreakStatement
+  | DiscardStatement
