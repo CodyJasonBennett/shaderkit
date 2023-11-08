@@ -142,7 +142,7 @@ function parseFor(): ForStatement {
   return new ForStatement(init, test, update, body)
 }
 
-function parseDoWhile() {
+function parseDoWhile(): DoWhileStatement {
   // TODO: parse expression
   const body = getTokensUntil('}')
   i++ // skip while
@@ -151,7 +151,7 @@ function parseDoWhile() {
   return new DoWhileStatement(test, body)
 }
 
-function parseSwitch() {
+function parseSwitch(): SwitchStatement {
   const discriminant = getTokensUntil(')')
   const body = getTokensUntil('}').slice(1, -1)
 
