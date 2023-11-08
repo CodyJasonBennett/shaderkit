@@ -20,9 +20,8 @@ export function parse(code: string): AST[] {
   let i = 0
 
   // TODO: this is GLSL-only, separate language constants
-  const isType = RegExp.prototype.test.bind(/^(void|bool|float|u?int|[ui]?vec\d|mat\d(x\d)?)$/)
-  const isStorage = RegExp.prototype.test.bind(/^(uniform|in|out|attribute|varying)$/)
-  const isQualifier = RegExp.prototype.test.bind(/^(centroid|flat|smooth)$/)
+  const isType = RegExp.prototype.test.bind(/^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/)
+  const isQualifier = RegExp.prototype.test.bind(/^(in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/)
 
   function getTokensUntil(value: string): Token[] {
     const output: Token[] = []
@@ -48,7 +47,7 @@ export function parse(code: string): AST[] {
       let statement: AST | null = null
 
       if (token.type === 'keyword') {
-        if (isQualifier(token.value) || isStorage(token.value) || isType(token.value) || token.value === 'const') {
+        if (isQualifier(token.value) || isType(token.value) || token.value === 'const' || token.value === 'uniform') {
           if (tokens[i + 2]?.value === '(') {
             const body = getTokensUntil('}')
             statement = { __brand: 'FunctionDeclaration', body }
@@ -106,4 +105,4 @@ const glsl = /* glsl */ `
   }
 `
 
-console.log(parse(glsl))
+console.log(...parse(glsl))
