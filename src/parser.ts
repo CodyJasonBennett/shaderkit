@@ -172,23 +172,6 @@ function parseSwitch() {
   return new SwitchStatement(discriminant, cases)
 }
 
-function parseCase() {
-  const test = tokens[i++]
-  i++ // skip :
-
-  let consequent: AST[] = []
-  if (tokens[i].value === '{') {
-    parseBody(consequent)
-  } else {
-    // TODO: handle fall-through and unscoped
-    // while (i < tokens.length && tokens[i].value !== 'case') {
-    //   consequent.push(tokens[i++])
-    // }
-  }
-
-  return new SwitchCase(test, consequent)
-}
-
 function parseBody(body: AST[]): AST[] {
   if (tokens[i].value === '{') i++
   let scopeIndex = 0
