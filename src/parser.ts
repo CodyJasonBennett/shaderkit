@@ -164,9 +164,9 @@ function parseSwitch(): SwitchStatement {
   const cases: SwitchCase[] = []
   while (body.length) {
     const token = body.shift()!
-    if (token.value === 'case') {
-      const test = body.shift()!
-      body.shift() // skip :
+    if (token.value === 'case' || token.value === 'default') {
+      const test = body.shift() ?? null
+      if (test) body.shift() // skip :
       cases.push(new SwitchCase(test, []))
       j++
     } else {
@@ -254,6 +254,8 @@ const glsl = /* glsl */ `
       break;
     case 1:
       break;
+    default:
+      //
   }
 
   void main() {
