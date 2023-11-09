@@ -184,7 +184,8 @@ function parseStatements(): AST[] {
 
     if (token.type === 'keyword') {
       if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
-      else if (token.value === 'continue' && tokens[i]?.value !== '(') statement = new ContinueStatement()
+      else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
+      if (token.value === 'continue') statement = new ContinueStatement()
       else if (token.value === 'break') statement = new BreakStatement()
       else if (token.value === 'discard') statement = new DiscardStatement()
       else if (token.value === 'return') statement = parseReturn()
