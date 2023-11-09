@@ -53,7 +53,7 @@ function getTokensUntil(value: string): Token[] {
 function parseFunction(): FunctionDeclaration {
   const type = tokens[i].value
   const name = tokens[i++].value
-  // TODO: parse
+  // TODO: parse expressions
   const args = getTokensUntil(')') as any
   const body = parseBlock()
   return new FunctionDeclaration(name, type, args, body)
@@ -122,12 +122,9 @@ function parseFor(): ForStatement {
   const tests: (AST | null)[] = [null, null, null]
   let j = 0
 
-  const loop = getTokensUntil(')')
-  loop.shift() // skip (
-  loop.pop() // skip )
-
-  let next = loop.shift()
-  while (next) {
+  const loop = getTokensUntil(')').slice(1, -1)
+  while (loop.length) {
+    const next = loop.shift()!
     if (next.value === ';') {
       j++
     } else {
@@ -137,8 +134,6 @@ function parseFor(): ForStatement {
       // @ts-ignore
       tests[j].push(next)
     }
-
-    next = loop.shift()
   }
 
   const [init, test, update] = tests
