@@ -17,8 +17,11 @@ import {
 import { type Token, tokenize } from './tokenizer'
 
 // TODO: this is GLSL-only, separate language constants
-const isType = RegExp.prototype.test.bind(/^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/)
-const isQualifier = RegExp.prototype.test.bind(/^(in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/)
+const TYPE_REGEX = /void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?/
+const QUALIFIER_REGEX = /in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp/
+const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|const|uniform`)
+
+const isVariable = RegExp.prototype.test.bind(VARIABLE_REGEX)
 
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
@@ -187,31 +190,17 @@ function parseStatements(): AST[] {
     let statement: AST | null = null
 
     if (token.type === 'keyword') {
-      if (isQualifier(token.value) || isType(token.value) || token.value === 'const' || token.value === 'uniform') {
-        if (tokens[i + 1]?.value === '(') {
-          statement = parseFunction()
-        } else {
-          statement = parseVariable()
-        }
-      } else if (token.value === 'continue') {
-        statement = new ContinueStatement()
-      } else if (token.value === 'break') {
-        statement = new BreakStatement()
-      } else if (token.value === 'discard') {
-        statement = new DiscardStatement()
-      } else if (token.value === 'return') {
-        statement = parseReturn()
-      } else if (token.value === 'if') {
-        statement = parseIf()
-      } else if (token.value === 'while') {
-        statement = parseWhile()
-      } else if (token.value === 'for') {
-        statement = parseFor()
-      } else if (token.value === 'do') {
-        statement = parseDoWhile()
-      } else if (token.value === 'switch') {
-        statement = parseSwitch()
-      }
+      if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
+      else if (isVariable(token.value)) statement = parseVariable()
+      else if (token.value === 'continue') statement = new ContinueStatement()
+      else if (token.value === 'break') statement = new BreakStatement()
+      else if (token.value === 'discard') statement = new DiscardStatement()
+      else if (token.value === 'return') statement = parseReturn()
+      else if (token.value === 'if') statement = parseIf()
+      else if (token.value === 'while') statement = parseWhile()
+      else if (token.value === 'for') statement = parseFor()
+      else if (token.value === 'do') statement = parseDoWhile()
+      else if (token.value === 'switch') statement = parseSwitch()
     }
 
     if (statement) body.push(statement)
