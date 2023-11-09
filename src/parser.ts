@@ -51,22 +51,23 @@ function getTokensUntil(value: string): Token[] {
 }
 
 function parseFunction(): FunctionDeclaration {
-  const type = tokens[i].value
+  const type = tokens[i - 1].value
   const name = tokens[i++].value
   // TODO: parse expressions
-  const args = getTokensUntil(')') as any
+  const args = getTokensUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
   const body = parseBlock()
   return new FunctionDeclaration(name, type, args, body)
 }
 
 function parseVariable(): VariableDeclaration {
+  i--
   const qualifiers: string[] = []
   while (tokens[i] && tokens[i].type !== 'identifier') {
     qualifiers.push(tokens[i++].value)
   }
   const type = qualifiers.pop()!
 
-  const body = getTokensUntil(';') // TODO, comma-separated lists
+  const body = getTokensUntil(';') // TODO: comma-separated lists
   const name = body.shift()!.value
   body.pop() // skip ;
 
@@ -92,7 +93,7 @@ function parseReturn(): ReturnStatement {
 
 function parseIf(): IfStatement {
   // TODO: parse expression
-  const test = getTokensUntil(')')
+  const test = getTokensUntil(')').slice(1, -1)
   const consequent = parseBlock()
 
   let alternate = null
@@ -112,7 +113,7 @@ function parseIf(): IfStatement {
 
 function parseWhile(): WhileStatement {
   // TODO: parse expression
-  const test = getTokensUntil(')')
+  const test = getTokensUntil(')').slice(1, -1)
   const body = parseBlock()
 
   return new WhileStatement(test, body)
@@ -141,9 +142,9 @@ function parseFor(): ForStatement {
 }
 
 function parseDoWhile(): DoWhileStatement {
-  // TODO: parse expression
   const body = parseBlock()
   i++ // skip while
+  // TODO: parse expression
   const test = getTokensUntil(')')
 
   return new DoWhileStatement(test, body)
@@ -158,11 +159,12 @@ function parseSwitch(): SwitchStatement {
   while (body.length) {
     const token = body.shift()!
     if (token.value === 'case' || token.value === 'default') {
-      const test = body.shift() ?? null
+      const test = body.shift() ?? null // TODO: parse literal/identifier
       if (test) body.shift() // skip :
       cases.push(new SwitchCase(test, []))
       j++
     } else {
+      // TODO: parse expression
       cases[j].consequent.push(token)
     }
   }
@@ -203,7 +205,7 @@ function parseStatements(): AST[] {
 }
 
 function parseBlock(): BlockStatement {
-  if (tokens[i].value === '{') i++
+  i++ // skip {
   const body = parseStatements()
   return new BlockStatement(body)
 }
