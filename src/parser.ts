@@ -55,7 +55,7 @@ function parseFunction(): FunctionDeclaration {
   const name = tokens[i++].value
   // TODO: parse
   const args = getTokensUntil(')') as any
-  const body = getTokensUntil('}') as any
+  const body = parseBlock()
   return new FunctionDeclaration(name, type, args, body)
 }
 
@@ -66,7 +66,7 @@ function parseVariable(): VariableDeclaration {
   }
   const type = qualifiers.pop()!
 
-  const body = getTokensUntil(';')
+  const body = getTokensUntil(';') // TODO, comma-separated lists
   const name = body.shift()!.value
   body.pop() // skip ;
 
@@ -93,7 +93,7 @@ function parseReturn(): ReturnStatement {
 function parseIf(): IfStatement {
   // TODO: parse expression
   const test = getTokensUntil(')')
-  const consequent = getTokensUntil('}')
+  const consequent = parseBlock()
 
   let alternate = null
   if (tokens[i].value === 'else') {
@@ -113,7 +113,7 @@ function parseIf(): IfStatement {
 function parseWhile(): WhileStatement {
   // TODO: parse expression
   const test = getTokensUntil(')')
-  const body = getTokensUntil('}')
+  const body = parseBlock()
 
   return new WhileStatement(test, body)
 }
@@ -142,14 +142,14 @@ function parseFor(): ForStatement {
   }
 
   const [init, test, update] = tests
-  const body = getTokensUntil('}')
+  const body = parseBlock()
 
   return new ForStatement(init, test, update, body)
 }
 
 function parseDoWhile(): DoWhileStatement {
   // TODO: parse expression
-  const body = getTokensUntil('}')
+  const body = parseBlock()
   i++ // skip while
   const test = getTokensUntil(')')
 
@@ -259,7 +259,7 @@ const glsl = /* glsl */ `
   }
 
   void main() {
-    gl_FragColor = vec4(1, 0, 0, 1); // red
+    discard;
   }
 `
 
