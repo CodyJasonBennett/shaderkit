@@ -119,7 +119,7 @@ function parseWhile(): WhileStatement {
 }
 
 function parseFor(): ForStatement {
-  const tests: (AST | null)[] = [null, null, null]
+  const tests: [init?: AST, test?: AST, update?: AST] = []
   let j = 0
 
   const loop = getTokensUntil(')').slice(1, -1)
@@ -129,14 +129,12 @@ function parseFor(): ForStatement {
       j++
     } else {
       // TODO: parse expressions
-      // @ts-ignore
-      tests[j] ??= []
-      // @ts-ignore
-      tests[j].push(next)
+      const test = (tests[j] ??= []) as Token[]
+      test.push(next)
     }
   }
 
-  const [init, test, update] = tests
+  const [init = null, test = null, update = null] = tests
   const body = parseBlock()
 
   return new ForStatement(init, test, update, body)
