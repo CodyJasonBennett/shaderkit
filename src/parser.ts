@@ -58,7 +58,9 @@ function parseFunction(): FunctionDeclaration {
 
 function parseVariable(): VariableDeclaration {
   const qualifiers: string[] = []
-  while (tokens[i].type !== 'identifier') qualifiers.push(tokens[i++].value)
+  while (tokens[i] && tokens[i].type !== 'identifier') {
+    qualifiers.push(tokens[i++].value)
+  }
   const type = qualifiers.pop()!
 
   const body = getTokensUntil(';')
@@ -174,8 +176,6 @@ function parseSwitch(): SwitchStatement {
 
 function parseStatements(): AST[] {
   const body: AST[] = []
-
-  if (tokens[i].value === '{') i++
   let scopeIndex = 0
 
   while (i < tokens.length) {
@@ -221,6 +221,7 @@ function parseStatements(): AST[] {
 }
 
 function parseBlock(): BlockStatement {
+  if (tokens[i].value === '{') i++
   const body = parseStatements()
   return new BlockStatement(body)
 }
