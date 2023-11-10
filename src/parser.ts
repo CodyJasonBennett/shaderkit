@@ -13,6 +13,7 @@ import {
   DoWhileStatement,
   SwitchStatement,
   SwitchCase,
+  StructDeclaration,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
@@ -77,6 +78,15 @@ function parseVariable(): VariableDeclaration {
   }
 
   return new VariableDeclaration(name, type, value, qualifiers)
+}
+
+function parseStruct(): StructDeclaration {
+  const name = tokens[i++].value
+  // TODO: parse expressions
+  const members = getTokensUntil('}').slice(1, -1) as unknown as VariableDeclaration[]
+  i++ // skip ;
+
+  return new StructDeclaration(name, members)
 }
 
 function parseReturn(): ReturnStatement {
@@ -188,6 +198,7 @@ function parseStatements(): AST[] {
     if (token.type === 'keyword') {
       if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
       else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
+      else if (token.value === 'struct') statement = parseStruct()
       else if (token.value === 'continue') statement = new ContinueStatement()
       else if (token.value === 'break') statement = new BreakStatement()
       else if (token.value === 'discard') statement = new DiscardStatement()
@@ -224,6 +235,10 @@ export function parse(code: string): AST[] {
 
 const glsl = /* glsl */ `
   flat in mat4 test;
+
+  struct foo {
+    bool isStruct;
+  };
 
   if (true) {
     discard;
