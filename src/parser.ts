@@ -129,7 +129,7 @@ function parseFor(): ForStatement {
     if (next.value === ';') {
       j++
     } else {
-      // TODO: parse expressions
+      // TODO: parse expression
       const test = (tests[j] ??= []) as Token[]
       test.push(next)
     }
@@ -145,13 +145,14 @@ function parseDoWhile(): DoWhileStatement {
   const body = parseBlock()
   i++ // skip while
   // TODO: parse expression
-  const test = getTokensUntil(')')
+  const test = getTokensUntil(')').slice(1, -1)
 
   return new DoWhileStatement(test, body)
 }
 
 function parseSwitch(): SwitchStatement {
-  const discriminant = getTokensUntil(')')
+  // TODO: parse expression
+  const discriminant = getTokensUntil(')').slice(1, -1)
   const body = getTokensUntil('}').slice(1, -1)
 
   let j = -1
@@ -187,7 +188,7 @@ function parseStatements(): AST[] {
     if (token.type === 'keyword') {
       if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
       else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
-      if (token.value === 'continue') statement = new ContinueStatement()
+      else if (token.value === 'continue') statement = new ContinueStatement()
       else if (token.value === 'break') statement = new BreakStatement()
       else if (token.value === 'discard') statement = new DiscardStatement()
       else if (token.value === 'return') statement = parseReturn()
