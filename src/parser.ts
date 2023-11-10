@@ -86,8 +86,13 @@ function parseVariable(): VariableDeclaration {
 
 function parseStruct(): StructDeclaration {
   const name = tokens[i++].value
-  // TODO: parse expressions
-  const members = getTokensUntil('}').slice(1, -1) as unknown as VariableDeclaration[]
+  i++ // skip {
+  const members: VariableDeclaration[] = []
+  while (tokens[i] && tokens[i].value !== '}') {
+    i++ // TODO: remove backtrack hack
+    members.push(parseVariable())
+  }
+  i++ // skip }
   i++ // skip ;
 
   return new StructDeclaration(name, members)
@@ -242,6 +247,7 @@ const glsl = /* glsl */ `
 
   struct foo {
     bool isStruct;
+    vec4 color;
   };
 
   if (true) {
