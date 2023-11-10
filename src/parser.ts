@@ -56,7 +56,11 @@ function parseFunction(): FunctionDeclaration {
   const name = tokens[i++].value
   // TODO: parse expressions
   const args = getTokensUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
-  const body = parseBlock()
+
+  let body = null
+  if (tokens[i].value === ';') i++ // skip ;
+  else body = parseBlock()
+
   return new FunctionDeclaration(name, type, args, body)
 }
 
@@ -268,6 +272,8 @@ const glsl = /* glsl */ `
     default:
       //
   }
+
+  void method();
 
   void main() {
     gl_FragColor = vec4(1, 0, 0, 1); // red

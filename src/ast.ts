@@ -29,7 +29,7 @@ export class FunctionDeclaration extends Node {
     public name: string,
     public type: Node | null,
     public args: VariableDeclaration[],
-    public body: BlockStatement,
+    public body: BlockStatement | null,
   ) {
     super()
   }
