@@ -36,12 +36,12 @@ function getScopeDelta(token: Token): number {
 let tokens: Token[] = []
 let i: number = 0
 
-function getTokensUntil(value: string): Token[] {
+function readUntil(value: string, body: Token[], offset: number = 0): Token[] {
   const output: Token[] = []
   let scopeIndex = 0
 
-  while (i < tokens.length) {
-    const token = tokens[i++]
+  while (offset < body.length) {
+    const token = body[offset++]
     output.push(token)
 
     scopeIndex += getScopeDelta(token)
@@ -51,11 +51,17 @@ function getTokensUntil(value: string): Token[] {
   return output
 }
 
+function consumeUntil(value: string): Token[] {
+  const output = readUntil(value, tokens, i)
+  i += output.length
+  return output
+}
+
 function parseFunction(): FunctionDeclaration {
   const type = tokens[i - 1].value
   const name = tokens[i++].value
   // TODO: parse expressions
-  const args = getTokensUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
+  const args = consumeUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
 
   let body = null
   if (tokens[i].value === ';') i++ // skip ;
@@ -72,7 +78,7 @@ function parseVariable(): VariableDeclaration {
   }
   const type = qualifiers.pop()!
 
-  const body = getTokensUntil(';') // TODO: comma-separated lists
+  const body = consumeUntil(';') // TODO: comma-separated lists
   const name = body.shift()!.value
   body.pop() // skip ;
 
@@ -99,7 +105,7 @@ function parseStruct(): StructDeclaration {
 }
 
 function parseReturn(): ReturnStatement {
-  const body = getTokensUntil(';')
+  const body = consumeUntil(';')
   body.pop() // skip ;
 
   let argument = null
@@ -112,7 +118,7 @@ function parseReturn(): ReturnStatement {
 
 function parseIf(): IfStatement {
   // TODO: parse expression
-  const test = getTokensUntil(')').slice(1, -1)
+  const test = consumeUntil(')').slice(1, -1)
   const consequent = parseBlock()
 
   let alternate = null
@@ -132,7 +138,7 @@ function parseIf(): IfStatement {
 
 function parseWhile(): WhileStatement {
   // TODO: parse expression
-  const test = getTokensUntil(')').slice(1, -1)
+  const test = consumeUntil(')').slice(1, -1)
   const body = parseBlock()
 
   return new WhileStatement(test, body)
@@ -142,7 +148,7 @@ function parseFor(): ForStatement {
   const tests: [init?: AST, test?: AST, update?: AST] = []
   let j = 0
 
-  const loop = getTokensUntil(')').slice(1, -1)
+  const loop = consumeUntil(')').slice(1, -1)
   while (loop.length) {
     const next = loop.shift()!
     if (next.value === ';') {
@@ -164,15 +170,15 @@ function parseDoWhile(): DoWhileStatement {
   const body = parseBlock()
   i++ // skip while
   // TODO: parse expression
-  const test = getTokensUntil(')').slice(1, -1)
+  const test = consumeUntil(')').slice(1, -1)
 
   return new DoWhileStatement(test, body)
 }
 
 function parseSwitch(): SwitchStatement {
   // TODO: parse expression
-  const discriminant = getTokensUntil(')').slice(1, -1)
-  const body = getTokensUntil('}').slice(1, -1)
+  const discriminant = consumeUntil(')').slice(1, -1)
+  const body = consumeUntil('}').slice(1, -1)
 
   let j = -1
   const cases: SwitchCase[] = []
