@@ -1,7 +1,7 @@
 export abstract class Node {}
 
 export class Literal extends Node {
-  constructor(public value: string | number | boolean) {
+  constructor(public value: string /*| number | boolean*/) {
     super()
   }
 }

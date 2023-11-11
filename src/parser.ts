@@ -1,5 +1,12 @@
 import {
   type AST,
+  Identifier,
+  Literal,
+  CallExpression,
+  UnaryExpression,
+  MemberExpression,
+  TernaryExpression,
+  BinaryExpression,
   BlockStatement,
   FunctionDeclaration,
   VariableDeclaration,
@@ -16,6 +23,43 @@ import {
   StructDeclaration,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
+
+const UNARY_OPERATORS = ['+', '-', '~', '!', '++', '--']
+
+const BINARY_OPERATORS = [
+  ',',
+  '>>=',
+  '<<=',
+  '|=',
+  '&=',
+  '^=',
+  '%=',
+  '/=',
+  '*=',
+  '-=',
+  '+=',
+  '=',
+  '?',
+  '||',
+  '^^',
+  '&&',
+  '|',
+  '^',
+  '&',
+  '!=',
+  '==',
+  '>=',
+  '<=',
+  '>',
+  '<',
+  '>>',
+  '<<',
+  '+',
+  '-',
+  '%',
+  '/',
+  '*',
+]
 
 // TODO: this is GLSL-only, separate language constants
 const TYPE_REGEX = /void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?/
@@ -57,10 +101,91 @@ function consumeUntil(value: string): Token[] {
   return output
 }
 
+function parseExpression(body: Token[]): AST | null {
+  if (body.length === 0) return null
+
+  let scopeIndex = 0
+
+  for (const operator of BINARY_OPERATORS) {
+    for (let i = 1; i < body.length - 1; i++) {
+      const token = body[i]
+      if (token.type !== 'symbol') continue
+
+      scopeIndex += getScopeDelta(token)
+
+      if (scopeIndex === 0 && token.value === operator) {
+        if (operator === '?') {
+          const testBody = body.slice(0, i)
+          const consequentBody = readUntil(':', body, i + 1).slice(0, -1)
+          const alternateBody = body.slice(i + consequentBody.length + 2)
+
+          const test = parseExpression(testBody)!
+          const consequent = parseExpression(consequentBody)!
+          const alternate = parseExpression(alternateBody)!
+
+          return new TernaryExpression(test, consequent, alternate)
+        } else {
+          const left = parseExpression(body.slice(0, i))!
+          const right = parseExpression(body.slice(i + 1, body.length))!
+
+          return new BinaryExpression(operator, left, right)
+        }
+      }
+
+      if (scopeIndex < 0) {
+        return parseExpression(body.slice(0, i))
+      }
+    }
+  }
+
+  const first = body[0]
+  const last = body[body.length - 1]
+  if (UNARY_OPERATORS.includes(first.value)) {
+    const right = parseExpression(body.slice(1))!
+    return new UnaryExpression(first.value, right)
+  } else if (UNARY_OPERATORS.includes(last.value)) {
+    const argument = parseExpression(body.slice(0, body.length - 1))!
+    return new UnaryExpression(last.value, argument)
+  }
+
+  if (first.value === '(') {
+    const leftBody = readUntil(')', body)
+    const left = parseExpression(leftBody.slice(1, leftBody.length - 1))!
+
+    const operator = body[leftBody.length]
+    if (operator) {
+      const rightBody = body.slice(leftBody.length + 1)
+      const right = parseExpression(rightBody)!
+
+      return new BinaryExpression(operator.value, left, right)
+    }
+
+    return left
+  }
+
+  if (first.type === 'bool' || first.type === 'int' || first.type === 'float') {
+    return new Literal(first.value)
+  } else if (first.type === 'identifier' || first.type === 'keyword') {
+    const second = body[1]
+
+    if (!second) {
+      return new Identifier(first.value)
+    } else if (second.value === '(') {
+      const args: AST[] = [] // TODO: parse args
+      return new CallExpression(first.value, args)
+    } else if (second.value === '.' || second.value === '[') {
+      const third = body[2]
+      return new MemberExpression(first.value, third.value)
+    }
+  }
+
+  return null
+}
+
 function parseFunction(): FunctionDeclaration {
-  const type = tokens[i - 1].value
+  const type = tokens[i - 1].value // TODO: remove backtrack hack
   const name = tokens[i++].value
-  // TODO: parse expressions
+  // TODO: parse args
   const args = consumeUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
 
   let body = null
@@ -71,7 +196,7 @@ function parseFunction(): FunctionDeclaration {
 }
 
 function parseVariable(): VariableDeclaration {
-  i--
+  i-- // TODO: remove backtrack hack
   const qualifiers: string[] = []
   while (tokens[i] && tokens[i].type !== 'identifier') {
     qualifiers.push(tokens[i++].value)
@@ -82,10 +207,7 @@ function parseVariable(): VariableDeclaration {
   const name = body.shift()!.value
   body.pop() // skip ;
 
-  let value = null
-  if (body.length) {
-    // TODO: parse expression
-  }
+  const value = parseExpression(body)
 
   return new VariableDeclaration(name, type, value, qualifiers)
 }
@@ -108,22 +230,18 @@ function parseReturn(): ReturnStatement {
   const body = consumeUntil(';')
   body.pop() // skip ;
 
-  let argument = null
-  if (body.length) {
-    // TODO: parse expression
-  }
+  const argument = parseExpression(body)
 
-  return new ReturnStatement(argument)
+  return new ReturnStatement(argument as any)
 }
 
 function parseIf(): IfStatement {
-  // TODO: parse expression
-  const test = consumeUntil(')').slice(1, -1)
+  const test = parseExpression(consumeUntil(')'))!
   const consequent = parseBlock()
 
   let alternate = null
   if (tokens[i].value === 'else') {
-    i++
+    i++ // TODO: remove backtrack hack
 
     if (tokens[i].value === 'if') {
       i++
@@ -137,15 +255,14 @@ function parseIf(): IfStatement {
 }
 
 function parseWhile(): WhileStatement {
-  // TODO: parse expression
-  const test = consumeUntil(')').slice(1, -1)
+  const test = parseExpression(consumeUntil(')'))!
   const body = parseBlock()
 
   return new WhileStatement(test, body)
 }
 
 function parseFor(): ForStatement {
-  const tests: [init?: AST, test?: AST, update?: AST] = []
+  const tests: [init: Token[], test: Token[], update: Token[]] = [[], [], []]
   let j = 0
 
   const loop = consumeUntil(')').slice(1, -1)
@@ -154,13 +271,14 @@ function parseFor(): ForStatement {
     if (next.value === ';') {
       j++
     } else {
-      // TODO: parse expression
-      const test = (tests[j] ??= []) as Token[]
-      test.push(next)
+      tests[j].push(next)
     }
   }
 
-  const [init = null, test = null, update = null] = tests
+  const init = parseExpression(tests[0])
+  const test = parseExpression(tests[1])
+  const update = parseExpression(tests[2])
+
   const body = parseBlock()
 
   return new ForStatement(init, test, update, body)
@@ -169,15 +287,14 @@ function parseFor(): ForStatement {
 function parseDoWhile(): DoWhileStatement {
   const body = parseBlock()
   i++ // skip while
-  // TODO: parse expression
-  const test = consumeUntil(')').slice(1, -1)
+  const test = parseExpression(consumeUntil(')'))!
+  i++ // skip ;
 
   return new DoWhileStatement(test, body)
 }
 
 function parseSwitch(): SwitchStatement {
-  // TODO: parse expression
-  const discriminant = consumeUntil(')').slice(1, -1)
+  const discriminant = parseExpression(consumeUntil(')'))
   const body = consumeUntil('}').slice(1, -1)
 
   let j = -1
@@ -185,17 +302,16 @@ function parseSwitch(): SwitchStatement {
   while (body.length) {
     const token = body.shift()!
     if (token.value === 'case' || token.value === 'default') {
-      const test = body.shift() ?? null // TODO: parse literal/identifier
-      if (test) body.shift() // skip :
+      const test = token.value === 'case' ? parseExpression([body.shift()!]) : null
       cases.push(new SwitchCase(test, []))
       j++
     } else {
-      // TODO: parse expression
+      // TODO: parse scope
       cases[j].consequent.push(token)
     }
   }
 
-  return new SwitchStatement(discriminant, cases)
+  return new SwitchStatement(discriminant!, cases)
 }
 
 function parseStatements(): AST[] {
@@ -214,9 +330,9 @@ function parseStatements(): AST[] {
       if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
       else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
       else if (token.value === 'struct') statement = parseStruct()
-      else if (token.value === 'continue') statement = new ContinueStatement()
-      else if (token.value === 'break') statement = new BreakStatement()
-      else if (token.value === 'discard') statement = new DiscardStatement()
+      else if (token.value === 'continue') (statement = new ContinueStatement()), i++
+      else if (token.value === 'break') (statement = new BreakStatement()), i++
+      else if (token.value === 'discard') (statement = new DiscardStatement()), i++
       else if (token.value === 'return') statement = parseReturn()
       else if (token.value === 'if') statement = parseIf()
       else if (token.value === 'while') statement = parseWhile()
@@ -225,7 +341,12 @@ function parseStatements(): AST[] {
       else if (token.value === 'switch') statement = parseSwitch()
     }
 
-    if (statement) body.push(statement)
+    if (statement) {
+      body.push(statement)
+    } else {
+      const expression = parseExpression([token, ...consumeUntil(';').slice(0, -1)])
+      if (expression) body.push(expression)
+    }
   }
 
   return body
