@@ -171,7 +171,17 @@ function parseExpression(body: Token[]): AST | null {
     if (!second) {
       return new Identifier(first.value)
     } else if (second.value === '(') {
-      const args: AST[] = [] // TODO: parse args
+      const args: VariableDeclaration[] = []
+      let i = 1
+
+      while (i < body.length) {
+        const line = readUntil(',', body, i)
+        i += line.length
+        if (line.at(-1)?.value === ',') line.pop() // skip ,
+
+        args.push(parseExpression(line) as VariableDeclaration)
+      }
+
       return new CallExpression(first.value, args)
     } else if (second.value === '.' || second.value === '[') {
       const third = body[2]
@@ -180,19 +190,6 @@ function parseExpression(body: Token[]): AST | null {
   }
 
   return null
-}
-
-function parseFunction(): FunctionDeclaration {
-  const type = tokens[i - 1].value // TODO: remove backtrack hack
-  const name = tokens[i++].value
-  // TODO: parse args
-  const args = consumeUntil(')').slice(1, -1) as unknown as VariableDeclaration[]
-
-  let body = null
-  if (tokens[i].value === ';') i++ // skip ;
-  else body = parseBlock()
-
-  return new FunctionDeclaration(name, type, args, body)
 }
 
 function parseVariable(): VariableDeclaration {
@@ -210,6 +207,38 @@ function parseVariable(): VariableDeclaration {
   const value = parseExpression(body)
 
   return new VariableDeclaration(name, type, value, qualifiers)
+}
+
+function parseFunction(): FunctionDeclaration {
+  const type = tokens[i - 1].value // TODO: remove backtrack hack
+  const name = tokens[i++].value
+  const args: VariableDeclaration[] = []
+
+  const header = consumeUntil(')').slice(1, -1)
+  let j = 0
+  while (j < header.length) {
+    const qualifiers: string[] = []
+    while (header[j] && header[j].type !== 'identifier') {
+      qualifiers.push(header[j++].value)
+    }
+    const type = qualifiers.pop()!
+
+    const line = readUntil(',', header, j)
+    j += line.length
+
+    const name = line.shift()!.value
+    if (line.at(-1)?.value === ',') line.pop() // skip ,
+
+    const value = parseExpression(line)
+
+    args.push(new VariableDeclaration(name, type, value, qualifiers))
+  }
+
+  let body = null
+  if (tokens[i].value === ';') i++ // skip ;
+  else body = parseBlock()
+
+  return new FunctionDeclaration(name, type, args, body)
 }
 
 function parseStruct(): StructDeclaration {
@@ -406,11 +435,13 @@ const glsl = /* glsl */ `
       //
   }
 
-  void method();
+  void method(const bool foo);
 
   void main() {
     gl_FragColor = vec4(1, 0, 0, 1); // red
   }
+
+  method(true);
 `
 
 console.log(glsl)
