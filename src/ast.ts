@@ -12,14 +12,25 @@ export class Identifier extends Node {
   }
 }
 
-export class VariableDeclaration extends Node {
-  constructor(public name: string, public type: Node, public value: Node | null, public qualifiers: Node[]) {
+export class BlockStatement extends Node {
+  constructor(public body: Node[]) {
     super()
   }
 }
 
-export class BlockStatement extends Node {
-  constructor(public body: Node[]) {
+export class Type extends Node {
+  constructor(public name: string, public componentType: Type | null, public size: number | null) {
+    super()
+  }
+}
+
+export class VariableDeclaration extends Node {
+  constructor(
+    public name: string,
+    public type: Type | Identifier,
+    public value: Node | null,
+    public qualifiers: Node[],
+  ) {
     super()
   }
 }
@@ -27,7 +38,7 @@ export class BlockStatement extends Node {
 export class FunctionDeclaration extends Node {
   constructor(
     public name: string,
-    public type: Node | null,
+    public type: Type | Identifier,
     public args: VariableDeclaration[],
     public body: BlockStatement | null,
   ) {
