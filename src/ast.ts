@@ -19,7 +19,7 @@ export class BlockStatement extends Node {
 }
 
 export class Type extends Node {
-  constructor(public name: string, public componentType: Type | null, public size: number | null) {
+  constructor(public name: string, public parameters: (Type | Literal | Identifier)[] | null) {
     super()
   }
 }

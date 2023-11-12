@@ -199,7 +199,7 @@ function parseVariable(): VariableDeclaration {
   while (tokens[i] && tokens[i].type !== 'identifier') {
     qualifiers.push(tokens[i++].value)
   }
-  const type = new Type(qualifiers.pop()!, null, null)
+  const type = new Type(qualifiers.pop()!, null)
 
   const body = consumeUntil(';') // TODO: comma-separated lists
   const name = body.shift()!.value
@@ -211,7 +211,7 @@ function parseVariable(): VariableDeclaration {
 }
 
 function parseFunction(): FunctionDeclaration {
-  const type = new Type(tokens[i - 1].value, null, null) // TODO: remove backtrack hack
+  const type = new Type(tokens[i - 1].value, null) // TODO: remove backtrack hack
   const name = tokens[i++].value
   const args: VariableDeclaration[] = []
 
@@ -222,7 +222,7 @@ function parseFunction(): FunctionDeclaration {
     while (header[j] && header[j].type !== 'identifier') {
       qualifiers.push(header[j++].value)
     }
-    const type = new Type(qualifiers.pop()!, null, null)
+    const type = new Type(qualifiers.pop()!, null)
 
     const line = readUntil(',', header, j)
     j += line.length
