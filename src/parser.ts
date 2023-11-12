@@ -172,21 +172,27 @@ function parseExpression(body: Token[]): AST | null {
     if (!second) {
       return new Identifier(first.value)
     } else if (second.value === '(') {
-      const args: VariableDeclaration[] = []
-      let i = 1
+      const callee = new Identifier(first.value)
+      const args: AST[] = []
+
+      body = body.slice(2, -1) // skip ()
+      let i = 0
 
       while (i < body.length) {
         const line = readUntil(',', body, i)
         i += line.length
         if (line.at(-1)?.value === ',') line.pop() // skip ,
 
-        args.push(parseExpression(line) as VariableDeclaration)
+        const arg = parseExpression(line)
+        if (arg) args.push(arg)
       }
 
-      return new CallExpression(first.value, args)
+      return new CallExpression(callee, args)
     } else if (second.value === '.' || second.value === '[') {
-      const third = body[2]
-      return new MemberExpression(first.value, third.value)
+      // TODO: CallExpression from accessor (e.g. array.length())
+      const object = new Identifier(first.value)
+      const property = parseExpression([body[2]])!
+      return new MemberExpression(object, property)
     }
   }
 
@@ -374,7 +380,9 @@ function parseStatements(): AST[] {
     if (statement) {
       body.push(statement)
     } else {
-      const expression = parseExpression([token, ...consumeUntil(';').slice(0, -1)])
+      const line = [token, ...consumeUntil(';')]
+      if (line[line.length - 1].value === ';') line.pop()
+      const expression = parseExpression(line)
       if (expression) body.push(expression)
     }
   }
@@ -393,13 +401,14 @@ function parseBlock(): BlockStatement {
  */
 export function parse(code: string): AST[] {
   // TODO: preserve
+  code = code.replace('#version 300 es', '')
   tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   i = 0
 
   return parseStatements()
 }
 
-const glsl = /* glsl */ `
+const glsl = /* glsl */ `#version 300 es
   flat in mat4 test;
 
   struct foo {
