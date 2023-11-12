@@ -86,12 +86,25 @@ describe('parser', () => {
     })
 
     it('parses member expressions', () => {
-      const expression = parse('foo.bar')[0] as MemberExpression
-      expect(expression).toBeInstanceOf(MemberExpression)
-      expect(expression.object).toBeInstanceOf(Identifier)
-      expect((expression.object as Identifier).value).toBe('foo')
-      expect(expression.property).toBeInstanceOf(Identifier)
-      expect((expression.property as Identifier).value).toBe('bar')
+      {
+        const expression = parse('foo.bar')[0] as MemberExpression
+        expect(expression).toBeInstanceOf(MemberExpression)
+        expect(expression.object).toBeInstanceOf(Identifier)
+        expect((expression.object as Identifier).value).toBe('foo')
+        expect(expression.property).toBeInstanceOf(Identifier)
+        expect((expression.property as Identifier).value).toBe('bar')
+      }
+
+      {
+        const expression = parse('array.length()')[0] as CallExpression
+        expect(expression).toBeInstanceOf(CallExpression)
+        expect(expression.callee).toBeInstanceOf(MemberExpression)
+        expect((expression.callee as MemberExpression).object).toBeInstanceOf(Identifier)
+        expect(((expression.callee as MemberExpression).object as Identifier).value).toBe('array')
+        expect((expression.callee as MemberExpression).property).toBeInstanceOf(Identifier)
+        expect(((expression.callee as MemberExpression).property as Identifier).value).toBe('length')
+        expect(expression.args.length).toBe(0)
+      }
     })
   })
 })

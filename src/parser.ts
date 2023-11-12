@@ -189,10 +189,18 @@ function parseExpression(body: Token[]): AST | null {
 
       return new CallExpression(callee, args)
     } else if (second.value === '.' || second.value === '[') {
-      // TODO: CallExpression from accessor (e.g. array.length())
       const object = new Identifier(first.value)
       const property = parseExpression([body[2]])!
-      return new MemberExpression(object, property)
+      const left = new MemberExpression(object, property)
+
+      // e.g. array.length()
+      if (body[3]?.value === '(' && last.value === ')') {
+        const right = parseExpression(body.slice(2))! as CallExpression
+        right.callee = left
+        return right
+      }
+
+      return left
     }
   }
 
@@ -452,6 +460,8 @@ const glsl = /* glsl */ `#version 300 es
   }
 
   method(true);
+
+  foo.bar();
 `
 
 console.log(glsl)
