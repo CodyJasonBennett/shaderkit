@@ -29,7 +29,7 @@ export class VariableDeclaration extends Node {
     public name: string,
     public type: Type | Identifier,
     public value: Node | null,
-    public qualifiers: Node[],
+    public qualifiers: string[],
   ) {
     super()
   }

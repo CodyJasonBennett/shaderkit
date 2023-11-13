@@ -3,11 +3,26 @@ import {
   parse,
   Identifier,
   Literal,
+  Type,
   UnaryExpression,
   BinaryExpression,
   TernaryExpression,
   CallExpression,
   MemberExpression,
+  VariableDeclaration,
+  StructDeclaration,
+  FunctionDeclaration,
+  BlockStatement,
+  ContinueStatement,
+  BreakStatement,
+  DiscardStatement,
+  ReturnStatement,
+  IfStatement,
+  WhileStatement,
+  ForStatement,
+  DoWhileStatement,
+  SwitchStatement,
+  SwitchCase,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -104,5 +119,167 @@ describe('parser', () => {
       expect(((expression.callee as MemberExpression).property as Identifier).value).toBe('length')
       expect(expression.args.length).toBe(0)
     }
+  })
+
+  it('parses variable declarations', () => {
+    const statement = parse('const vec4 foo = vec4(0, 0, 0, 0);')[0] as VariableDeclaration
+    expect(statement).toBeInstanceOf(VariableDeclaration)
+    expect(statement.name).toBe('foo')
+    expect(statement.type).toBeInstanceOf(Type)
+    expect((statement.type as Type).name).toBe('vec4')
+    expect((statement.type as Type).parameters).toBe(null)
+    expect(statement.qualifiers.length).toBe(1)
+    expect(statement.qualifiers[0]).toBe('const')
+    expect(statement.value).toBeInstanceOf(CallExpression)
+
+    // TODO: comma-separated list
+  })
+
+  it('parses struct declarations', () => {
+    const statement = parse('struct foo { const bool bar = true; };')[0] as StructDeclaration
+    expect(statement).toBeInstanceOf(StructDeclaration)
+    expect(statement.name).toBe('foo')
+    expect(statement.members.length).toBe(1)
+    expect(statement.members[0].name).toBe('bar')
+    expect(statement.members[0].type).toBeInstanceOf(Type)
+    expect((statement.members[0].type as Type).name).toBe('bool')
+    expect((statement.members[0].type as Type).parameters).toBe(null)
+    expect(statement.members[0].qualifiers.length).toBe(1)
+    expect(statement.members[0].qualifiers[0]).toBe('const')
+    expect(statement.members[0].value).toBeInstanceOf(Literal)
+    expect((statement.members[0].value as Literal).value).toBe('true')
+  })
+
+  it('parses function declarations', () => {
+    {
+      const statement = parse('void main();')[0] as FunctionDeclaration
+      expect(statement).toBeInstanceOf(FunctionDeclaration)
+      expect(statement.name).toBe('main')
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('void')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.args.length).toBe(0)
+      expect(statement.body).toBe(null)
+    }
+
+    {
+      const statement = parse('void main(const bool enabled) {}')[0] as FunctionDeclaration
+      expect(statement).toBeInstanceOf(FunctionDeclaration)
+      expect(statement.name).toBe('main')
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('void')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.args[0]).toBeInstanceOf(VariableDeclaration)
+      expect((statement.args[0] as VariableDeclaration).name).toBe('enabled')
+      expect((statement.args[0] as VariableDeclaration).qualifiers.length).toBe(1)
+      expect((statement.args[0] as VariableDeclaration).qualifiers[0]).toBe('const')
+      expect((statement.args[0] as VariableDeclaration).type).toBeInstanceOf(Type)
+      expect(((statement.args[0] as VariableDeclaration).type as Type).name).toBe('bool')
+      expect(((statement.args[0] as VariableDeclaration).type as Type).parameters).toBe(null)
+      expect(statement.body).toBeInstanceOf(BlockStatement)
+      expect((statement.body as BlockStatement).body.length).toBe(0)
+    }
+  })
+
+  it('parses continue statements', () => {
+    const statement = parse('continue;')[0] as ContinueStatement
+    expect(statement).toBeInstanceOf(ContinueStatement)
+  })
+
+  it('parses break statements', () => {
+    const statement = parse('break;')[0] as BreakStatement
+    expect(statement).toBeInstanceOf(BreakStatement)
+  })
+
+  it('parses discard statements', () => {
+    const statement = parse('discard;')[0] as DiscardStatement
+    expect(statement).toBeInstanceOf(DiscardStatement)
+  })
+
+  it('parses return statements', () => {
+    {
+      const statement = parse('return;')[0] as ReturnStatement
+      expect(statement).toBeInstanceOf(ReturnStatement)
+      expect(statement.argument).toBe(null)
+    }
+
+    {
+      const statement = parse('return 0;')[0] as ReturnStatement
+      expect(statement).toBeInstanceOf(ReturnStatement)
+      expect(statement.argument).toBeInstanceOf(Literal)
+      expect((statement.argument as Literal).value).toBe('0')
+    }
+  })
+
+  it('parses if statements', () => {
+    const statement = parse('if (true) {} else if (false) {} else {}')[0] as IfStatement
+    expect(statement).toBeInstanceOf(IfStatement)
+    expect(statement.test).toBeInstanceOf(Literal)
+    expect((statement.test as Literal).value).toBe('true')
+    expect(statement.consequent).toBeInstanceOf(BlockStatement)
+    expect((statement.consequent as BlockStatement).body.length).toBe(0)
+    expect(statement.alternate).toBeInstanceOf(IfStatement)
+    expect((statement.alternate as IfStatement).test).toBeInstanceOf(Literal)
+    expect(((statement.alternate as IfStatement).test as Literal).value).toBe('false')
+    expect((statement.alternate as IfStatement).consequent).toBeInstanceOf(BlockStatement)
+    expect(((statement.alternate as IfStatement).consequent as BlockStatement).body.length).toBe(0)
+    expect((statement.alternate as IfStatement).alternate).toBeInstanceOf(BlockStatement)
+    expect(((statement.alternate as IfStatement).alternate as BlockStatement).body.length).toBe(0)
+  })
+
+  it('parses while statements', () => {
+    const statement = parse('while(true) {}')[0] as WhileStatement
+    expect(statement).toBeInstanceOf(WhileStatement)
+    expect(statement.test).toBeInstanceOf(Literal)
+    expect((statement.test as Literal).value).toBe('true')
+    expect(statement.body).toBeInstanceOf(BlockStatement)
+    expect((statement.body as BlockStatement).body.length).toBe(0)
+  })
+
+  it('parses for statements', () => {
+    const statement = parse('for (int 0 = 0; i < 1; i++) {}')[0] as ForStatement
+    expect(statement).toBeInstanceOf(ForStatement)
+    // TODO: this should be a VariableDeclaration
+    expect(statement.init).toBeInstanceOf(BinaryExpression)
+    expect((statement.init as BinaryExpression).operator).toBe('=')
+    expect(statement.test).toBeInstanceOf(BinaryExpression)
+    expect((statement.test as BinaryExpression).operator).toBe('<')
+    expect((statement.test as BinaryExpression).left).toBeInstanceOf(Identifier)
+    expect(((statement.test as BinaryExpression).left as Identifier).value).toBe('i')
+    expect((statement.test as BinaryExpression).right).toBeInstanceOf(Literal)
+    expect(((statement.test as BinaryExpression).right as Literal).value).toBe('1')
+    expect(statement.update).toBeInstanceOf(UnaryExpression)
+    expect((statement.update as UnaryExpression).operator).toBe('++')
+    expect((statement.update as UnaryExpression).argument).toBeInstanceOf(Identifier)
+    expect(((statement.update as UnaryExpression).argument as Identifier).value).toBe('i')
+    expect(statement.body).toBeInstanceOf(BlockStatement)
+    expect((statement.body as BlockStatement).body.length).toBe(0)
+  })
+
+  it('parses do-while statements', () => {
+    const statement = parse('do {} while(true);')[0] as DoWhileStatement
+    expect(statement).toBeInstanceOf(DoWhileStatement)
+    expect(statement.body).toBeInstanceOf(BlockStatement)
+    expect((statement.body as BlockStatement).body.length).toBe(0)
+    expect(statement.test).toBeInstanceOf(Literal)
+    expect((statement.test as Literal).value).toBe('true')
+  })
+
+  it('parses switch statements', () => {
+    // TODO: parse switch case scope
+    const statement = parse('switch(true) { case 0: break; default: discard; }')[0] as SwitchStatement
+    expect(statement).toBeInstanceOf(SwitchStatement)
+    expect(statement.discriminant).toBeInstanceOf(Literal)
+    expect((statement.discriminant as Literal).value).toBe('true')
+    expect(statement.cases.length).toBe(2)
+    expect(statement.cases[0]).toBeInstanceOf(SwitchCase)
+    expect((statement.cases[0] as SwitchCase).test).toBeInstanceOf(Literal)
+    expect(((statement.cases[0] as SwitchCase).test as Literal).value).toBe('0')
+    // expect((statement.cases[0] as SwitchCase).consequent.length).toBe(1)
+    // expect((statement.cases[0] as SwitchCase).consequent[0]).toBeInstanceOf(BreakStatement)
+    expect(statement.cases[1]).toBeInstanceOf(SwitchCase)
+    expect((statement.cases[1] as SwitchCase).test).toBe(null)
+    // expect((statement.cases[1] as SwitchCase).consequent.length).toBe(1)
+    // expect((statement.cases[0] as SwitchCase).consequent[0]).toBeInstanceOf(DiscardStatement)
   })
 })

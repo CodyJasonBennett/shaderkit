@@ -217,6 +217,7 @@ function parseVariable(): VariableDeclaration {
 
   const body = consumeUntil(';') // TODO: comma-separated lists
   const name = body.shift()!.value
+  body.shift() // skip =
   body.pop() // skip ;
 
   const value = parseExpression(body)
@@ -371,9 +372,7 @@ function parseStatements(): AST[] {
     let statement: AST | null = null
 
     if (token.type === 'keyword') {
-      if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
-      else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
-      else if (token.value === 'struct') statement = parseStruct()
+      if (token.value === 'struct') statement = parseStruct()
       else if (token.value === 'continue') (statement = new ContinueStatement()), i++
       else if (token.value === 'break') (statement = new BreakStatement()), i++
       else if (token.value === 'discard') (statement = new DiscardStatement()), i++
@@ -383,6 +382,8 @@ function parseStatements(): AST[] {
       else if (token.value === 'for') statement = parseFor()
       else if (token.value === 'do') statement = parseDoWhile()
       else if (token.value === 'switch') statement = parseSwitch()
+      else if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
+      else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
     }
 
     if (statement) {
