@@ -271,7 +271,6 @@ describe('parser', () => {
   })
 
   it('parses switch statements', () => {
-    // TODO: parse switch case scope
     const statement = parse('switch(true) { case 0: break; default: discard; }')[0] as SwitchStatement
     expect(statement).toBeInstanceOf(SwitchStatement)
     expect(statement.discriminant).toBeInstanceOf(Literal)
