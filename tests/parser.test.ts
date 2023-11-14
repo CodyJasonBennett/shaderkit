@@ -237,11 +237,16 @@ describe('parser', () => {
   })
 
   it('parses for statements', () => {
-    const statement = parse('for (int 0 = 0; i < 1; i++) {}')[0] as ForStatement
+    const statement = parse('for (int i = 0; i < 1; i++) {}')[0] as ForStatement
     expect(statement).toBeInstanceOf(ForStatement)
-    // TODO: this should be a VariableDeclaration
-    expect(statement.init).toBeInstanceOf(BinaryExpression)
-    expect((statement.init as BinaryExpression).operator).toBe('=')
+    expect(statement.init).toBeInstanceOf(VariableDeclaration)
+    expect((statement.init as VariableDeclaration).name).toBe('i')
+    expect((statement.init as VariableDeclaration).type).toBeInstanceOf(Type)
+    expect(((statement.init as VariableDeclaration).type as Type).name).toBe('int')
+    expect(((statement.init as VariableDeclaration).type as Type).parameters).toBe(null)
+    expect((statement.init as VariableDeclaration).value).toBeInstanceOf(Literal)
+    expect(((statement.init as VariableDeclaration).value as Literal).value).toBe('0')
+    expect((statement.init as VariableDeclaration).qualifiers.length).toBe(0)
     expect(statement.test).toBeInstanceOf(BinaryExpression)
     expect((statement.test as BinaryExpression).operator).toBe('<')
     expect((statement.test as BinaryExpression).left).toBeInstanceOf(Identifier)

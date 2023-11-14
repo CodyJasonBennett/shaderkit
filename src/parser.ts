@@ -307,22 +307,17 @@ function parseWhile(): WhileStatement {
 }
 
 function parseFor(): ForStatement {
-  const tests: [init: Token[], test: Token[], update: Token[]] = [[], [], []]
-  let j = 0
+  const delimiterIndex = i + (readUntil(')', tokens, i).length - 1)
 
-  const loop = consumeUntil(')').slice(1, -1)
-  while (loop.length) {
-    const next = loop.shift()!
-    if (next.value === ';') {
-      j++
-    } else {
-      tests[j].push(next)
-    }
-  }
+  i++ // skip (
+  i++ // TODO: remove backtrack hack
 
-  const init = parseExpression(tests[0])
-  const test = parseExpression(tests[1])
-  const update = parseExpression(tests[2])
+  const init = parseVariable()
+  const test = parseExpression(consumeUntil(';').slice(0, -1))
+  const update = parseExpression(tokens.slice(i, delimiterIndex))
+
+  i = delimiterIndex
+  i++ // skip )
 
   const body = parseBlock()
 
