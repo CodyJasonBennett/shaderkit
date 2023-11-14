@@ -335,19 +335,20 @@ function parseDoWhile(): DoWhileStatement {
 
 function parseSwitch(): SwitchStatement {
   const discriminant = parseExpression(consumeUntil(')'))
-  const body = consumeUntil('}').slice(1, -1)
+  const delimiterIndex = i + readUntil('}', tokens, i).length - 1
 
-  let j = -1
   const cases: SwitchCase[] = []
-  while (body.length) {
-    const token = body.shift()!
-    if (token.value === 'case' || token.value === 'default') {
-      const test = token.value === 'case' ? parseExpression([body.shift()!]) : null
-      cases.push(new SwitchCase(test, []))
-      j++
-    } else {
-      // TODO: parse scope
-      cases[j].consequent.push(token)
+  while (i < delimiterIndex) {
+    const token = tokens[i++]
+
+    if (token.value === 'case') {
+      const test = parseExpression(consumeUntil(':').slice(0, -1))
+      const consequent = parseStatements()
+      cases.push(new SwitchCase(test, consequent))
+    } else if (token.value === 'default') {
+      i++ // skip :
+      const consequent = parseStatements()
+      cases.push(new SwitchCase(null, consequent))
     }
   }
 
@@ -367,7 +368,10 @@ function parseStatements(): AST[] {
     let statement: AST | null = null
 
     if (token.type === 'keyword') {
-      if (token.value === 'struct') statement = parseStruct()
+      if (token.value === 'case' || token.value === 'default') {
+        i--
+        break
+      } else if (token.value === 'struct') statement = parseStruct()
       else if (token.value === 'continue') (statement = new ContinueStatement()), i++
       else if (token.value === 'break') (statement = new BreakStatement()), i++
       else if (token.value === 'discard') (statement = new DiscardStatement()), i++
