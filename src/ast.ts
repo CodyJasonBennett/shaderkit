@@ -107,7 +107,7 @@ export class StructDeclaration extends Node {
 }
 
 export class UnaryExpression extends Node {
-  constructor(public operator: string, public argument: Node) {
+  constructor(public operator: string, public left: Node | null, public right: Node | null) {
     super()
   }
 }

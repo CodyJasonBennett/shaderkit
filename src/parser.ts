@@ -105,10 +105,35 @@ function consumeUntil(value: string): Token[] {
 function parseExpression(body: Token[]): AST | null {
   if (body.length === 0) return null
 
+  const first = body[0]
+  const last = body[body.length - 1]
+  if (UNARY_OPERATORS.includes(first.value)) {
+    const left = parseExpression(body.slice(1))!
+    return new UnaryExpression(first.value, left, null)
+  } else if (UNARY_OPERATORS.includes(last.value)) {
+    const right = parseExpression(body.slice(0, body.length - 1))!
+    return new UnaryExpression(last.value, null, right)
+  }
+
+  if (first.value === '(') {
+    const leftBody = readUntil(')', body)
+    const left = parseExpression(leftBody.slice(1, leftBody.length - 1))!
+
+    const operator = body[leftBody.length]
+    if (operator) {
+      const rightBody = body.slice(leftBody.length + 1)
+      const right = parseExpression(rightBody)!
+
+      return new BinaryExpression(operator.value, left, right)
+    }
+
+    return left
+  }
+
   let scopeIndex = 0
 
   for (const operator of BINARY_OPERATORS) {
-    for (let i = 1; i < body.length - 1; i++) {
+    for (let i = 0; i < body.length; i++) {
       const token = body[i]
       if (token.type !== 'symbol') continue
 
@@ -137,31 +162,6 @@ function parseExpression(body: Token[]): AST | null {
         return parseExpression(body.slice(0, i))
       }
     }
-  }
-
-  const first = body[0]
-  const last = body[body.length - 1]
-  if (UNARY_OPERATORS.includes(first.value)) {
-    const right = parseExpression(body.slice(1))!
-    return new UnaryExpression(first.value, right)
-  } else if (UNARY_OPERATORS.includes(last.value)) {
-    const argument = parseExpression(body.slice(0, body.length - 1))!
-    return new UnaryExpression(last.value, argument)
-  }
-
-  if (first.value === '(') {
-    const leftBody = readUntil(')', body)
-    const left = parseExpression(leftBody.slice(1, leftBody.length - 1))!
-
-    const operator = body[leftBody.length]
-    if (operator) {
-      const rightBody = body.slice(leftBody.length + 1)
-      const right = parseExpression(rightBody)!
-
-      return new BinaryExpression(operator.value, left, right)
-    }
-
-    return left
   }
 
   if (first.type === 'bool' || first.type === 'int' || first.type === 'float') {
