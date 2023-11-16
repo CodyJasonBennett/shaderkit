@@ -23,6 +23,7 @@ import {
   SwitchCase,
   StructDeclaration,
 } from './ast'
+import { generate } from './generator'
 import { type Token, tokenize } from './tokenizer'
 
 const UNARY_OPERATORS = ['+', '-', '~', '!', '++', '--']
@@ -465,4 +466,7 @@ const glsl = /* glsl */ `#version 300 es
 `
 
 console.log(glsl)
-console.log(...parse(glsl))
+const ast = parse(glsl)
+console.log(...ast)
+
+console.log(generate(ast, { target: 'GLSL' }))

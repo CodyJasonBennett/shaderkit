@@ -1,0 +1,111 @@
+import {
+  type AST,
+  Literal,
+  Identifier,
+  Type,
+  BlockStatement,
+  VariableDeclaration,
+  FunctionDeclaration,
+  CallExpression,
+  MemberExpression,
+  ArrayExpression,
+  IfStatement,
+  WhileStatement,
+  ForStatement,
+  DoWhileStatement,
+  SwitchStatement,
+  SwitchCase,
+  StructDeclaration,
+  UnaryExpression,
+  BinaryExpression,
+  TernaryExpression,
+  ReturnStatement,
+  ContinueStatement,
+  BreakStatement,
+  DiscardStatement,
+} from './ast'
+
+const EOL_REGEX = /\n$/
+
+// Punctuates expression statements
+function punctuate(line: string): string {
+  if (!line.endsWith('\n')) line = line + ';\n'
+  return line
+}
+
+// TODO: GLSL-only
+function format(node: AST | null): string {
+  let line = ''
+
+  if (node instanceof Literal || node instanceof Identifier) {
+    line = node.value
+  } else if (node instanceof Type) {
+    line = node.parameters ? `${node.name}<${node.parameters.map(format).join(', ')}>` : node.name
+  } else if (node instanceof BlockStatement) {
+    line = `{\n${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
+  } else if (node instanceof VariableDeclaration) {
+    const value = node.value ? ` = ${format(node.value)}` : ''
+    line = `${node.qualifiers.join(' ')} ${format(node.type)} ${node.name}${value};\n`.trimStart()
+  } else if (node instanceof FunctionDeclaration) {
+    const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
+    const body = node.body ? ` ${format(node.body)}` : ';\n'
+    line = `${format(node.type)} ${node.name}(${args})${body}`
+  } else if (node instanceof CallExpression) {
+    line = `${format(node.callee)}(${node.args.map(format).join(', ')})`
+  } else if (node instanceof MemberExpression) {
+    line = `${format(node.object)}.${format(node.property)}`
+  } else if (node instanceof ArrayExpression) {
+    // TODO
+  } else if (node instanceof IfStatement) {
+    const consequent = format(node.consequent).replace(EOL_REGEX, '')
+    const alternate = node.alternate ? ` else ${format(node.alternate).replace(EOL_REGEX, '')}` : ''
+    line = `if (${format(node.test)}) ${consequent}${alternate}\n`
+  } else if (node instanceof WhileStatement) {
+    line = `while (${format(node.test)}) ${format(node.body)}`
+  } else if (node instanceof ForStatement) {
+    const init = format(node.init).replace(';\n', '')
+    line = `for (${init}; ${format(node.test)}; ${format(node.update)}) ${format(node.body)}`
+  } else if (node instanceof DoWhileStatement) {
+    line = `do ${format(node.body).replace(EOL_REGEX, '')} while (${format(node.test)});\n`
+  } else if (node instanceof SwitchStatement) {
+    line = `switch(${format(node.discriminant)}) {\n${node.cases.map(format).join('')}}\n`
+  } else if (node instanceof SwitchCase) {
+    const header = node.test ? `case ${format(node.test)}:` : 'default:'
+    line = `  ${header}\n${node.consequent.map((node) => `    ${punctuate(format(node))}`).join('')}`
+  } else if (node instanceof StructDeclaration) {
+    line = `struct ${node.name} {\n${node.members.map((node) => `  ${format(node)}`).join('')}};\n`
+  } else if (node instanceof UnaryExpression) {
+    line = node.left ? `${format(node.left)}${node.operator}` : `${node.operator}${format(node.right)}`
+  } else if (node instanceof BinaryExpression) {
+    line = `${format(node.left)} ${node.operator} ${format(node.right)}`
+  } else if (node instanceof TernaryExpression) {
+    line = `${format(node.test)} ? ${format(node.consequent)} : ${format(node.alternate)}`
+  } else if (node instanceof ReturnStatement) {
+    line = node.argument ? `return ${format(node.argument)};\n` : `return;\n`
+  } else if (node instanceof ContinueStatement) {
+    line = 'continue;\n'
+  } else if (node instanceof BreakStatement) {
+    line = 'break;\n'
+  } else if (node instanceof DiscardStatement) {
+    line = 'discard;\n'
+  }
+
+  return line
+}
+
+export interface GenerateOptions {
+  target: 'GLSL' | 'WGSL'
+}
+
+/**
+ * Generates a string of GLSL or WGSL code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ */
+export function generate(ast: AST[], options: GenerateOptions): string {
+  let code = '#version 300 es\n'
+
+  for (let i = 0; i < ast.length; i++) {
+    code += punctuate(format(ast[i]))
+  }
+
+  return code
+}
