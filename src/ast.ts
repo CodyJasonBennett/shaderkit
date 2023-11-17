@@ -40,6 +40,7 @@ export class FunctionDeclaration extends Node {
   constructor(
     public name: string,
     public type: Type | Identifier,
+    public qualifiers: string[],
     public args: VariableDeclaration[],
     public body: BlockStatement | null,
   ) {

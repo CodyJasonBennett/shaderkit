@@ -69,7 +69,7 @@ const TYPE_REGEX = /void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?/
 const QUALIFIER_REGEX = /in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|const|uniform`)
 
-const isVariable = RegExp.prototype.test.bind(VARIABLE_REGEX)
+const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
 
 const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
 const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
@@ -209,38 +209,13 @@ function parseExpression(body: Token[]): AST | null {
   return null
 }
 
-function parseVariable(): VariableDeclaration {
+function parseVariable(
+  qualifiers: string[] = [],
+  layout: Record<string, string | boolean> | null = null,
+): VariableDeclaration {
   i-- // TODO: remove backtrack hack
 
-  let layout: Record<string, string | boolean> | null = null
-  if (tokens[i].value === 'layout') {
-    layout = {}
-
-    i++ // skip layout
-
-    let key: string | null = null
-    while (tokens[i] && tokens[i].value !== ')') {
-      const token = tokens[i++]
-
-      if (token.value === ',') key = null
-      if (token.type === 'symbol') continue
-
-      if (!key) {
-        key = token.value
-        layout[key] = true
-      } else {
-        layout[key] = token.value
-      }
-    }
-
-    i++ // skip )
-  }
-
-  const qualifiers: string[] = []
-  while (tokens[i] && tokens[i].type !== 'identifier') {
-    qualifiers.push(tokens[i++].value)
-  }
-  const type = new Type(qualifiers.pop()!, null)
+  const type = new Type(tokens[i++].value, null)
 
   const body = consumeUntil(';') // TODO: comma-separated lists
   const name = body.shift()!.value
@@ -252,11 +227,14 @@ function parseVariable(): VariableDeclaration {
   return new VariableDeclaration(name, type, value, qualifiers, layout)
 }
 
-function parseFunction(): FunctionDeclaration {
-  const type = new Type(tokens[i - 1].value, null) // TODO: remove backtrack hack
+function parseFunction(qualifiers: string[]): FunctionDeclaration {
+  i-- // TODO: remove backtrack hack
+
+  const type = new Type(tokens[i++].value, null)
   const name = tokens[i++].value
   const args: VariableDeclaration[] = []
 
+  // TODO: merge with parseVariable
   const header = consumeUntil(')').slice(1, -1)
   let j = 0
   while (j < header.length) {
@@ -281,7 +259,43 @@ function parseFunction(): FunctionDeclaration {
   if (tokens[i].value === ';') i++ // skip ;
   else body = parseBlock()
 
-  return new FunctionDeclaration(name, type, args, body)
+  return new FunctionDeclaration(name, type, qualifiers, args, body)
+}
+
+function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
+  i-- // TODO: remove backtrack hack
+
+  let layout: Record<string, string | boolean> | null = null
+  if (tokens[i].value === 'layout') {
+    i++ // skip layout
+
+    layout = {}
+
+    let key: string | null = null
+    while (tokens[i] && tokens[i].value !== ')') {
+      const token = tokens[i++]
+
+      if (token.value === ',') key = null
+      if (token.type === 'symbol') continue
+
+      if (!key) {
+        key = token.value
+        layout[key] = true
+      } else {
+        layout[key] = token.value
+      }
+    }
+
+    i++ // skip )
+  }
+
+  const qualifiers: string[] = []
+  while (tokens[i] && tokens[i].type !== 'identifier') {
+    qualifiers.push(tokens[i++].value)
+  }
+  qualifiers.pop()!
+
+  return tokens[i + 1]?.value === '(' ? parseFunction(qualifiers) : parseVariable(qualifiers, layout)
 }
 
 function parseStruct(): StructDeclaration {
@@ -290,7 +304,7 @@ function parseStruct(): StructDeclaration {
   const members: VariableDeclaration[] = []
   while (tokens[i] && tokens[i].value !== '}') {
     i++ // TODO: remove backtrack hack
-    members.push(parseVariable())
+    members.push(parseIndeterminate() as VariableDeclaration)
   }
   i++ // skip }
   i++ // skip ;
@@ -416,9 +430,7 @@ function parseStatements(): AST[] {
       else if (token.value === 'do') statement = parseDoWhile()
       else if (token.value === 'switch') statement = parseSwitch()
       else if (token.value === 'precision') statement = parsePrecision()
-      else if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
-      else if (token.value === 'layout' || (isVariable(token.value) && tokens[i]?.value !== '('))
-        statement = parseVariable()
+      else if (isDeclaration(token.value)) statement = parseIndeterminate()
     }
 
     if (statement) {
