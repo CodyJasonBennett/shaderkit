@@ -20,6 +20,7 @@ import {
   BinaryExpression,
   TernaryExpression,
   ReturnStatement,
+  PrecisionStatement,
   ContinueStatement,
   BreakStatement,
   DiscardStatement,
@@ -85,6 +86,8 @@ function format(node: AST | null): string {
     line = `${format(node.test)} ? ${format(node.consequent)} : ${format(node.alternate)}`
   } else if (node instanceof ReturnStatement) {
     line = node.argument ? `return ${format(node.argument)};\n` : `return;\n`
+  } else if (node instanceof PrecisionStatement) {
+    line = `precision ${node.precision} ${node.type.name};\n`
   } else if (node instanceof ContinueStatement) {
     line = 'continue;\n'
   } else if (node instanceof BreakStatement) {

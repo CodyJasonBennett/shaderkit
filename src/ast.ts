@@ -136,6 +136,12 @@ export class BreakStatement extends Node {}
 
 export class DiscardStatement extends Node {}
 
+export class PrecisionStatement extends Node {
+  constructor(public precision: 'lowp' | 'mediump' | 'highp', public type: Type) {
+    super()
+  }
+}
+
 export type AST =
   | Literal
   | Identifier

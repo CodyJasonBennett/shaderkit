@@ -22,6 +22,7 @@ import {
   SwitchStatement,
   SwitchCase,
   StructDeclaration,
+  PrecisionStatement,
 } from './ast'
 import { generate } from './generator'
 import { type Token, tokenize } from './tokenizer'
@@ -356,6 +357,13 @@ function parseSwitch(): SwitchStatement {
   return new SwitchStatement(discriminant!, cases)
 }
 
+function parsePrecision(): PrecisionStatement {
+  const precision = tokens[i++].value
+  const type = new Type(tokens[i++].value, null)
+  i++ // skip ;
+  return new PrecisionStatement(precision as any, type)
+}
+
 function parseStatements(): AST[] {
   const body: AST[] = []
   let scopeIndex = 0
@@ -382,6 +390,7 @@ function parseStatements(): AST[] {
       else if (token.value === 'for') statement = parseFor()
       else if (token.value === 'do') statement = parseDoWhile()
       else if (token.value === 'switch') statement = parseSwitch()
+      else if (token.value === 'precision') statement = parsePrecision()
       else if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
       else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
     }
@@ -418,6 +427,8 @@ export function parse(code: string): AST[] {
 }
 
 const glsl = /* glsl */ `#version 300 es
+  precision highp float;
+
   flat in mat4 test;
 
   struct foo {

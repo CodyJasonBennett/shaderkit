@@ -23,6 +23,7 @@ import {
   DoWhileStatement,
   SwitchStatement,
   SwitchCase,
+  PrecisionStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -285,5 +286,14 @@ describe('parser', () => {
     expect((statement.cases[1] as SwitchCase).test).toBe(null)
     expect((statement.cases[1] as SwitchCase).consequent.length).toBe(1)
     expect((statement.cases[1] as SwitchCase).consequent[0]).toBeInstanceOf(DiscardStatement)
+  })
+
+  it('parses precision statements', () => {
+    const statement = parse('precision highp float;')[0] as PrecisionStatement
+    expect(statement).toBeInstanceOf(PrecisionStatement)
+    expect(statement.precision).toBe('highp')
+    expect(statement.type).toBeInstanceOf(Type)
+    expect(statement.type.name).toBe('float')
+    expect(statement.type.parameters).toBe(null)
   })
 })
