@@ -109,11 +109,11 @@ function parseExpression(body: Token[]): AST | null {
   const first = body[0]
   const last = body[body.length - 1]
   if (UNARY_OPERATORS.includes(first.value)) {
-    const left = parseExpression(body.slice(1))!
-    return new UnaryExpression(first.value, left, null)
+    const right = parseExpression(body.slice(1))!
+    return new UnaryExpression(first.value, null, right)
   } else if (UNARY_OPERATORS.includes(last.value)) {
-    const right = parseExpression(body.slice(0, body.length - 1))!
-    return new UnaryExpression(last.value, null, right)
+    const left = parseExpression(body.slice(0, body.length - 1))!
+    return new UnaryExpression(last.value, left, null)
   }
 
   if (first.value === '(') {

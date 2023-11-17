@@ -42,13 +42,13 @@ describe('parser', () => {
 
   it('parses unary expressions', () => {
     for (const operator of ['+', '-', '~', '!', '++', '--']) {
-      const left = parse(`${operator}0`)[0] as UnaryExpression
+      const left = parse(`0${operator}`)[0] as UnaryExpression
       expect(left).toBeInstanceOf(UnaryExpression)
       expect(left.operator).toBe(operator)
       expect(left.left).toBeInstanceOf(Literal)
       expect((left.left as Literal).value).toBe('0')
 
-      const right = parse(`1${operator}`)[0] as UnaryExpression
+      const right = parse(`${operator}1`)[0] as UnaryExpression
       expect(right).toBeInstanceOf(UnaryExpression)
       expect(right.operator).toBe(operator)
       expect(right.right).toBeInstanceOf(Literal)
@@ -255,8 +255,8 @@ describe('parser', () => {
     expect(((statement.test as BinaryExpression).right as Literal).value).toBe('1')
     expect(statement.update).toBeInstanceOf(UnaryExpression)
     expect((statement.update as UnaryExpression).operator).toBe('++')
-    expect((statement.update as UnaryExpression).right).toBeInstanceOf(Identifier)
-    expect(((statement.update as UnaryExpression).right as Identifier).value).toBe('i')
+    expect((statement.update as UnaryExpression).left).toBeInstanceOf(Identifier)
+    expect(((statement.update as UnaryExpression).left as Identifier).value).toBe('i')
     expect(statement.body).toBeInstanceOf(BlockStatement)
     expect((statement.body as BlockStatement).body.length).toBe(0)
   })
