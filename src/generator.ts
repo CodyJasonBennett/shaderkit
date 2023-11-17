@@ -42,7 +42,8 @@ function format(node: AST | null): string {
   } else if (node instanceof Type) {
     line = node.parameters ? `${node.name}<${node.parameters.map(format).join(', ')}>` : node.name
   } else if (node instanceof BlockStatement) {
-    line = `{\n${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
+    const cr = node.body.length ? '\n' : ''
+    line = `{${cr}${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
   } else if (node instanceof VariableDeclaration) {
     const value = node.value ? ` = ${format(node.value)}` : ''
     line = `${node.qualifiers.join(' ')} ${format(node.type)} ${node.name}${value};\n`.trimStart()
@@ -68,12 +69,14 @@ function format(node: AST | null): string {
   } else if (node instanceof DoWhileStatement) {
     line = `do ${format(node.body).replace(EOL_REGEX, '')} while (${format(node.test)});\n`
   } else if (node instanceof SwitchStatement) {
-    line = `switch(${format(node.discriminant)}) {\n${node.cases.map(format).join('')}}\n`
+    const cr = node.cases.length ? '\n' : ''
+    line = `switch(${format(node.discriminant)}) {${cr}${node.cases.map(format).join('')}}\n`
   } else if (node instanceof SwitchCase) {
     const header = node.test ? `case ${format(node.test)}:` : 'default:'
     line = `  ${header}\n${node.consequent.map((node) => `    ${punctuate(format(node))}`).join('')}`
   } else if (node instanceof StructDeclaration) {
-    line = `struct ${node.name} {\n${node.members.map((node) => `  ${format(node)}`).join('')}};\n`
+    const cr = node.members.length ? '\n' : ''
+    line = `struct ${node.name} {${cr}${node.members.map((node) => `  ${format(node)}`).join('')}};\n`
   } else if (node instanceof UnaryExpression) {
     line = node.left ? `${format(node.left)}${node.operator}` : `${node.operator}${format(node.right)}`
   } else if (node instanceof BinaryExpression) {
