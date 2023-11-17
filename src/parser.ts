@@ -211,6 +211,31 @@ function parseExpression(body: Token[]): AST | null {
 
 function parseVariable(): VariableDeclaration {
   i-- // TODO: remove backtrack hack
+
+  let layout: Record<string, string | boolean> | null = null
+  if (tokens[i].value === 'layout') {
+    layout = {}
+
+    i++ // skip layout
+
+    let key: string | null = null
+    while (tokens[i] && tokens[i].value !== ')') {
+      const token = tokens[i++]
+
+      if (token.value === ',') key = null
+      if (token.type === 'symbol') continue
+
+      if (!key) {
+        key = token.value
+        layout[key] = true
+      } else {
+        layout[key] = token.value
+      }
+    }
+
+    i++ // skip )
+  }
+
   const qualifiers: string[] = []
   while (tokens[i] && tokens[i].type !== 'identifier') {
     qualifiers.push(tokens[i++].value)
@@ -224,7 +249,7 @@ function parseVariable(): VariableDeclaration {
 
   const value = parseExpression(body)
 
-  return new VariableDeclaration(name, type, value, qualifiers)
+  return new VariableDeclaration(name, type, value, qualifiers, layout)
 }
 
 function parseFunction(): FunctionDeclaration {
@@ -249,7 +274,7 @@ function parseFunction(): FunctionDeclaration {
 
     const value = parseExpression(line)
 
-    args.push(new VariableDeclaration(name, type, value, qualifiers))
+    args.push(new VariableDeclaration(name, type, value, qualifiers, null))
   }
 
   let body = null
@@ -392,7 +417,8 @@ function parseStatements(): AST[] {
       else if (token.value === 'switch') statement = parseSwitch()
       else if (token.value === 'precision') statement = parsePrecision()
       else if (isVariable(token.value) && tokens[i + 1]?.value === '(') statement = parseFunction()
-      else if (isVariable(token.value) && tokens[i]?.value !== '(') statement = parseVariable()
+      else if (token.value === 'layout' || (isVariable(token.value) && tokens[i]?.value !== '('))
+        statement = parseVariable()
     }
 
     if (statement) {
@@ -429,7 +455,7 @@ export function parse(code: string): AST[] {
 const glsl = /* glsl */ `#version 300 es
   precision highp float;
 
-  flat in mat4 test;
+  layout(location = 0, component = 1) flat in mat4 test;
 
   struct foo {
     bool isStruct;

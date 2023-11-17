@@ -30,6 +30,7 @@ export class VariableDeclaration extends Node {
     public type: Type | Identifier,
     public value: Node | null,
     public qualifiers: string[],
+    public layout: Record<string, string | boolean> | null,
   ) {
     super()
   }

@@ -123,15 +123,37 @@ describe('parser', () => {
   })
 
   it('parses variable declarations', () => {
-    const statement = parse('const vec4 foo = vec4(0, 0, 0, 0);')[0] as VariableDeclaration
-    expect(statement).toBeInstanceOf(VariableDeclaration)
-    expect(statement.name).toBe('foo')
-    expect(statement.type).toBeInstanceOf(Type)
-    expect((statement.type as Type).name).toBe('vec4')
-    expect((statement.type as Type).parameters).toBe(null)
-    expect(statement.qualifiers.length).toBe(1)
-    expect(statement.qualifiers[0]).toBe('const')
-    expect(statement.value).toBeInstanceOf(CallExpression)
+    {
+      const statement = parse('const vec4 foo = vec4(0, 0, 0, 0);')[0] as VariableDeclaration
+      expect(statement).toBeInstanceOf(VariableDeclaration)
+      expect(statement.name).toBe('foo')
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('vec4')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.qualifiers.length).toBe(1)
+      expect(statement.qualifiers[0]).toBe('const')
+      expect(statement.value).toBeInstanceOf(CallExpression)
+    }
+
+    {
+      const statement = parse(
+        ' layout(location = 0, component = 1, column_major) flat in mat4 test;',
+      )[0] as VariableDeclaration
+      expect(statement).toBeInstanceOf(VariableDeclaration)
+      expect(statement.name).toBe('test')
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('mat4')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.qualifiers.length).toBe(2)
+      expect(statement.qualifiers[0]).toBe('flat')
+      expect(statement.qualifiers[1]).toBe('in')
+      expect(statement.value).toBe(null)
+      expect(statement.layout).not.toBe(null)
+      expect(Object.keys(statement.layout as object).length).toBe(3)
+      expect((statement.layout as any).location).toBe('0')
+      expect((statement.layout as any).component).toBe('1')
+      expect((statement.layout as any).column_major).toBe(true)
+    }
 
     // TODO: comma-separated list
   })
