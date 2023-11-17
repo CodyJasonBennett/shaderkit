@@ -93,8 +93,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
     }
     tokens.push(token)
 
-    for (let i = 0; i < tokens[tokens.length - 1].value.length; i++) {
-      if (tokens[tokens.length - 1].value[i] === '\n') {
+    for (let i = 0; i < token.value.length; i++) {
+      if (token.value[i] === '\n') {
         line++
         column = 0
       } else {
