@@ -157,7 +157,27 @@ describe('parser', () => {
       expect((statement.layout as any).column_major).toBe(true)
     }
 
-    // TODO: comma-separated list
+    {
+      const statement = parse('float foo = 0.0, bar = foo + 1.0, baz;')[0] as VariableDeclaration
+      expect(statement).toBeInstanceOf(VariableDeclaration)
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('float')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.qualifiers.length).toBe(0)
+      expect(statement.declarations.length).toBe(3)
+      expect(statement.declarations[0].name).toBe('foo')
+      expect(statement.declarations[0].value).toBeInstanceOf(Literal)
+      expect((statement.declarations[0].value as Literal).value).toBe('0.0')
+      expect(statement.declarations[1].name).toBe('bar')
+      expect(statement.declarations[1].value).toBeInstanceOf(BinaryExpression)
+      expect((statement.declarations[1].value as BinaryExpression).operator).toBe('+')
+      expect((statement.declarations[1].value as BinaryExpression).left).toBeInstanceOf(Identifier)
+      expect(((statement.declarations[1].value as BinaryExpression).left as Identifier).value).toBe('foo')
+      expect((statement.declarations[1].value as BinaryExpression).right).toBeInstanceOf(Literal)
+      expect(((statement.declarations[1].value as BinaryExpression).right as Literal).value).toBe('1.0')
+      expect(statement.declarations[2].name).toBe('baz')
+      expect(statement.declarations[2].value).toBe(null)
+    }
   })
 
   it('parses struct declarations', () => {

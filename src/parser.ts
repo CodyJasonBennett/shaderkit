@@ -31,7 +31,6 @@ import { type Token, tokenize } from './tokenizer'
 const UNARY_OPERATORS = ['+', '-', '~', '!', '++', '--']
 
 const BINARY_OPERATORS = [
-  ',',
   '>>=',
   '<<=',
   '|=',
@@ -219,14 +218,21 @@ function parseVariable(
   const kind = null // TODO: WGSL
   const type = new Type(tokens[i++].value, null)
 
-  const body = consumeUntil(';') // TODO: comma-separated lists
-  const name = body.shift()!.value
-  body.shift() // skip =
-  body.pop() // skip ;
+  const declarations: VariableDeclarator[] = []
 
-  const value = parseExpression(body)
+  const body = consumeUntil(';')
+  let j = 0
 
-  const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
+  while (j < body.length) {
+    const name = body[j++].value
+    j++ // skip =
+
+    const right = readUntil(',', body, j)
+    const value = parseExpression(readUntil(',', body, j))
+    j += right.length
+
+    declarations.push(new VariableDeclarator(name, value))
+  }
 
   return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
 }
