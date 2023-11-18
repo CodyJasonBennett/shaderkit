@@ -477,57 +477,51 @@ export function parse(code: string): AST[] {
 }
 
 const glsl = /* glsl */ `#version 300 es
-  precision highp float;
+precision highp float;
 
-  layout(location = 0, component = 1) flat in mat4 test;
+layout(location = 0, component = 1) flat in mat4 test;
 
-  struct foo {
-    bool isStruct;
-    vec4 color;
-  };
+float foo = 0.0, bar = foo + 1.0, baz;
 
-  if (true) {
-    discard;
-  } else if (false) {
-    //
-  } else {
-    //
-  }
+struct foo {
+  bool isStruct;
+  vec4 color;
+};
 
-  for (int i = 0; i < 10; i++) {
-    //
-  }
+if (true) {
+  discard;
+} else if (false) {} else {}
 
-  while(true) {
-    //
-  }
+for (int i = 0; i < 10; i++) {}
 
-  do {
-    //
-  } while (true);
+while (true) {}
 
-  switch(true) {
-    case 0:
-      break;
-    case 1:
-      break;
-    default:
-      //
-  }
+do {} while (true);
 
-  void method(const bool foo);
+switch(true) {
+  case 0:
+    break;
+  case 1:
+    break;
+  default:
+    break;
+}
 
-  void main() {
-    gl_FragColor = vec4(1, 0, 0, 1); // red
-  }
+highp float method(const bool foo);
 
-  method(true);
+void main() {
+  gl_FragColor = vec4(1, 0, 0, 1);
+}
 
-  foo.bar();
-`
+method(true);
+
+foo.bar();
+`.trim()
+
+const ast = parse(glsl)
+const output = generate(ast, { target: 'GLSL' })
 
 console.log(glsl)
-const ast = parse(glsl)
 console.log(...ast)
-
-console.log(generate(ast, { target: 'GLSL' }))
+console.log(output)
+console.log(glsl.replace(/\n+/g, '\n') === output)

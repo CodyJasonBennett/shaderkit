@@ -46,12 +46,25 @@ function format(node: AST | null): string {
     const cr = node.body.length ? '\n' : ''
     line = `{${cr}${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
   } else if (node instanceof VariableDeclaration) {
+    let layout = ''
+    if (node.layout) {
+      const args: string[] = []
+      for (const key in node.layout) {
+        const value = node.layout[key]
+        if (typeof value === 'string') args.push(`${key} = ${value}`)
+        else args.push(key)
+      }
+      layout = `layout(${args.join(', ')}) `
+    }
+
+    const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
     const body = node.declarations.map((d) => d.name + (d.value ? ` = ${format(d.value)}` : '')).join(', ')
-    line = `${node.qualifiers.join(' ')} ${format(node.type)} ${body};\n`.trimStart()
+    line = `${layout}${qualifiers}${format(node.type)} ${body};\n`.trimStart()
   } else if (node instanceof FunctionDeclaration) {
+    const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
     const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
     const body = node.body ? ` ${format(node.body)}` : ';\n'
-    line = `${format(node.type)} ${node.name}(${args})${body}`
+    line = `${qualifiers}${format(node.type)} ${node.name}(${args})${body}`
   } else if (node instanceof CallExpression) {
     line = `${format(node.callee)}(${node.args.map(format).join(', ')})`
   } else if (node instanceof MemberExpression) {
@@ -113,5 +126,5 @@ export function generate(ast: AST[], options: GenerateOptions): string {
     code += punctuate(format(ast[i]))
   }
 
-  return code
+  return code.trim()
 }
