@@ -11,6 +11,7 @@ import {
   BlockStatement,
   FunctionDeclaration,
   VariableDeclaration,
+  VariableDeclarator,
   ContinueStatement,
   BreakStatement,
   DiscardStatement,
@@ -215,6 +216,7 @@ function parseVariable(
 ): VariableDeclaration {
   i-- // TODO: remove backtrack hack
 
+  const kind = null // TODO: WGSL
   const type = new Type(tokens[i++].value, null)
 
   const body = consumeUntil(';') // TODO: comma-separated lists
@@ -224,7 +226,9 @@ function parseVariable(
 
   const value = parseExpression(body)
 
-  return new VariableDeclaration(name, type, value, qualifiers, layout)
+  const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
+
+  return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
 }
 
 function parseFunction(qualifiers: string[]): FunctionDeclaration {
@@ -252,7 +256,9 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
 
     const value = parseExpression(line)
 
-    args.push(new VariableDeclaration(name, type, value, qualifiers, null))
+    const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
+
+    args.push(new VariableDeclaration(null, qualifiers, null, type, declarations))
   }
 
   let body = null

@@ -24,13 +24,19 @@ export class Type extends Node {
   }
 }
 
+export class VariableDeclarator extends Node {
+  constructor(public name: string, public value: Node | null) {
+    super()
+  }
+}
+
 export class VariableDeclaration extends Node {
   constructor(
-    public name: string,
-    public type: Type | Identifier,
-    public value: Node | null,
-    public qualifiers: string[],
     public layout: Record<string, string | boolean> | null,
+    public qualifiers: string[],
+    public kind: 'var' | 'let' | 'const' | null,
+    public type: Type | Identifier,
+    public declarations: VariableDeclarator[],
   ) {
     super()
   }

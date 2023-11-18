@@ -46,8 +46,8 @@ function format(node: AST | null): string {
     const cr = node.body.length ? '\n' : ''
     line = `{${cr}${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
   } else if (node instanceof VariableDeclaration) {
-    const value = node.value ? ` = ${format(node.value)}` : ''
-    line = `${node.qualifiers.join(' ')} ${format(node.type)} ${node.name}${value};\n`.trimStart()
+    const body = node.declarations.map((d) => d.name + (d.value ? ` = ${format(d.value)}` : '')).join(', ')
+    line = `${node.qualifiers.join(' ')} ${format(node.type)} ${body};\n`.trimStart()
   } else if (node instanceof FunctionDeclaration) {
     const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
     const body = node.body ? ` ${format(node.body)}` : ';\n'
