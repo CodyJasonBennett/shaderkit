@@ -179,19 +179,29 @@ function parseExpression(body: Token[]): AST | null {
       const callee = new Identifier(first.value)
       const args: AST[] = []
 
-      body = body.slice(2, -1) // skip ()
-      let i = 0
+      const scope = readUntil(')', body, 1).slice(1, -1)
 
-      while (i < body.length) {
-        const line = readUntil(',', body, i)
-        i += line.length
+      let j = 0
+      while (j < scope.length) {
+        const line = readUntil(',', scope, j)
+        j += line.length
         if (line[line.length - 1]?.value === ',') line.pop() // skip ,
 
         const arg = parseExpression(line)
         if (arg) args.push(arg)
       }
 
-      return new CallExpression(callee, args)
+      const expression = new CallExpression(callee, args)
+
+      // e.g. texture().rgb
+      let i = 3 + j
+      if (body[i]?.value === '.') {
+        const right = parseExpression([first, ...body.slice(i)])! as MemberExpression
+        right.object = expression
+        return right
+      }
+
+      return expression
     } else if (second.value === '.') {
       const object = new Identifier(first.value)
       const property = parseExpression([body[2]])!
@@ -607,6 +617,8 @@ method(true);
 foo.bar();
 
 const float array[3] = float[3](2.5, 7.0, 1.5);
+
+texture().rgb;
 `.trim()
 
 const ast = parse(glsl)

@@ -122,6 +122,17 @@ describe('parser', () => {
       expect(((expression.callee as MemberExpression).property as Identifier).value).toBe('length')
       expect(expression.args.length).toBe(0)
     }
+
+    {
+      const expression = parse('texture().rgb')[0] as MemberExpression
+      expect(expression).toBeInstanceOf(MemberExpression)
+      expect(expression.object).toBeInstanceOf(CallExpression)
+      expect((expression.object as CallExpression).callee).toBeInstanceOf(Identifier)
+      expect(((expression.object as CallExpression).callee as Identifier).value).toBe('texture')
+      expect((expression.object as CallExpression).args.length).toBe(0)
+      expect(expression.property).toBeInstanceOf(Identifier)
+      expect((expression.property as Identifier).value).toBe('rgb')
+    }
   })
 
   it('parses variable declarations', () => {
@@ -378,7 +389,6 @@ describe('parser', () => {
       const statement = parse('#define TEST 1\n')[0] as PreprocessorStatement
       expect(statement).toBeInstanceOf(PreprocessorStatement)
       expect(statement.name).toBe('define')
-      console.log(statement.value)
       expect(statement.value!.length).toBe(2)
       expect(statement.value![0]).toBeInstanceOf(Identifier)
       expect((statement.value![0] as Identifier).value).toBe('TEST')
