@@ -24,6 +24,7 @@ import {
   SwitchCase,
   StructDeclaration,
   PrecisionStatement,
+  ArrayExpression,
 } from './ast'
 import { generate } from './generator'
 import { type Token, tokenize } from './tokenizer'
@@ -183,7 +184,7 @@ function parseExpression(body: Token[]): AST | null {
       while (i < body.length) {
         const line = readUntil(',', body, i)
         i += line.length
-        if (line.at(-1)?.value === ',') line.pop() // skip ,
+        if (line[line.length - 1]?.value === ',') line.pop() // skip ,
 
         const arg = parseExpression(line)
         if (arg) args.push(arg)
@@ -225,10 +226,18 @@ function parseVariable(
 
   while (j < body.length) {
     const name = body[j++].value
+
+    let prefix: AST | null = null
+    if (body[j].value === '[') {
+      j++ // skip [
+      prefix = new ArrayExpression([], parseExpression([body[j++]]))
+      j++ // skip ]
+    }
+
     j++ // skip =
 
     const right = readUntil(',', body, j)
-    const value = parseExpression(readUntil(',', body, j))
+    const value = parseExpression(readUntil(',', body, j)) ?? prefix
     j += right.length
 
     declarations.push(new VariableDeclarator(name, value))
@@ -258,9 +267,17 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
     j += line.length
 
     const name = line.shift()!.value
-    if (line.at(-1)?.value === ',') line.pop() // skip ,
 
-    const value = parseExpression(line)
+    let prefix: AST | null = null
+    if (line[0]?.value === '[') {
+      line.shift() // skip [
+      prefix = new ArrayExpression([], parseExpression([line.shift()!]))
+      line.shift() // skip ]
+    }
+
+    if (line[line.length - 1]?.value === ',') line.pop() // skip ,
+
+    const value = parseExpression(line) ?? prefix
 
     const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
 
@@ -516,6 +533,8 @@ void main() {
 method(true);
 
 foo.bar();
+
+uniform float test[3];
 `.trim()
 
 const ast = parse(glsl)

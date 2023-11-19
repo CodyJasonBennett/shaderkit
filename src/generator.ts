@@ -58,7 +58,23 @@ function format(node: AST | null): string {
     }
 
     const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
-    const body = node.declarations.map((d) => d.name + (d.value ? ` = ${format(d.value)}` : '')).join(', ')
+
+    let body = ''
+    if (node.declarations.length) {
+      const members: string[] = []
+      for (const declaration of node.declarations) {
+        let value = ''
+        if (declaration.value instanceof ArrayExpression && !declaration.value.members.length) {
+          value = `[${format(declaration.value.length)}]`
+        } else if (declaration.value) {
+          value = ` = ${format(declaration.value)}`
+        }
+
+        members.push(`${declaration.name}${value}`)
+      }
+      body = members.join(', ')
+    }
+
     line = `${layout}${qualifiers}${format(node.type)} ${body};\n`.trimStart()
   } else if (node instanceof FunctionDeclaration) {
     const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''

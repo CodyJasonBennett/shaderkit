@@ -24,6 +24,7 @@ import {
   SwitchStatement,
   SwitchCase,
   PrecisionStatement,
+  ArrayExpression,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -158,7 +159,7 @@ describe('parser', () => {
     }
 
     {
-      const statement = parse('float foo = 0.0, bar = foo + 1.0, baz;')[0] as VariableDeclaration
+      const statement = parse('float foo = 0.0, bar = foo + 1.0, baz[3];')[0] as VariableDeclaration
       expect(statement).toBeInstanceOf(VariableDeclaration)
       expect(statement.type).toBeInstanceOf(Type)
       expect((statement.type as Type).name).toBe('float')
@@ -176,7 +177,10 @@ describe('parser', () => {
       expect((statement.declarations[1].value as BinaryExpression).right).toBeInstanceOf(Literal)
       expect(((statement.declarations[1].value as BinaryExpression).right as Literal).value).toBe('1.0')
       expect(statement.declarations[2].name).toBe('baz')
-      expect(statement.declarations[2].value).toBe(null)
+      expect(statement.declarations[2].value).toBeInstanceOf(ArrayExpression)
+      expect((statement.declarations[2].value as ArrayExpression).members.length).toBe(0)
+      expect((statement.declarations[2].value as ArrayExpression).length).toBeInstanceOf(Literal)
+      expect(((statement.declarations[2].value as ArrayExpression).length as Literal).value).toBe('3')
     }
   })
 
