@@ -24,6 +24,7 @@ import {
   ContinueStatement,
   BreakStatement,
   DiscardStatement,
+  PreprocessorStatement,
 } from './ast'
 
 const EOL_REGEX = /\n$/
@@ -133,6 +134,19 @@ function format(node: AST | null): string {
     line = 'break;\n'
   } else if (node instanceof DiscardStatement) {
     line = 'discard;\n'
+  } else if (node instanceof PreprocessorStatement) {
+    let value = ''
+    if (node.value) {
+      if (node.name === 'include') {
+        value = ` <${format(node.value[0])}>`
+      } else if (node.name === 'extension') {
+        value = ` ${node.value.map(format).join(': ')}`
+      } else {
+        value = ` ${node.value.map(format).join(' ')}`
+      }
+    }
+
+    line = `#${node.name}${value}\n`
   }
 
   return line

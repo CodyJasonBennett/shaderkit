@@ -18,6 +18,12 @@ export class BlockStatement extends Node {
   }
 }
 
+export class PreprocessorStatement extends Node {
+  constructor(public name: string, public value: Node[] | null) {
+    super()
+  }
+}
+
 export class Type extends Node {
   constructor(public name: string, public parameters: (Type | Literal | Identifier)[] | null) {
     super()
@@ -173,3 +179,4 @@ export type AST =
   | ContinueStatement
   | BreakStatement
   | DiscardStatement
+  | PreprocessorStatement

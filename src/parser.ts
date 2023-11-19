@@ -25,6 +25,7 @@ import {
   StructDeclaration,
   PrecisionStatement,
   ArrayExpression,
+  PreprocessorStatement,
 } from './ast'
 import { generate } from './generator'
 import { type Token, tokenize } from './tokenizer'
@@ -455,6 +456,34 @@ function parsePrecision(): PrecisionStatement {
   return new PrecisionStatement(precision as any, type)
 }
 
+function parsePreprocessor(): PreprocessorStatement {
+  const name = tokens[i++].value
+
+  const body = consumeUntil('\\').slice(0, -1)
+  let value: AST[] | null = null
+
+  if (name !== 'else' && name !== 'endif') {
+    value = []
+
+    if (name === 'define') {
+      const left = parseExpression([body.shift()!])!
+      const right = parseExpression(body)!
+      value.push(left, right)
+    } else if (name === 'extension') {
+      const left = parseExpression([body.shift()!])!
+      body.shift() // skip :
+      const right = parseExpression(body)!
+      value.push(left, right)
+    } else if (name === 'include') {
+      value.push(parseExpression(body.slice(1, -1))!)
+    } else {
+      value.push(parseExpression(body)!)
+    }
+  }
+
+  return new PreprocessorStatement(name, value)
+}
+
 function parseStatements(): AST[] {
   const body: AST[] = []
   let scopeIndex = 0
@@ -467,7 +496,9 @@ function parseStatements(): AST[] {
 
     let statement: AST | null = null
 
-    if (token.type === 'keyword') {
+    if (token.value === '#') {
+      statement = parsePreprocessor()
+    } else if (token.type === 'keyword') {
       if (token.value === 'case' || token.value === 'default') {
         i--
         break
@@ -504,12 +535,19 @@ function parseBlock(): BlockStatement {
   return new BlockStatement(body)
 }
 
+const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
+
 /**
  * Parses a string of GLSL or WGSL code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function parse(code: string): AST[] {
-  // TODO: preserve
+  // Remove (implicit) version header
   code = code.replace('#version 300 es', '')
+
+  // Escape newlines after directives, skip comments
+  code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
+
+  // TODO: preserve
   tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
   i = 0
 
@@ -552,6 +590,17 @@ highp float method(const bool foo);
 void main() {
   gl_FragColor = vec4(1, 0, 0, 1);
 }
+
+#line 0
+#define TEST 1
+#extension all: disable
+#error test
+#pragma optimize(on)
+#include <chunk>
+
+#ifdef TEST
+test;
+#endif
 
 method(true);
 

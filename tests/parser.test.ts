@@ -25,6 +25,7 @@ import {
   SwitchCase,
   PrecisionStatement,
   ArrayExpression,
+  PreprocessorStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -370,5 +371,64 @@ describe('parser', () => {
     expect((statement.members[1] as Literal).value).toBe('7.0')
     expect(statement.members[2]).toBeInstanceOf(Literal)
     expect((statement.members[2] as Literal).value).toBe('1.5')
+  })
+
+  it('parses preprocessor statements', () => {
+    {
+      const statement = parse('#define TEST 1\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('define')
+      console.log(statement.value)
+      expect(statement.value!.length).toBe(2)
+      expect(statement.value![0]).toBeInstanceOf(Identifier)
+      expect((statement.value![0] as Identifier).value).toBe('TEST')
+      expect(statement.value![1]).toBeInstanceOf(Literal)
+      expect((statement.value![1] as Literal).value).toBe('1')
+    }
+
+    {
+      const statement = parse('#extension all: disable\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('extension')
+      expect(statement.value!.length).toBe(2)
+    }
+
+    {
+      const statement = parse('#pragma optimize(on)\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('pragma')
+      expect(statement.value!.length).toBe(1)
+      expect(statement.value![0]).toBeInstanceOf(CallExpression)
+      expect((statement.value![0] as CallExpression).callee).toBeInstanceOf(Identifier)
+      expect(((statement.value![0] as CallExpression).callee as Identifier).value).toBe('optimize')
+      expect((statement.value![0] as CallExpression).args.length).toBe(1)
+      expect((statement.value![0] as CallExpression).args[0]).toBeInstanceOf(Identifier)
+      expect(((statement.value![0] as CallExpression).args[0] as Identifier).value).toBe('on')
+    }
+
+    {
+      const statement = parse('#include <chunk>\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('include')
+      expect(statement.value!.length).toBe(1)
+      expect(statement.value![0]).toBeInstanceOf(Identifier)
+      expect((statement.value![0] as Identifier).value).toBe('chunk')
+    }
+
+    {
+      const statement = parse('#ifdef TEST\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('ifdef')
+      expect(statement.value!.length).toBe(1)
+      expect(statement.value![0]).toBeInstanceOf(Identifier)
+      expect((statement.value![0] as Identifier).value).toBe('TEST')
+    }
+
+    {
+      const statement = parse('#endif\n')[0] as PreprocessorStatement
+      expect(statement).toBeInstanceOf(PreprocessorStatement)
+      expect(statement.name).toBe('endif')
+      expect(statement.value).toBe(null)
+    }
   })
 })
