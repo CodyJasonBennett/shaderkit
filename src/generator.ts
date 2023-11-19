@@ -59,13 +59,22 @@ function format(node: AST | null): string {
 
     const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
 
+    let type = format(node.type)
+
     let body = ''
     if (node.declarations.length) {
       const members: string[] = []
       for (const declaration of node.declarations) {
         let value = ''
-        if (declaration.value instanceof ArrayExpression && !declaration.value.members.length) {
-          value = `[${format(declaration.value.length)}]`
+
+        if (declaration.value instanceof ArrayExpression) {
+          const t = declaration.value.type
+          const params = t.parameters ? t.parameters?.map(format).join(', ') : ''
+          value = `[${params}]`
+
+          if (declaration.value.members.length) {
+            value += ` = ${type}[${params}](${declaration.value.members.map(format).join(', ')})`
+          }
         } else if (declaration.value) {
           value = ` = ${format(declaration.value)}`
         }
@@ -75,7 +84,7 @@ function format(node: AST | null): string {
       body = members.join(', ')
     }
 
-    line = `${layout}${qualifiers}${format(node.type)} ${body};\n`.trimStart()
+    line = `${layout}${qualifiers}${type} ${body};\n`.trimStart()
   } else if (node instanceof FunctionDeclaration) {
     const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
     const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
@@ -86,7 +95,8 @@ function format(node: AST | null): string {
   } else if (node instanceof MemberExpression) {
     line = `${format(node.object)}.${format(node.property)}`
   } else if (node instanceof ArrayExpression) {
-    // TODO
+    const params = node.type.parameters ? node.type.parameters?.map(format).join(', ') : ''
+    line = `${node.type.name}[${params}](${node.members.map(format).join(', ')})`
   } else if (node instanceof IfStatement) {
     const consequent = format(node.consequent).replace(EOL_REGEX, '')
     const alternate = node.alternate ? ` else ${format(node.alternate).replace(EOL_REGEX, '')}` : ''

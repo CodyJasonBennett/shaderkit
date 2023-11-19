@@ -191,7 +191,7 @@ function parseExpression(body: Token[]): AST | null {
       }
 
       return new CallExpression(callee, args)
-    } else if (second.value === '.' || second.value === '[') {
+    } else if (second.value === '.') {
       const object = new Identifier(first.value)
       const property = parseExpression([body[2]])!
       const left = new MemberExpression(object, property)
@@ -204,6 +204,29 @@ function parseExpression(body: Token[]): AST | null {
       }
 
       return left
+    } else if (second.value === '[') {
+      let i = 2
+
+      const type = new Type(first.value, [])
+
+      if (body[i].value !== ']') type.parameters!.push(parseExpression([body[i++]]) as any)
+      i++ // skip ]
+
+      const scope = readUntil(')', body, i).slice(1, -1)
+
+      const members: AST[] = []
+
+      let j = 0
+      while (j < scope.length) {
+        const next = readUntil(',', scope, j)
+        j += next.length
+
+        if (next[next.length - 1].value === ',') next.pop()
+
+        members.push(parseExpression(next)!)
+      }
+
+      return new ArrayExpression(type, members)
     }
   }
 
@@ -230,7 +253,7 @@ function parseVariable(
     let prefix: AST | null = null
     if (body[j].value === '[') {
       j++ // skip [
-      prefix = new ArrayExpression([], parseExpression([body[j++]]))
+      prefix = new ArrayExpression(new Type(type.name, [parseExpression([body[j++]]) as any]), [])
       j++ // skip ]
     }
 
@@ -271,7 +294,7 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
     let prefix: AST | null = null
     if (line[0]?.value === '[') {
       line.shift() // skip [
-      prefix = new ArrayExpression([], parseExpression([line.shift()!]))
+      prefix = new ArrayExpression(new Type(type.name, [parseExpression([line.shift()!]) as any]), [])
       line.shift() // skip ]
     }
 
@@ -459,7 +482,7 @@ function parseStatements(): AST[] {
       else if (token.value === 'do') statement = parseDoWhile()
       else if (token.value === 'switch') statement = parseSwitch()
       else if (token.value === 'precision') statement = parsePrecision()
-      else if (isDeclaration(token.value)) statement = parseIndeterminate()
+      else if (isDeclaration(token.value) && tokens[i].value !== '[') statement = parseIndeterminate()
     }
 
     if (statement) {
@@ -534,7 +557,7 @@ method(true);
 
 foo.bar();
 
-uniform float test[3];
+const float array[3] = float[3](2.5, 7.0, 1.5);
 `.trim()
 
 const ast = parse(glsl)

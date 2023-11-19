@@ -179,8 +179,11 @@ describe('parser', () => {
       expect(statement.declarations[2].name).toBe('baz')
       expect(statement.declarations[2].value).toBeInstanceOf(ArrayExpression)
       expect((statement.declarations[2].value as ArrayExpression).members.length).toBe(0)
-      expect((statement.declarations[2].value as ArrayExpression).length).toBeInstanceOf(Literal)
-      expect(((statement.declarations[2].value as ArrayExpression).length as Literal).value).toBe('3')
+      expect((statement.declarations[2].value as ArrayExpression).type).toBeInstanceOf(Type)
+      expect((statement.declarations[2].value as ArrayExpression).type.name).toBe('float')
+      expect((statement.declarations[2].value as ArrayExpression).type.parameters!.length).toBe(1)
+      expect((statement.declarations[2].value as ArrayExpression).type.parameters![0]).toBeInstanceOf(Literal)
+      expect(((statement.declarations[2].value as ArrayExpression).type.parameters![0] as Literal).value).toBe('3')
     }
   })
 
@@ -350,5 +353,22 @@ describe('parser', () => {
     expect(statement.type).toBeInstanceOf(Type)
     expect(statement.type.name).toBe('float')
     expect(statement.type.parameters).toBe(null)
+  })
+
+  it('parses array expressions', () => {
+    const statement = parse('float[3](2.5, 7.0, 1.5);')[0] as ArrayExpression
+    expect(statement).toBeInstanceOf(ArrayExpression)
+    expect(statement.type).toBeInstanceOf(Type)
+    expect(statement.type.name).toBe('float')
+    expect(statement.type.parameters!.length).toBe(1)
+    expect(statement.type.parameters![0]).toBeInstanceOf(Literal)
+    expect((statement.type.parameters![0] as Literal).value).toBe('3')
+    expect(statement.members.length).toBe(3)
+    expect(statement.members[0]).toBeInstanceOf(Literal)
+    expect((statement.members[0] as Literal).value).toBe('2.5')
+    expect(statement.members[1]).toBeInstanceOf(Literal)
+    expect((statement.members[1] as Literal).value).toBe('7.0')
+    expect(statement.members[2]).toBeInstanceOf(Literal)
+    expect((statement.members[2] as Literal).value).toBe('1.5')
   })
 })

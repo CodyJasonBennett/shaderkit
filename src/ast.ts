@@ -67,7 +67,7 @@ export class MemberExpression extends Node {
 }
 
 export class ArrayExpression extends Node {
-  constructor(public members: Node[], public length: Node | null) {
+  constructor(public type: Type, public members: Node[]) {
     super()
   }
 }
