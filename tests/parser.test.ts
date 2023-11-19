@@ -137,6 +137,19 @@ describe('parser', () => {
 
   it('parses variable declarations', () => {
     {
+      const statement = parse('uniform Type foo;')[0] as VariableDeclaration
+      expect(statement).toBeInstanceOf(VariableDeclaration)
+      expect(statement.type).toBeInstanceOf(Type)
+      expect((statement.type as Type).name).toBe('Type')
+      expect((statement.type as Type).parameters).toBe(null)
+      expect(statement.qualifiers.length).toBe(1)
+      expect(statement.qualifiers[0]).toBe('uniform')
+      expect(statement.declarations.length).toBe(1)
+      expect(statement.declarations[0].name).toBe('foo')
+      expect(statement.declarations[0].value).toBe(null)
+    }
+
+    {
       const statement = parse('const vec4 foo = vec4(0, 0, 0, 0);')[0] as VariableDeclaration
       expect(statement).toBeInstanceOf(VariableDeclaration)
       expect(statement.type).toBeInstanceOf(Type)

@@ -68,8 +68,8 @@ const BINARY_OPERATORS = [
 
 // TODO: this is GLSL-only, separate language constants
 const TYPE_REGEX = /void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?/
-const QUALIFIER_REGEX = /in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp/
-const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|const|uniform`)
+const QUALIFIER_REGEX = /const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp/
+const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}`)
 
 const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
 
@@ -353,10 +353,10 @@ function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
   }
 
   const qualifiers: string[] = []
-  while (tokens[i] && tokens[i].type !== 'identifier') {
+  while (tokens[i] && QUALIFIER_REGEX.test(tokens[i].value)) {
     qualifiers.push(tokens[i++].value)
   }
-  qualifiers.pop()!
+  i++
 
   return tokens[i + 1]?.value === '(' ? parseFunction(qualifiers) : parseVariable(qualifiers, layout)
 }
