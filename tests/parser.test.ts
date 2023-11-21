@@ -242,7 +242,7 @@ describe('parser', () => {
     }
 
     {
-      const statement = parse('highp vec4 main(const bool enabled) {}')[0] as FunctionDeclaration
+      const statement = parse('highp vec4 main(const bool enabled, bool disabled) {}')[0] as FunctionDeclaration
       expect(statement).toBeInstanceOf(FunctionDeclaration)
       expect(statement.name).toBe('main')
       expect(statement.type).toBeInstanceOf(Type)
@@ -259,6 +259,9 @@ describe('parser', () => {
       expect(statement.args[0].declarations.length).toBe(1)
       expect(statement.args[0].declarations[0].name).toBe('enabled')
       expect(statement.args[0].declarations[0].value).toBe(null)
+      expect(statement.args[1].declarations.length).toBe(1)
+      expect(statement.args[1].declarations[0].name).toBe('disabled')
+      expect(statement.args[1].declarations[0].value).toBe(null)
       expect(statement.body).toBeInstanceOf(BlockStatement)
       expect((statement.body as BlockStatement).body.length).toBe(0)
     }

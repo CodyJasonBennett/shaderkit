@@ -111,7 +111,7 @@ function format(node: AST | null): string {
     line = `do ${format(node.body).replace(EOL_REGEX, '')} while (${format(node.test)});\n`
   } else if (node instanceof SwitchStatement) {
     const cr = node.cases.length ? '\n' : ''
-    line = `switch(${format(node.discriminant)}) {${cr}${node.cases.map(format).join('')}}\n`
+    line = `switch (${format(node.discriminant)}) {${cr}${node.cases.map(format).join('')}}\n`
   } else if (node instanceof SwitchCase) {
     const header = node.test ? `case ${format(node.test)}:` : 'default:'
     line = `  ${header}\n${node.consequent.map((node) => `    ${punctuate(format(node))}`).join('')}`
