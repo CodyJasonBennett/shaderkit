@@ -27,7 +27,6 @@ import {
   ArrayExpression,
   PreprocessorStatement,
 } from './ast'
-import { generate } from './generator'
 import { type Token, tokenize } from './tokenizer'
 
 const UNARY_OPERATORS = ['+', '-', '~', '!', '++', '--']
@@ -567,68 +566,3 @@ export function parse(code: string): AST[] {
 
   return parseStatements()
 }
-
-const glsl = /* glsl */ `#version 300 es
-precision highp float;
-
-layout(location = 0, component = 1) flat in mat4 test;
-
-float foo = 0.0, bar = foo + 1.0, baz;
-
-struct foo {
-  bool isStruct;
-  vec4 color;
-};
-
-if (true) {
-  discard;
-} else if (false) {} else {}
-
-for (int i = 0; i < 10; i++) {}
-
-while (true) {}
-
-do {} while (true);
-
-switch(true) {
-  case 0:
-    break;
-  case 1:
-    break;
-  default:
-    break;
-}
-
-highp float method(const bool foo);
-
-void main() {
-  gl_FragColor = vec4(1, 0, 0, 1);
-}
-
-#line 0
-#define TEST 1
-#extension all: disable
-#error test
-#pragma optimize(on)
-#include <chunk>
-
-#ifdef TEST
-test;
-#endif
-
-method(true);
-
-foo.bar();
-
-const float array[3] = float[3](2.5, 7.0, 1.5);
-
-texture().rgb;
-`.trim()
-
-const ast = parse(glsl)
-const output = generate(ast, { target: 'GLSL' })
-
-console.log(glsl)
-console.log(...ast)
-console.log(output)
-console.log(glsl.replace(/\n+/g, '\n') === output)
