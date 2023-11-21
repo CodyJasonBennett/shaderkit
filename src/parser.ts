@@ -268,13 +268,17 @@ function parseVariable(
       j++ // skip ]
     }
 
-    j++ // skip =
+    let value: AST | null = null
 
-    const right = readUntil(',', body, j)
-    const value = parseExpression(readUntil(',', body, j)) ?? prefix
-    j += right.length
+    const delimiter = body[j++]
+    if (delimiter?.value === '=') {
+      const right = readUntil(',', body, j)
+      j += right.length
 
-    declarations.push(new VariableDeclarator(name, value))
+      value = parseExpression(right.slice(0, -1))
+    }
+
+    declarations.push(new VariableDeclarator(name, value ?? prefix))
   }
 
   return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
