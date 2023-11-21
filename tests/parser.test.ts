@@ -164,7 +164,7 @@ describe('parser', () => {
 
     {
       const statement = parse(
-        ' layout(location = 0, component = 1, column_major) flat in mat4 test;',
+        'layout(location = 0, component = 1, column_major) flat in mat4 test;',
       )[0] as VariableDeclaration
       expect(statement).toBeInstanceOf(VariableDeclaration)
       expect(statement.type).toBeInstanceOf(Type)
