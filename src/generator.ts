@@ -153,14 +153,14 @@ function format(node: AST | null): string {
 }
 
 export interface GenerateOptions {
-  target: 'GLSL' // | 'WGSL'
+  target: 'GLSL' | 'WGSL'
 }
 
 /**
- * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ * Generates a string of GLSL or WGSL code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(ast: AST[], options: GenerateOptions): string {
-  let code = '#version 300 es\n'
+  let code = options.target === 'GLSL' ? '#version 300 es\n' : ''
 
   for (let i = 0; i < ast.length; i++) {
     code += punctuate(format(ast[i]))
