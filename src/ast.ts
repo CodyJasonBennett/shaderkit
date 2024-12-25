@@ -93,7 +93,18 @@ export class SwitchStatement {
 }
 
 export class ReturnStatement {
-  constructor(public argument: Literal | Identifier | UnaryExpression | null) {}
+  constructor(
+    public argument:
+      | Literal
+      | Identifier
+      | UnaryExpression
+      | BinaryExpression
+      | TernaryExpression
+      | CallExpression
+      | MemberExpression
+      | ArrayExpression
+      | null,
+  ) {}
 }
 
 export class PreprocessorStatement {

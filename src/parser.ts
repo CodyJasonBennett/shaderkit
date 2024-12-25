@@ -124,9 +124,7 @@ function advance(tokens: Token[], expected?: string): Token {
   return token
 }
 
-function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression | null {
-  if (tokens.length === 0) return null
-
+function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression {
   let token = advance(tokens)
 
   let lhs: Expression
@@ -135,11 +133,11 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
     lhs = new Literal(token.value)
   } else if (token.type === 'symbol' && token.value === '(') {
-    lhs = parseExpression(tokens, 0)!
+    lhs = parseExpression(tokens, 0)
     advance(tokens, ')')
   } else if (token.type === 'symbol' && token.value in PREFIX_BINDING_POWERS) {
     const [_, rightBindingPower] = PREFIX_BINDING_POWERS[token.value]
-    const rhs = parseExpression(tokens, rightBindingPower)!
+    const rhs = parseExpression(tokens, rightBindingPower)
     lhs = new UnaryExpression(token.value, null, rhs)
   } else {
     throw new SyntaxError(`Unexpected token: "${token.value}"`)
@@ -161,7 +159,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
         const args: AST[] = []
 
         while (tokens[0]?.value !== ')') {
-          args.push(parseExpression(tokens, 0)!)
+          args.push(parseExpression(tokens, 0))
           if (tokens[0]?.value !== ')') advance(tokens, ',')
         }
         advance(tokens, ')')
@@ -173,23 +171,23 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
           lhs = new CallExpression(lhs, args)
         }
       } else if (token.value === '[') {
-        const rhs = parseExpression(tokens, 0)!
+        const rhs = parseExpression(tokens, 0)
         advance(tokens, ']')
         lhs = new MemberExpression(lhs, rhs)
       } else if (token.value === '.') {
-        const rhs = parseExpression(tokens, 0)!
+        const rhs = parseExpression(tokens, 0)
         lhs = new MemberExpression(lhs, rhs)
       } else {
         lhs = new UnaryExpression(token.value, lhs, null)
       }
     } else {
       if (token.value === '?') {
-        const mhs = parseExpression(tokens, 0)!
+        const mhs = parseExpression(tokens, 0)
         advance(tokens, ':')
-        const rhs = parseExpression(tokens, rightBindingPower)!
+        const rhs = parseExpression(tokens, rightBindingPower)
         lhs = new TernaryExpression(lhs, mhs, rhs)
       } else {
-        const rhs = parseExpression(tokens, rightBindingPower)!
+        const rhs = parseExpression(tokens, rightBindingPower)
         lhs = new BinaryExpression(token.value, lhs, rhs)
       }
     }
@@ -269,7 +267,7 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
 
     if (line[line.length - 1]?.value === ',') line.pop() // skip ,
 
-    const value = parseExpression(line) ?? prefix
+    const value = line.length ? parseExpression(line) : prefix
 
     const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
 
@@ -337,13 +335,13 @@ function parseReturn(): ReturnStatement {
   const body = consumeUntil(';')
   body.pop() // skip ;
 
-  const argument = parseExpression(body)
+  const argument = body.length ? parseExpression(body) : null
 
-  return new ReturnStatement(argument as any)
+  return new ReturnStatement(argument)
 }
 
 function parseIf(): IfStatement {
-  const test = parseExpression(consumeUntil(')'))!
+  const test = parseExpression(consumeUntil(')'))
   const consequent = parseBlock()
 
   let alternate = null
@@ -362,7 +360,7 @@ function parseIf(): IfStatement {
 }
 
 function parseWhile(): WhileStatement {
-  const test = parseExpression(consumeUntil(')'))!
+  const test = parseExpression(consumeUntil(')'))
   const body = parseBlock()
 
   return new WhileStatement(test, body)
@@ -389,7 +387,7 @@ function parseFor(): ForStatement {
 function parseDoWhile(): DoWhileStatement {
   const body = parseBlock()
   i++ // skip while
-  const test = parseExpression(consumeUntil(')'))!
+  const test = parseExpression(consumeUntil(')'))
   i++ // skip ;
 
   return new DoWhileStatement(test, body)
@@ -414,7 +412,7 @@ function parseSwitch(): SwitchStatement {
     }
   }
 
-  return new SwitchStatement(discriminant!, cases)
+  return new SwitchStatement(discriminant, cases)
 }
 
 function parsePrecision(): PrecisionStatement {
@@ -434,18 +432,18 @@ function parsePreprocessor(): PreprocessorStatement {
     value = []
 
     if (name === 'define') {
-      const left = parseExpression([body.shift()!])!
-      const right = parseExpression(body)!
+      const left = parseExpression([body.shift()!])
+      const right = parseExpression(body)
       value.push(left, right)
     } else if (name === 'extension') {
-      const left = parseExpression([body.shift()!])!
+      const left = parseExpression([body.shift()!])
       body.shift() // skip :
-      const right = parseExpression(body)!
+      const right = parseExpression(body)
       value.push(left, right)
     } else if (name === 'include') {
-      value.push(parseExpression(body.slice(1, -1))!)
+      value.push(parseExpression(body.slice(1, -1)))
     } else {
-      value.push(parseExpression(body)!)
+      value.push(parseExpression(body))
     }
   }
 
