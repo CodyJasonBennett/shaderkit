@@ -89,7 +89,7 @@ const PREFIX_BINDING_POWERS: Record<string, [left: null, right: number]> = {
   '-': [null, 9],
   '~': [null, 9],
   '!': [null, 9],
-} as const
+}
 
 const POSTFIX_BINDING_POWERS: Record<string, [left: number, right: null]> = {
   '[': [11, null],
@@ -97,7 +97,7 @@ const POSTFIX_BINDING_POWERS: Record<string, [left: number, right: null]> = {
   '.': [11, null],
   '++': [11, null],
   '--': [11, null],
-} as const
+}
 
 const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
   '==': [2, 1],
@@ -108,7 +108,7 @@ const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
   '/': [7, 8],
   '<': [14, 13],
   '>': [14, 13],
-} as const
+}
 
 function advance(tokens: Token[], expected?: string): Token {
   const token = tokens.shift()
