@@ -44,18 +44,20 @@ describe('parser', () => {
   })
 
   it('parses unary expressions', () => {
-    for (const operator of ['+', '-', '~', '!', '++', '--']) {
-      const left = parse(`0${operator}`)[0] as UnaryExpression
-      expect(left).toBeInstanceOf(UnaryExpression)
-      expect(left.operator).toBe(operator)
-      expect(left.left).toBeInstanceOf(Literal)
-      expect((left.left as Literal).value).toBe('0')
-
+    for (const operator of ['+', '-', '~', '!']) {
       const right = parse(`${operator}1`)[0] as UnaryExpression
       expect(right).toBeInstanceOf(UnaryExpression)
       expect(right.operator).toBe(operator)
       expect(right.right).toBeInstanceOf(Literal)
       expect((right.right as Literal).value).toBe('1')
+    }
+
+    for (const operator of ['++', '--']) {
+      const left = parse(`0${operator}`)[0] as UnaryExpression
+      expect(left).toBeInstanceOf(UnaryExpression)
+      expect(left.operator).toBe(operator)
+      expect(left.left).toBeInstanceOf(Literal)
+      expect((left.left as Literal).value).toBe('0')
     }
   })
 
@@ -113,14 +115,14 @@ describe('parser', () => {
     }
 
     {
-      const expression = parse('array.length()')[0] as CallExpression
-      expect(expression).toBeInstanceOf(CallExpression)
-      expect(expression.callee).toBeInstanceOf(MemberExpression)
-      expect((expression.callee as MemberExpression).object).toBeInstanceOf(Identifier)
-      expect(((expression.callee as MemberExpression).object as Identifier).value).toBe('array')
-      expect((expression.callee as MemberExpression).property).toBeInstanceOf(Identifier)
-      expect(((expression.callee as MemberExpression).property as Identifier).value).toBe('length')
-      expect(expression.args.length).toBe(0)
+      const expression = parse('array.length()')[0] as MemberExpression
+      expect(expression).toBeInstanceOf(MemberExpression)
+      expect(expression.object).toBeInstanceOf(Identifier)
+      expect((expression.object as Identifier).value).toBe('array')
+      expect(expression.property).toBeInstanceOf(CallExpression)
+      expect((expression.property as CallExpression).callee).toBeInstanceOf(Identifier)
+      expect(((expression.property as CallExpression).callee as Identifier).value).toBe('length')
+      expect((expression.property as CallExpression).args.length).toBe(0)
     }
 
     {

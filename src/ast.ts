@@ -39,6 +39,8 @@ export class FunctionDeclaration {
 }
 
 export class UnaryExpression {
+  constructor(operator: string, left: AST, right: null)
+  constructor(operator: string, left: null, right: AST)
   constructor(public operator: string, public left: AST | null, public right: AST | null) {}
 }
 

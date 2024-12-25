@@ -29,42 +29,6 @@ import {
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
-const UNARY_OPERATORS = ['+', '-', '~', '!', '++', '--']
-
-const BINARY_OPERATORS = [
-  '>>=',
-  '<<=',
-  '|=',
-  '&=',
-  '^=',
-  '%=',
-  '/=',
-  '*=',
-  '-=',
-  '+=',
-  '=',
-  '?',
-  '||',
-  '^^',
-  '&&',
-  '|',
-  '^',
-  '&',
-  '!=',
-  '==',
-  '>=',
-  '<=',
-  '>',
-  '<',
-  '>>',
-  '<<',
-  '+',
-  '-',
-  '%',
-  '/',
-  '*',
-]
-
 // TODO: this is GLSL-only, separate language constants
 const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
 const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
@@ -105,142 +69,133 @@ function consumeUntil(value: string): Token[] {
   return output
 }
 
-function parseExpression(body: Token[]): AST | null {
-  if (body.length === 0) return null
+// https://engineering.desmos.com/articles/pratt-parser
+// https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
-  const first = body[0]
-  const last = body[body.length - 1]
-  if (UNARY_OPERATORS.includes(first.value)) {
-    const right = parseExpression(body.slice(1))!
-    return new UnaryExpression(first.value, null, right)
-  } else if (UNARY_OPERATORS.includes(last.value)) {
-    const left = parseExpression(body.slice(0, body.length - 1))!
-    return new UnaryExpression(last.value, left, null)
+type Expression =
+  | Literal
+  | Identifier
+  | UnaryExpression
+  | BinaryExpression
+  | TernaryExpression
+  | CallExpression
+  | MemberExpression
+  | ArrayExpression
+
+// TODO: complete precedence tables
+
+const PREFIX_BINDING_POWERS: Record<string, [left: null, right: number]> = {
+  '+': [null, 9],
+  '-': [null, 9],
+  '~': [null, 9],
+  '!': [null, 9],
+} as const
+
+const POSTFIX_BINDING_POWERS: Record<string, [left: number, right: null]> = {
+  '[': [11, null],
+  '(': [11, null],
+  '.': [11, null],
+  '++': [11, null],
+  '--': [11, null],
+} as const
+
+const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
+  '==': [2, 1],
+  '?': [4, 3],
+  '+': [5, 6],
+  '-': [5, 6],
+  '*': [7, 8],
+  '/': [7, 8],
+  '<': [14, 13],
+  '>': [14, 13],
+} as const
+
+function advance(tokens: Token[], expected?: string): Token {
+  const token = tokens.shift()
+
+  if (token === undefined && expected !== undefined) {
+    throw new SyntaxError(`Expected "${expected}"`)
+  } else if (token === undefined) {
+    throw new SyntaxError('Unexpected end of input')
+  } else if (expected !== undefined && token.value !== expected) {
+    throw new SyntaxError(`Expected "${expected}" got "${token.value}"`)
   }
 
-  if (first.value === '(') {
-    const leftBody = readUntil(')', body)
-    const left = parseExpression(leftBody.slice(1, leftBody.length - 1))!
+  return token
+}
 
-    const operator = body[leftBody.length]
-    if (operator) {
-      const rightBody = body.slice(leftBody.length + 1)
-      const right = parseExpression(rightBody)!
+function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression | null {
+  if (tokens.length === 0) return null
 
-      return new BinaryExpression(operator.value, left, right)
-    }
+  let token = advance(tokens)
 
-    return left
+  let lhs: Expression
+  if (token.type === 'identifier' || token.type === 'keyword') {
+    lhs = new Identifier(token.value)
+  } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
+    lhs = new Literal(token.value)
+  } else if (token.type === 'symbol' && token.value === '(') {
+    lhs = parseExpression(tokens, 0)!
+    advance(tokens, ')')
+  } else if (token.type === 'symbol' && token.value in PREFIX_BINDING_POWERS) {
+    const [_, rightBindingPower] = PREFIX_BINDING_POWERS[token.value]
+    const rhs = parseExpression(tokens, rightBindingPower)!
+    lhs = new UnaryExpression(token.value, null, rhs)
+  } else {
+    throw new SyntaxError(`Unexpected token: "${token.value}"`)
   }
 
-  let scopeIndex = 0
+  while (tokens.length) {
+    token = tokens[0]
 
-  for (const operator of BINARY_OPERATORS) {
-    for (let i = 0; i < body.length; i++) {
-      const token = body[i]
-      if (token.type !== 'symbol') continue
+    const bindingPower = POSTFIX_BINDING_POWERS[token.value] || INFIX_BINDING_POWERS[token.value]
+    if (!bindingPower) break
 
-      scopeIndex += getScopeDelta(token)
+    const [leftBindingPower, rightBindingPower] = bindingPower
+    if (leftBindingPower < minBindingPower) break
 
-      if (scopeIndex === 0 && token.value === operator) {
-        if (operator === '?') {
-          const testBody = body.slice(0, i)
-          const consequentBody = readUntil(':', body, i + 1).slice(0, -1)
-          const alternateBody = body.slice(i + consequentBody.length + 2)
+    advance(tokens)
 
-          const test = parseExpression(testBody)!
-          const consequent = parseExpression(consequentBody)!
-          const alternate = parseExpression(alternateBody)!
+    if (rightBindingPower === null) {
+      if (token.value === '(') {
+        const args: AST[] = []
 
-          return new TernaryExpression(test, consequent, alternate)
-        } else {
-          const left = parseExpression(body.slice(0, i))!
-          const right = parseExpression(body.slice(i + 1, body.length))!
-
-          return new BinaryExpression(operator, left, right)
+        while (tokens[0]?.value !== ')') {
+          args.push(parseExpression(tokens, 0)!)
+          if (tokens[0]?.value !== ')') advance(tokens, ',')
         }
-      }
+        advance(tokens, ')')
 
-      if (scopeIndex < 0) {
-        return parseExpression(body.slice(0, i))
+        if (lhs instanceof MemberExpression) {
+          const type = new Type((lhs.object as Identifier).value, [lhs.property as Literal])
+          lhs = new ArrayExpression(type, args)
+        } else {
+          lhs = new CallExpression(lhs, args)
+        }
+      } else if (token.value === '[') {
+        const rhs = parseExpression(tokens, 0)!
+        advance(tokens, ']')
+        lhs = new MemberExpression(lhs, rhs)
+      } else if (token.value === '.') {
+        const rhs = parseExpression(tokens, 0)!
+        lhs = new MemberExpression(lhs, rhs)
+      } else {
+        lhs = new UnaryExpression(token.value, lhs, null)
+      }
+    } else {
+      if (token.value === '?') {
+        const mhs = parseExpression(tokens, 0)!
+        advance(tokens, ':')
+        const rhs = parseExpression(tokens, rightBindingPower)!
+        lhs = new TernaryExpression(lhs, mhs, rhs)
+      } else {
+        const rhs = parseExpression(tokens, rightBindingPower)!
+        lhs = new BinaryExpression(token.value, lhs, rhs)
       }
     }
   }
 
-  if (first.type === 'bool' || first.type === 'int' || first.type === 'float') {
-    return new Literal(first.value)
-  } else if (first.type === 'identifier' || first.type === 'keyword') {
-    const second = body[1]
-
-    if (!second) {
-      return new Identifier(first.value)
-    } else if (second.value === '(') {
-      const callee = new Identifier(first.value)
-      const args: AST[] = []
-
-      const scope = readUntil(')', body, 1).slice(1, -1)
-
-      let j = 0
-      while (j < scope.length) {
-        const line = readUntil(',', scope, j)
-        j += line.length
-        if (line[line.length - 1]?.value === ',') line.pop() // skip ,
-
-        const arg = parseExpression(line)
-        if (arg) args.push(arg)
-      }
-
-      const expression = new CallExpression(callee, args)
-
-      // e.g. texture().rgb
-      let i = 3 + j
-      if (body[i]?.value === '.') {
-        const right = parseExpression([first, ...body.slice(i)])! as MemberExpression
-        right.object = expression
-        return right
-      }
-
-      return expression
-    } else if (second.value === '.') {
-      const object = new Identifier(first.value)
-      const property = parseExpression([body[2]])!
-      const left = new MemberExpression(object, property)
-
-      // e.g. array.length()
-      if (body[3]?.value === '(' && last.value === ')') {
-        const right = parseExpression(body.slice(2))! as CallExpression
-        right.callee = left
-        return right
-      }
-
-      return left
-    } else if (second.value === '[') {
-      let i = 2
-
-      const type = new Type(first.value, [])
-
-      if (body[i].value !== ']') type.parameters!.push(parseExpression([body[i++]]) as any)
-      i++ // skip ]
-
-      const scope = readUntil(')', body, i).slice(1, -1)
-
-      const members: AST[] = []
-
-      let j = 0
-      while (j < scope.length) {
-        const next = readUntil(',', scope, j)
-        j += next.length
-
-        if (next[next.length - 1].value === ',') next.pop()
-
-        members.push(parseExpression(next)!)
-      }
-
-      return new ArrayExpression(type, members)
-    }
-  }
-
-  return null
+  return lhs
 }
 
 function parseVariable(
