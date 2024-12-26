@@ -813,6 +813,21 @@ export const GLSL_KEYWORDS = [
   // Additional directives
   '#include',
 
+  // WebGL1 (three.js)
+  // 'attribute',
+  // 'varying',
+  'gl_FragColor',
+  'gl_FragDepthEXT',
+  'texture2D',
+  'textureCube',
+  'texture2DProj',
+  'texture2DLodEXT',
+  'texture2DProjLodEXT',
+  'textureCubeLodEXT',
+  'texture2DGradEXT',
+  'texture2DProjGradEXT',
+  'textureCubeGradEXT',
+
   // WEBGL_multi_draw https://registry.khronos.org/webgl/extensions/WEBGL_multi_draw
   'gl_DrawID', // vertex only
 
