@@ -215,8 +215,6 @@ function parseVariable(
   qualifiers: string[] = [],
   layout: Record<string, string | boolean> | null = null,
 ): VariableDeclaration {
-  i-- // TODO: remove backtrack hack
-
   const kind = null // TODO: WGSL
   const type = new Type(consume().value, null)
 
@@ -253,8 +251,6 @@ function parseVariable(
 }
 
 function parseFunction(qualifiers: string[]): FunctionDeclaration {
-  i-- // TODO: remove backtrack hack
-
   const type = new Type(consume().value, null)
   const name = consume().value
   const args: VariableDeclaration[] = []
@@ -299,8 +295,6 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
 }
 
 function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
-  i-- // TODO: remove backtrack hack
-
   let layout: Record<string, string | boolean> | null = null
   if (tokens[i].value === 'layout') {
     consume()
@@ -329,17 +323,16 @@ function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
   while (tokens[i] && QUALIFIER_REGEX.test(tokens[i].value)) {
     qualifiers.push(consume().value)
   }
-  consume()
 
-  return tokens[i + 1]?.value === '(' ? parseFunction(qualifiers) : parseVariable(qualifiers, layout)
+  return tokens[i + 2]?.value === '(' ? parseFunction(qualifiers) : parseVariable(qualifiers, layout)
 }
 
 function parseStruct(): StructDeclaration {
+  consume('struct')
   const name = consume().value
   consume('{')
   const members: VariableDeclaration[] = []
   while (tokens[i] && tokens[i].value !== '}') {
-    consume() // TODO: remove backtrack hack
     members.push(parseIndeterminate() as VariableDeclaration)
   }
   consume('}')
@@ -348,7 +341,32 @@ function parseStruct(): StructDeclaration {
   return new StructDeclaration(name, members)
 }
 
+function parseContinue(): ContinueStatement {
+  consume('continue')
+  const statement = new ContinueStatement()
+  consume(';')
+
+  return statement
+}
+
+function parseBreak(): BreakStatement {
+  consume('break')
+  const statement = new BreakStatement()
+  consume(';')
+
+  return statement
+}
+
+function parseDiscard(): DiscardStatement {
+  consume('discard')
+  const statement = new DiscardStatement()
+  consume(';')
+
+  return statement
+}
+
 function parseReturn(): ReturnStatement {
+  consume('return')
   // TODO: validate consumed tokens
   const body = consumeUntil(';')
   body.pop() // skip ;
@@ -359,15 +377,15 @@ function parseReturn(): ReturnStatement {
 }
 
 function parseIf(): IfStatement {
+  consume('if')
   const test = parseExpression(consumeUntil(')'))
   const consequent = parseBlock()
 
   let alternate = null
   if (tokens[i].value === 'else') {
-    consume('else') // TODO: remove backtrack hack
+    consume('else')
 
     if (tokens[i].value === 'if') {
-      consume('if')
       alternate = parseIf()
     } else {
       alternate = parseBlock()
@@ -378,6 +396,7 @@ function parseIf(): IfStatement {
 }
 
 function parseWhile(): WhileStatement {
+  consume('while')
   const test = parseExpression(consumeUntil(')'))
   const body = parseBlock()
 
@@ -385,10 +404,10 @@ function parseWhile(): WhileStatement {
 }
 
 function parseFor(): ForStatement {
+  consume('for')
   const delimiterIndex = i + (readUntil(')', tokens, i).length - 1)
 
   consume('(')
-  consume() // TODO: remove backtrack hack
 
   const init = parseVariable()
   const test = parseExpression(consumeUntil(';').slice(0, -1))
@@ -403,6 +422,7 @@ function parseFor(): ForStatement {
 }
 
 function parseDoWhile(): DoWhileStatement {
+  consume('do')
   const body = parseBlock()
   consume('while')
   const test = parseExpression(consumeUntil(')'))
@@ -412,6 +432,7 @@ function parseDoWhile(): DoWhileStatement {
 }
 
 function parseSwitch(): SwitchStatement {
+  consume('switch')
   const discriminant = parseExpression(consumeUntil(')'))
   const delimiterIndex = i + readUntil('}', tokens, i).length - 1
 
@@ -434,6 +455,7 @@ function parseSwitch(): SwitchStatement {
 }
 
 function parsePrecision(): PrecisionStatement {
+  consume('precision')
   const precision = consume().value
   const type = new Type(consume().value, null)
   consume(';')
@@ -441,6 +463,7 @@ function parsePrecision(): PrecisionStatement {
 }
 
 function parsePreprocessor(): PreprocessorStatement {
+  consume('#')
   const name = consume().value
 
   const body = consumeUntil('\\').slice(0, -1)
@@ -473,47 +496,35 @@ function parseStatements(): AST[] {
   let scopeIndex = 0
 
   while (i < tokens.length) {
-    const token = consume()
+    const token = tokens[i]
 
     scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0) break
 
     let statement: AST | null = null
 
-    if (token.value === '#') {
-      statement = parsePreprocessor()
-    } else if (token.type === 'keyword') {
-      if (token.value === 'case' || token.value === 'default') {
-        i--
-        break
-      } else if (token.value === 'struct') statement = parseStruct()
-      else if (token.value === 'continue') {
-        statement = new ContinueStatement()
-        consume()
-      } else if (token.value === 'break') {
-        statement = new BreakStatement()
-        consume()
-      } else if (token.value === 'discard') {
-        statement = new DiscardStatement()
-        consume()
-      } else if (token.value === 'return') statement = parseReturn()
-      else if (token.value === 'if') statement = parseIf()
-      else if (token.value === 'while') statement = parseWhile()
-      else if (token.value === 'for') statement = parseFor()
-      else if (token.value === 'do') statement = parseDoWhile()
-      else if (token.value === 'switch') statement = parseSwitch()
-      else if (token.value === 'precision') statement = parsePrecision()
-      else if (isDeclaration(token.value) && tokens[i].value !== '[') statement = parseIndeterminate()
+    if (token.value === 'case' || token.value === 'default') break
+    else if (token.value === '#') statement = parsePreprocessor()
+    else if (token.value === 'struct') statement = parseStruct()
+    else if (token.value === 'continue') statement = parseContinue()
+    else if (token.value === 'break') statement = parseBreak()
+    else if (token.value === 'discard') statement = parseDiscard()
+    else if (token.value === 'return') statement = parseReturn()
+    else if (token.value === 'if') statement = parseIf()
+    else if (token.value === 'while') statement = parseWhile()
+    else if (token.value === 'for') statement = parseFor()
+    else if (token.value === 'do') statement = parseDoWhile()
+    else if (token.value === 'switch') statement = parseSwitch()
+    else if (token.value === 'precision') statement = parsePrecision()
+    else if (isDeclaration(token.value) && tokens[i + 1].value !== '[') statement = parseIndeterminate()
+    else {
+      const line = tokens.slice(i++)
+      let total = line.length
+      statement = parseExpression(line)
+      i += total - line.length
     }
 
-    if (statement) {
-      body.push(statement)
-    } else {
-      const line = [token, ...consumeUntil(';')]
-      if (line[line.length - 1].value === ';') line.pop()
-      const expression = parseExpression(line)
-      if (expression) body.push(expression)
-    }
+    body.push(statement)
   }
 
   return body
@@ -522,6 +533,7 @@ function parseStatements(): AST[] {
 function parseBlock(): BlockStatement {
   consume('{')
   const body = parseStatements()
+  consume('}')
   return new BlockStatement(body)
 }
 
