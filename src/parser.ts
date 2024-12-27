@@ -115,6 +115,7 @@ const POSTFIX_BINDING_POWERS: Record<string, [left: number, right: null]> = {
 }
 
 const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
+  '=': [2, 1], // TODO: AssignmentExpression
   '==': [2, 1],
   '?': [4, 3],
   '+': [5, 6],
@@ -305,23 +306,27 @@ function parseFunction(qualifiers: string[]): FunctionDeclaration {
 function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[i].value === 'layout') {
-    consume()
+    consume('layout')
+    consume('(')
 
     layout = {}
 
-    let key: string | null = null
     while (tokens[i] && tokens[i].value !== ')') {
-      const token = tokens[i++]
+      const expression = consumeExpression()
 
-      if (token.value === ',') key = null
-      if (token.type === 'symbol') continue
-
-      if (!key) {
-        key = token.value
-        layout[key] = true
+      if (
+        expression instanceof BinaryExpression &&
+        expression.left instanceof Identifier &&
+        expression.right instanceof Literal
+      ) {
+        layout[expression.left.value] = expression.right.value
+      } else if (expression instanceof Identifier) {
+        layout[expression.value] = true
       } else {
-        layout[key] = token.value
+        throw new TypeError('Unexpected expression')
       }
+
+      if (tokens[i]?.value !== ')') consume(',')
     }
 
     consume(')')
