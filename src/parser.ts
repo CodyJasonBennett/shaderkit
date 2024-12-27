@@ -32,6 +32,7 @@ import { type Token, tokenize } from './tokenizer'
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
+// TODO: AssignmentExpression
 type Expression =
   | Literal
   | Identifier
@@ -42,33 +43,136 @@ type Expression =
   | MemberExpression
   | ArrayExpression
 
-// TODO: complete precedence tables
+enum Operators {
+  // Unary
+  COMPLEMENT = '~',
+  DECREMENT = '--',
+  INCREMENT = '++',
+  NOT = '!',
 
-const PREFIX_BINDING_POWERS: Record<string, [left: null, right: number]> = {
-  '+': [null, 9],
-  '-': [null, 9],
-  '~': [null, 9],
-  '!': [null, 9],
+  // Binary
+  BITWISE_AND = '&',
+  BITWISE_OR = '|',
+  BITWISE_XOR = '^',
+  DIVIDE = '/',
+  EQUAL = '==',
+  GREATER_THAN = '>',
+  GREATER_THAN_OR_EQUAL = '>=',
+  LESS_THAN = '<',
+  LESS_THAN_OR_EQUAL = '<=',
+  LOGICAL_AND = '&&',
+  LOGICAL_OR = '||',
+  LOGICAL_XOR = '^^',
+  MINUS = '-',
+  MULTIPLY = '*',
+  NOT_EQUAL = '!=',
+  PLUS = '+',
+  REMAINDER = '%',
+  SHIFT_LEFT = '<<',
+  SHIFT_RIGHT = '>>',
+
+  // Binary assignment
+  ASSIGN = '=',
+  ASSIGN_ADD = '+=',
+  ASSIGN_BITWISE_AND = '&=',
+  ASSIGN_BITWISE_OR = '|=',
+  ASSIGN_BITWISE_XOR = '^=',
+  ASSIGN_DIVIDE = '/=',
+  ASSIGN_MULTIPLY = '*=',
+  ASSIGN_REMAINDER = '%=',
+  ASSIGN_SHIFT_LEFT = '<<=',
+  ASSIGN_SHIFT_RIGHT = '>>=',
+  ASSIGN_SUBTRACT = '-=',
+
+  // Other
+  COLON = ':',
+  COMMA = ',',
+  DOT = '.',
+  LEFT_BRACE = '{',
+  LEFT_BRACKET = '[',
+  LEFT_PARENTHESIS = '(',
+  QUESTION = '?',
+  RIGHT_BRACE = '}',
+  RIGHT_BRACKET = ']',
+  RIGHT_PARENTHESIS = ')',
+  SEMICOLON = ';',
+  PREPROCESSOR = '#',
+  NEWLINE = '\\',
+  ATTRIBUTE = '@', // WGSL
 }
 
-const POSTFIX_BINDING_POWERS: Record<string, [left: number, right: null]> = {
-  '[': [11, null],
-  '(': [11, null],
-  '.': [11, null],
-  '++': [11, null],
-  '--': [11, null],
+enum Precedence {
+  LOWEST,
+  COMMA,
+  ASSIGN,
+  LOGICAL_OR,
+  LOGICAL_XOR,
+  LOGICAL_AND,
+  BITWISE_OR,
+  BITWISE_XOR,
+  BITWISE_AND,
+  TERNARY,
+  COMPARE,
+  SHIFT,
+  ADD,
+  MULTIPLY,
+  UNARY_PREFIX,
+  UNARY_POSTFIX,
+  MEMBER,
 }
 
-const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
-  '=': [2, 1], // TODO: AssignmentExpression
-  '==': [2, 1],
-  '?': [4, 3],
-  '+': [5, 6],
-  '-': [5, 6],
-  '*': [7, 8],
-  '/': [7, 8],
-  '<': [14, 13],
-  '>': [14, 13],
+const PREFIX_OPERATOR_PRECEDENCE: Record<string, Precedence> = {
+  [Operators.COMPLEMENT]: Precedence.UNARY_PREFIX,
+  [Operators.NOT]: Precedence.UNARY_PREFIX,
+  [Operators.DECREMENT]: Precedence.UNARY_PREFIX,
+  [Operators.INCREMENT]: Precedence.UNARY_PREFIX,
+  [Operators.MINUS]: Precedence.UNARY_PREFIX,
+  [Operators.PLUS]: Precedence.UNARY_PREFIX,
+}
+
+const POSTFIX_OPERATOR_PRECEDENCE: Record<string, Precedence> = {
+  [Operators.DECREMENT]: Precedence.UNARY_POSTFIX,
+  [Operators.INCREMENT]: Precedence.UNARY_POSTFIX,
+  [Operators.LEFT_PARENTHESIS]: Precedence.LOWEST,
+  [Operators.LEFT_BRACKET]: Precedence.MEMBER,
+  [Operators.DOT]: Precedence.MEMBER,
+}
+
+const INFIX_OPERATOR_PRECEDENCE_LEFT: Record<string, Precedence> = {
+  [Operators.LOGICAL_OR]: Precedence.LOGICAL_OR,
+  [Operators.LOGICAL_XOR]: Precedence.LOGICAL_XOR,
+  [Operators.LOGICAL_AND]: Precedence.LOGICAL_AND,
+  [Operators.BITWISE_OR]: Precedence.BITWISE_OR,
+  [Operators.BITWISE_XOR]: Precedence.BITWISE_XOR,
+  [Operators.BITWISE_AND]: Precedence.BITWISE_AND,
+  [Operators.EQUAL]: Precedence.COMPARE,
+  [Operators.GREATER_THAN]: Precedence.COMPARE,
+  [Operators.GREATER_THAN_OR_EQUAL]: Precedence.COMPARE,
+  [Operators.LESS_THAN]: Precedence.COMPARE,
+  [Operators.LESS_THAN_OR_EQUAL]: Precedence.COMPARE,
+  [Operators.NOT_EQUAL]: Precedence.COMPARE,
+  [Operators.SHIFT_LEFT]: Precedence.SHIFT,
+  [Operators.SHIFT_RIGHT]: Precedence.SHIFT,
+  [Operators.PLUS]: Precedence.ADD,
+  [Operators.MINUS]: Precedence.ADD,
+  [Operators.MULTIPLY]: Precedence.MULTIPLY,
+  [Operators.DIVIDE]: Precedence.MULTIPLY,
+  [Operators.REMAINDER]: Precedence.MULTIPLY,
+}
+
+const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
+  [Operators.ASSIGN]: Precedence.ASSIGN,
+  [Operators.ASSIGN_ADD]: Precedence.ASSIGN,
+  [Operators.ASSIGN_BITWISE_AND]: Precedence.ASSIGN,
+  [Operators.ASSIGN_BITWISE_OR]: Precedence.ASSIGN,
+  [Operators.ASSIGN_BITWISE_XOR]: Precedence.ASSIGN,
+  [Operators.ASSIGN_DIVIDE]: Precedence.ASSIGN,
+  [Operators.ASSIGN_MULTIPLY]: Precedence.ASSIGN,
+  [Operators.ASSIGN_REMAINDER]: Precedence.ASSIGN,
+  [Operators.ASSIGN_SHIFT_LEFT]: Precedence.ASSIGN,
+  [Operators.ASSIGN_SHIFT_RIGHT]: Precedence.ASSIGN,
+  [Operators.ASSIGN_SUBTRACT]: Precedence.ASSIGN,
+  [Operators.QUESTION]: Precedence.TERNARY,
 }
 
 // TODO: this is GLSL-only, separate language constants
@@ -78,12 +182,21 @@ const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source
 
 const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
 
-const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
-const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
-
 function getScopeDelta(token: Token): number {
-  if (isOpen(token.value)) return 1
-  if (isClose(token.value)) return -1
+  if (
+    token.value === Operators.LEFT_PARENTHESIS ||
+    token.value === Operators.LEFT_BRACKET ||
+    token.value === Operators.LEFT_BRACE
+  )
+    return 1
+
+  if (
+    token.value === Operators.RIGHT_PARENTHESIS ||
+    token.value === Operators.RIGHT_BRACKET ||
+    token.value === Operators.RIGHT_BRACE
+  )
+    return -1
+
   return 0
 }
 
@@ -109,11 +222,11 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
     lhs = new Identifier(token.value)
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
     lhs = new Literal(token.value)
-  } else if (token.type === 'symbol' && token.value === '(') {
+  } else if (token.type === 'symbol' && token.value === Operators.LEFT_PARENTHESIS) {
     lhs = parseExpression(tokens, 0)
     consume(tokens, ')')
-  } else if (token.type === 'symbol' && token.value in PREFIX_BINDING_POWERS) {
-    const [_, rightBindingPower] = PREFIX_BINDING_POWERS[token.value]
+  } else if (token.type === 'symbol' && token.value in PREFIX_OPERATOR_PRECEDENCE) {
+    const rightBindingPower = PREFIX_OPERATOR_PRECEDENCE[token.value]
     const rhs = parseExpression(tokens, rightBindingPower)
     lhs = new UnaryExpression(token.value, null, rhs)
   } else {
@@ -123,23 +236,20 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   while (tokens.length) {
     token = tokens[0]
 
-    const bindingPower = POSTFIX_BINDING_POWERS[token.value] || INFIX_BINDING_POWERS[token.value]
-    if (!bindingPower) break
+    if (token.value in POSTFIX_OPERATOR_PRECEDENCE) {
+      const leftBindingPower = POSTFIX_OPERATOR_PRECEDENCE[token.value]
+      if (leftBindingPower < minBindingPower) break
 
-    const [leftBindingPower, rightBindingPower] = bindingPower
-    if (leftBindingPower < minBindingPower) break
+      consume(tokens)
 
-    consume(tokens)
-
-    if (rightBindingPower === null) {
-      if (token.value === '(') {
+      if (token.value === Operators.LEFT_PARENTHESIS) {
         const args: AST[] = []
 
-        while (tokens[0]?.value !== ')') {
+        while (tokens[0]?.value !== Operators.RIGHT_PARENTHESIS) {
           args.push(parseExpression(tokens, 0))
-          if (tokens[0]?.value !== ')') consume(tokens, ',')
+          if (tokens[0]?.value !== Operators.RIGHT_PARENTHESIS) consume(tokens, Operators.COMMA)
         }
-        consume(tokens, ')')
+        consume(tokens, Operators.RIGHT_PARENTHESIS)
 
         if (lhs instanceof MemberExpression) {
           const type = new Type((lhs.object as Identifier).value, [lhs.property as Literal])
@@ -147,26 +257,45 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
         } else {
           lhs = new CallExpression(lhs, args)
         }
-      } else if (token.value === '[') {
+      } else if (token.value === Operators.LEFT_BRACKET) {
         const rhs = parseExpression(tokens, 0)
-        consume(tokens, ']')
+        consume(tokens, Operators.RIGHT_BRACKET)
         lhs = new MemberExpression(lhs, rhs)
-      } else if (token.value === '.') {
+      } else if (token.value === Operators.DOT) {
         const rhs = parseExpression(tokens, 0)
         lhs = new MemberExpression(lhs, rhs)
       } else {
         lhs = new UnaryExpression(token.value, lhs, null)
       }
-    } else {
-      if (token.value === '?') {
+    } else if (token.value in INFIX_OPERATOR_PRECEDENCE_LEFT || token.value in INFIX_OPERATOR_PRECEDENCE_RIGHT) {
+      let leftBindingPower: number
+      let rightBindingPower: number
+
+      if (token.value in INFIX_OPERATOR_PRECEDENCE_LEFT) {
+        const precedence = INFIX_OPERATOR_PRECEDENCE_LEFT[token.value]
+        leftBindingPower = precedence - 1
+        rightBindingPower = precedence
+      } else {
+        const precedence = INFIX_OPERATOR_PRECEDENCE_RIGHT[token.value]
+        leftBindingPower = precedence
+        rightBindingPower = precedence - 1
+      }
+
+      if (leftBindingPower < minBindingPower) break
+
+      consume(tokens)
+
+      if (token.value === Operators.QUESTION) {
         const mhs = parseExpression(tokens, 0)
-        consume(tokens, ':')
+        consume(tokens, Operators.COLON)
         const rhs = parseExpression(tokens, rightBindingPower)
         lhs = new TernaryExpression(lhs, mhs, rhs)
       } else {
         const rhs = parseExpression(tokens, rightBindingPower)
         lhs = new BinaryExpression(token.value, lhs, rhs)
       }
+    } else {
+      break
     }
   }
 
@@ -178,14 +307,14 @@ function parseVariableDeclarator(tokens: Token[], type: Type): VariableDeclarato
 
   let value: AST | null = null
 
-  if (tokens[0]?.value === '[') {
-    consume(tokens, '[')
+  if (tokens[0]?.value === Operators.LEFT_BRACKET) {
+    consume(tokens, Operators.LEFT_BRACKET)
     value = new ArrayExpression(new Type(type.name, [parseExpression(tokens) as Literal | Identifier]), [])
-    consume(tokens, ']')
+    consume(tokens, Operators.RIGHT_BRACKET)
   }
 
-  if (tokens[0]?.value === '=') {
-    consume(tokens, '=')
+  if (tokens[0]?.value === Operators.ASSIGN) {
+    consume(tokens, Operators.ASSIGN)
     value = parseExpression(tokens)
   }
 
@@ -205,14 +334,14 @@ function parseVariable(
   while (tokens.length) {
     declarations.push(parseVariableDeclarator(tokens, type))
 
-    if (tokens[0]?.value === ',') {
-      consume(tokens, ',')
+    if (tokens[0]?.value === Operators.COMMA) {
+      consume(tokens, Operators.COMMA)
     } else {
       break
     }
   }
 
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
 
   return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
 }
@@ -221,10 +350,10 @@ function parseFunction(tokens: Token[], qualifiers: string[]): FunctionDeclarati
   const type = new Type(consume(tokens).value, null)
   const name = consume(tokens).value
 
-  consume(tokens, '(')
+  consume(tokens, Operators.LEFT_PARENTHESIS)
 
   const args: VariableDeclaration[] = []
-  while (tokens[0] && tokens[0].value !== ')') {
+  while (tokens[0] && tokens[0].value !== Operators.RIGHT_PARENTHESIS) {
     const qualifiers: string[] = []
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
       qualifiers.push(consume(tokens).value)
@@ -236,13 +365,13 @@ function parseFunction(tokens: Token[], qualifiers: string[]): FunctionDeclarati
 
     args.push(new VariableDeclaration(null, qualifiers, kind, type, declarations))
 
-    if (tokens[0]?.value === ',') consume(tokens, ',')
+    if (tokens[0]?.value === Operators.COMMA) consume(tokens, Operators.COMMA)
   }
 
-  consume(tokens, ')')
+  consume(tokens, Operators.RIGHT_PARENTHESIS)
 
   let body = null
-  if (tokens[0].value === ';') consume(tokens, ';')
+  if (tokens[0].value === Operators.SEMICOLON) consume(tokens, Operators.SEMICOLON)
   else body = parseBlock(tokens)
 
   return new FunctionDeclaration(name, type, qualifiers, args, body)
@@ -252,11 +381,11 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
-    consume(tokens, '(')
+    consume(tokens, Operators.LEFT_PARENTHESIS)
 
     layout = {}
 
-    while (tokens[0] && (tokens[0] as Token).value !== ')') {
+    while (tokens[0] && (tokens[0] as Token).value !== Operators.RIGHT_PARENTHESIS) {
       const expression = parseExpression(tokens)
 
       if (
@@ -271,10 +400,10 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
         throw new TypeError('Unexpected expression')
       }
 
-      if (tokens[0] && (tokens[0] as Token).value !== ')') consume(tokens, ',')
+      if (tokens[0] && (tokens[0] as Token).value !== Operators.RIGHT_PARENTHESIS) consume(tokens, Operators.COMMA)
     }
 
-    consume(tokens, ')')
+    consume(tokens, Operators.RIGHT_PARENTHESIS)
   }
 
   const qualifiers: string[] = []
@@ -282,19 +411,21 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     qualifiers.push(consume(tokens).value)
   }
 
-  return tokens[2]?.value === '(' ? parseFunction(tokens, qualifiers) : parseVariable(tokens, qualifiers, layout)
+  return tokens[2]?.value === Operators.LEFT_PARENTHESIS
+    ? parseFunction(tokens, qualifiers)
+    : parseVariable(tokens, qualifiers, layout)
 }
 
 function parseStruct(tokens: Token[]): StructDeclaration {
   consume(tokens, 'struct')
   const name = consume(tokens).value
-  consume(tokens, '{')
+  consume(tokens, Operators.LEFT_BRACE)
   const members: VariableDeclaration[] = []
-  while (tokens[0] && tokens[0].value !== '}') {
+  while (tokens[0] && tokens[0].value !== Operators.RIGHT_BRACE) {
     members.push(parseIndeterminate(tokens) as VariableDeclaration)
   }
-  consume(tokens, '}')
-  consume(tokens, ';')
+  consume(tokens, Operators.RIGHT_BRACE)
+  consume(tokens, Operators.SEMICOLON)
 
   return new StructDeclaration(name, members)
 }
@@ -302,7 +433,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
 function parseContinue(tokens: Token[]): ContinueStatement {
   consume(tokens, 'continue')
   const statement = new ContinueStatement()
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
 
   return statement
 }
@@ -310,7 +441,7 @@ function parseContinue(tokens: Token[]): ContinueStatement {
 function parseBreak(tokens: Token[]): BreakStatement {
   consume(tokens, 'break')
   const statement = new BreakStatement()
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
 
   return statement
 }
@@ -318,7 +449,7 @@ function parseBreak(tokens: Token[]): BreakStatement {
 function parseDiscard(tokens: Token[]): DiscardStatement {
   consume(tokens, 'discard')
   const statement = new DiscardStatement()
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
 
   return statement
 }
@@ -327,17 +458,17 @@ function parseReturn(tokens: Token[]): ReturnStatement {
   consume(tokens, 'return')
 
   let argument: Expression | null = null
-  if (tokens[0]?.value !== ';') argument = parseExpression(tokens)
-  consume(tokens, ';')
+  if (tokens[0]?.value !== Operators.SEMICOLON) argument = parseExpression(tokens)
+  consume(tokens, Operators.SEMICOLON)
 
   return new ReturnStatement(argument)
 }
 
 function parseIf(tokens: Token[]): IfStatement {
   consume(tokens, 'if')
-  consume(tokens, '(')
+  consume(tokens, Operators.LEFT_PARENTHESIS)
   const test = parseExpression(tokens)
-  consume(tokens, ')')
+  consume(tokens, Operators.RIGHT_PARENTHESIS)
 
   const consequent = parseBlock(tokens)
 
@@ -357,9 +488,9 @@ function parseIf(tokens: Token[]): IfStatement {
 
 function parseWhile(tokens: Token[]): WhileStatement {
   consume(tokens, 'while')
-  consume(tokens, '(')
+  consume(tokens, Operators.LEFT_PARENTHESIS)
   const test = parseExpression(tokens)
-  consume(tokens, ')')
+  consume(tokens, Operators.RIGHT_PARENTHESIS)
   const body = parseBlock(tokens)
 
   return new WhileStatement(test, body)
@@ -367,15 +498,13 @@ function parseWhile(tokens: Token[]): WhileStatement {
 
 function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, 'for')
-
-  consume(tokens, '(')
+  consume(tokens, Operators.LEFT_PARENTHESIS)
   const init = parseVariable(tokens)
-  // consume(tokens, ';')
+  // consume(tokens, Operators.SEMICOLON)
   const test = parseExpression(tokens)
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
   const update = parseExpression(tokens)
-  consume(tokens, ')')
-
+  consume(tokens, Operators.RIGHT_PARENTHESIS)
   const body = parseBlock(tokens)
 
   return new ForStatement(init, test, update, body)
@@ -385,10 +514,10 @@ function parseDoWhile(tokens: Token[]): DoWhileStatement {
   consume(tokens, 'do')
   const body = parseBlock(tokens)
   consume(tokens, 'while')
-  consume(tokens, '(')
+  consume(tokens, Operators.LEFT_PARENTHESIS)
   const test = parseExpression(tokens)
-  consume(tokens, ')')
-  consume(tokens, ';')
+  consume(tokens, Operators.RIGHT_PARENTHESIS)
+  consume(tokens, Operators.SEMICOLON)
 
   return new DoWhileStatement(test, body)
 }
@@ -400,15 +529,15 @@ function parseSwitch(tokens: Token[]): SwitchStatement {
   const cases: SwitchCase[] = []
   while (tokens.length) {
     const token = consume(tokens)
-    if (token.value === '}') break
+    if (token.value === Operators.RIGHT_BRACE) break
 
     if (token.value === 'case') {
       const test = parseExpression(tokens)
-      consume(tokens, ':')
+      consume(tokens, Operators.COLON)
       const consequent = parseStatements(tokens)
       cases.push(new SwitchCase(test, consequent))
     } else if (token.value === 'default') {
-      consume(tokens, ':')
+      consume(tokens, Operators.COLON)
       const consequent = parseStatements(tokens)
       cases.push(new SwitchCase(null, consequent))
     }
@@ -421,12 +550,12 @@ function parsePrecision(tokens: Token[]): PrecisionStatement {
   consume(tokens, 'precision')
   const precision = consume(tokens).value
   const type = new Type(consume(tokens).value, null)
-  consume(tokens, ';')
+  consume(tokens, Operators.SEMICOLON)
   return new PrecisionStatement(precision as any, type)
 }
 
 function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
-  consume(tokens, '#')
+  consume(tokens, Operators.PREPROCESSOR)
   const name = consume(tokens).value
 
   let value: AST[] | null = null
@@ -436,17 +565,17 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
     value = [left, right]
   } else if (name === 'extension') {
     const left = parseExpression(tokens)
-    consume(tokens, ':')
+    consume(tokens, Operators.COLON)
     const right = parseExpression(tokens)
     value = [left, right]
   } else if (name === 'include') {
-    consume(tokens, '<')
+    consume(tokens, Operators.LESS_THAN)
     value = [new Identifier(consume(tokens).value)]
-    consume(tokens, '>')
+    consume(tokens, Operators.GREATER_THAN)
   } else if (name !== 'else' && name !== 'endif') {
     value = [parseExpression(tokens)]
   }
-  consume(tokens, '\\')
+  consume(tokens, Operators.NEWLINE)
 
   return new PreprocessorStatement(name, value)
 }
@@ -464,7 +593,7 @@ function parseStatements(tokens: Token[]): AST[] {
     let statement: AST | null = null
 
     if (token.value === 'case' || token.value === 'default') break
-    else if (token.value === '#') statement = parsePreprocessor(tokens)
+    else if (token.value === Operators.PREPROCESSOR) statement = parsePreprocessor(tokens)
     else if (token.value === 'struct') statement = parseStruct(tokens)
     else if (token.value === 'continue') statement = parseContinue(tokens)
     else if (token.value === 'break') statement = parseBreak(tokens)
@@ -479,7 +608,7 @@ function parseStatements(tokens: Token[]): AST[] {
     else if (isDeclaration(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
     else {
       statement = parseExpression(tokens)
-      consume(tokens, ';')
+      consume(tokens, Operators.SEMICOLON)
     }
 
     body.push(statement)
@@ -489,9 +618,9 @@ function parseStatements(tokens: Token[]): AST[] {
 }
 
 function parseBlock(tokens: Token[]): BlockStatement {
-  consume(tokens, '{')
+  consume(tokens, Operators.LEFT_BRACE)
   const body = parseStatements(tokens)
-  consume(tokens, '}')
+  consume(tokens, Operators.RIGHT_BRACE)
   return new BlockStatement(body)
 }
 
