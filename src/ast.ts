@@ -39,6 +39,8 @@ export class FunctionDeclaration {
 }
 
 export class UnaryExpression {
+  constructor(operator: string, left: AST, right: null)
+  constructor(operator: string, left: null, right: AST)
   constructor(public operator: string, public left: AST | null, public right: AST | null) {}
 }
 
@@ -91,7 +93,18 @@ export class SwitchStatement {
 }
 
 export class ReturnStatement {
-  constructor(public argument: Literal | Identifier | UnaryExpression | null) {}
+  constructor(
+    public argument:
+      | Literal
+      | Identifier
+      | UnaryExpression
+      | BinaryExpression
+      | TernaryExpression
+      | CallExpression
+      | MemberExpression
+      | ArrayExpression
+      | null,
+  ) {}
 }
 
 export class PreprocessorStatement {
