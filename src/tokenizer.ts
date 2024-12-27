@@ -2,9 +2,20 @@ import { WGSL_KEYWORDS, WGSL_SYMBOLS, GLSL_KEYWORDS, GLSL_SYMBOLS } from './cons
 
 export type TokenType = 'whitespace' | 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
 
+export interface Position {
+  line: number
+  column: number
+}
+
+export interface SourceLocation {
+  start: Position
+  end: Position
+}
+
 export interface Token<T = TokenType, V = string> {
   type: T
   value: V
+  loc: SourceLocation
 }
 
 // Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
@@ -43,34 +54,55 @@ export function tokenize(code: string, index: number = 0): Token[] {
 
   let prev: number = -1
   const [KEYWORDS, SYMBOLS] = isWGSL(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
+
+  let line = 1
+  let column = 0
+
   while (index < code.length) {
+    let type: TokenType
     let value = code[index]
     const char = code.charCodeAt(index++)
 
     if (isSpace(char)) {
+      type = 'whitespace'
       while (isSpace(code.charCodeAt(index))) value += code[index++]
-      tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char)) {
       while (isFloat(value + code[index]) || isInt(value + code[index])) value += code[index++]
-      if (isFloat(value)) tokens.push({ type: 'float', value })
-      else tokens.push({ type: 'int', value })
+      type = isFloat(value) ? 'float' : 'int'
     } else if (isIdent(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
-      if (isBool(value)) tokens.push({ type: 'bool', value })
-      else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value))
-        tokens.push({ type: 'keyword', value })
-      else tokens.push({ type: 'identifier', value })
+      if (isBool(value)) type = 'bool'
+      else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value)) type = 'keyword'
+      else type = 'identifier'
     } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
       const terminator = code.charCodeAt(index) === STAR ? '*/' : '\n'
       while (!value.endsWith(terminator)) value += code[index++]
-      tokens.push({ type: 'comment', value })
+      type = 'comment'
     } else {
+      type = 'symbol'
       for (const symbol of SYMBOLS) {
         if (symbol.length > value.length && code.startsWith(symbol, index - 1)) value = symbol
       }
       index += value.length - 1
-      tokens.push({ type: 'symbol', value })
     }
+
+    const token: Token = {
+      type,
+      value,
+      loc: { start: { line, column }, end: null! },
+    }
+    tokens.push(token)
+
+    for (let i = 0; i < token.value.length; i++) {
+      if (token.value[i] === '\n') {
+        line++
+        column = 0
+      } else {
+        column++
+      }
+    }
+    token.loc.end = { line, column }
+
     prev = char
   }
 

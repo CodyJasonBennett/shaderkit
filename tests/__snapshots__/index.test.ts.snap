@@ -166,1531 +166,5221 @@ Map {
 exports[`tokenize > can tokenize GLSL 1`] = `
 [
   {
+    "loc": {
+      "end": {
+        "column": 1,
+        "line": 1,
+      },
+      "start": {
+        "column": 0,
+        "line": 1,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 1,
+      },
+      "start": {
+        "column": 1,
+        "line": 1,
+      },
+    },
     "type": "keyword",
     "value": "version",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 1,
+      },
+      "start": {
+        "column": 8,
+        "line": 1,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 1,
+      },
+      "start": {
+        "column": 9,
+        "line": 1,
+      },
+    },
     "type": "int",
     "value": "300",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 1,
+      },
+      "start": {
+        "column": 12,
+        "line": 1,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 1,
+      },
+      "start": {
+        "column": 13,
+        "line": 1,
+      },
+    },
     "type": "identifier",
     "value": "es",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 2,
+      },
+      "start": {
+        "column": 15,
+        "line": 1,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 2,
+      },
+      "start": {
+        "column": 2,
+        "line": 2,
+      },
+    },
     "type": "keyword",
     "value": "precision",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 2,
+      },
+      "start": {
+        "column": 11,
+        "line": 2,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 2,
+      },
+      "start": {
+        "column": 12,
+        "line": 2,
+      },
+    },
     "type": "keyword",
     "value": "mediump",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 2,
+      },
+      "start": {
+        "column": 19,
+        "line": 2,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 2,
+      },
+      "start": {
+        "column": 20,
+        "line": 2,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 2,
+      },
+      "start": {
+        "column": 25,
+        "line": 2,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 4,
+      },
+      "start": {
+        "column": 26,
+        "line": 2,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 0,
+        "line": 5,
+      },
+      "start": {
+        "column": 2,
+        "line": 4,
+      },
+    },
     "type": "comment",
     "value": "// single line
 ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 6,
+      },
+      "start": {
+        "column": 0,
+        "line": 5,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 8,
+      },
+      "start": {
+        "column": 2,
+        "line": 6,
+      },
+    },
     "type": "comment",
     "value": "/*
     multiline
   */",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 10,
+      },
+      "start": {
+        "column": 4,
+        "line": 8,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 10,
+      },
+      "start": {
+        "column": 2,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 10,
+      },
+      "start": {
+        "column": 3,
+        "line": 10,
+      },
+    },
     "type": "keyword",
     "value": "define",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 10,
+      },
+      "start": {
+        "column": 9,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 10,
+      },
+      "start": {
+        "column": 10,
+        "line": 10,
+      },
+    },
     "type": "identifier",
     "value": "PLUS",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 10,
+      },
+      "start": {
+        "column": 14,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 10,
+      },
+      "start": {
+        "column": 15,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 10,
+      },
+      "start": {
+        "column": 16,
+        "line": 10,
+      },
+    },
     "type": "identifier",
     "value": "n",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 10,
+      },
+      "start": {
+        "column": 17,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 10,
+      },
+      "start": {
+        "column": 18,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": "     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 10,
+      },
+      "start": {
+        "column": 23,
+        "line": 10,
+      },
+    },
     "type": "identifier",
     "value": "n",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 10,
+      },
+      "start": {
+        "column": 24,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 10,
+      },
+      "start": {
+        "column": 25,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": "+=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 10,
+      },
+      "start": {
+        "column": 27,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 10,
+      },
+      "start": {
+        "column": 28,
+        "line": 10,
+      },
+    },
     "type": "int",
     "value": "1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 10,
+      },
+      "start": {
+        "column": 29,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 12,
+      },
+      "start": {
+        "column": 30,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 12,
+      },
+      "start": {
+        "column": 2,
+        "line": 12,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 12,
+      },
+      "start": {
+        "column": 3,
+        "line": 12,
+      },
+    },
     "type": "keyword",
     "value": "define",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 12,
+      },
+      "start": {
+        "column": 9,
+        "line": 12,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 12,
+      },
+      "start": {
+        "column": 10,
+        "line": 12,
+      },
+    },
     "type": "identifier",
     "value": "TEST",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 12,
+      },
+      "start": {
+        "column": 14,
+        "line": 12,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 0,
+        "line": 13,
+      },
+      "start": {
+        "column": 15,
+        "line": 12,
+      },
+    },
     "type": "comment",
     "value": "// inline comment
 ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 13,
+      },
+      "start": {
+        "column": 0,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": "  ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 13,
+      },
+      "start": {
+        "column": 2,
+        "line": 13,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 13,
+      },
+      "start": {
+        "column": 3,
+        "line": 13,
+      },
+    },
     "type": "keyword",
     "value": "if",
   },
   {
+    "loc": {
+      "end": {
+        "column": 6,
+        "line": 13,
+      },
+      "start": {
+        "column": 5,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 13,
+      },
+      "start": {
+        "column": 6,
+        "line": 13,
+      },
+    },
     "type": "keyword",
     "value": "defined",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 13,
+      },
+      "start": {
+        "column": 13,
+        "line": 13,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 13,
+      },
+      "start": {
+        "column": 14,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 13,
+      },
+      "start": {
+        "column": 15,
+        "line": 13,
+      },
+    },
     "type": "identifier",
     "value": "TEST",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 13,
+      },
+      "start": {
+        "column": 19,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 13,
+      },
+      "start": {
+        "column": 20,
+        "line": 13,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 14,
+      },
+      "start": {
+        "column": 21,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 14,
+      },
+      "start": {
+        "column": 4,
+        "line": 14,
+      },
+    },
     "type": "keyword",
     "value": "const",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 14,
+      },
+      "start": {
+        "column": 9,
+        "line": 14,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 14,
+      },
+      "start": {
+        "column": 10,
+        "line": 14,
+      },
+    },
     "type": "keyword",
     "value": "bool",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 14,
+      },
+      "start": {
+        "column": 14,
+        "line": 14,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 14,
+      },
+      "start": {
+        "column": 15,
+        "line": 14,
+      },
+    },
     "type": "identifier",
     "value": "isTest",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 14,
+      },
+      "start": {
+        "column": 21,
+        "line": 14,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 14,
+      },
+      "start": {
+        "column": 22,
+        "line": 14,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 14,
+      },
+      "start": {
+        "column": 23,
+        "line": 14,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 14,
+      },
+      "start": {
+        "column": 24,
+        "line": 14,
+      },
+    },
     "type": "bool",
     "value": "true",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 14,
+      },
+      "start": {
+        "column": 28,
+        "line": 14,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 15,
+      },
+      "start": {
+        "column": 29,
+        "line": 14,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 15,
+      },
+      "start": {
+        "column": 2,
+        "line": 15,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 15,
+      },
+      "start": {
+        "column": 3,
+        "line": 15,
+      },
+    },
     "type": "keyword",
     "value": "endif",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 17,
+      },
+      "start": {
+        "column": 8,
+        "line": 15,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 17,
+      },
+      "start": {
+        "column": 2,
+        "line": 17,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 17,
+      },
+      "start": {
+        "column": 9,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 17,
+      },
+      "start": {
+        "column": 10,
+        "line": 17,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 17,
+      },
+      "start": {
+        "column": 15,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 17,
+      },
+      "start": {
+        "column": 16,
+        "line": 17,
+      },
+    },
     "type": "identifier",
     "value": "foo",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 17,
+      },
+      "start": {
+        "column": 19,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 17,
+      },
+      "start": {
+        "column": 20,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 17,
+      },
+      "start": {
+        "column": 21,
+        "line": 17,
+      },
+    },
     "type": "identifier",
     "value": "bar",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 17,
+      },
+      "start": {
+        "column": 24,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 19,
+      },
+      "start": {
+        "column": 25,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 19,
+      },
+      "start": {
+        "column": 2,
+        "line": 19,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 19,
+      },
+      "start": {
+        "column": 9,
+        "line": 19,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 19,
+      },
+      "start": {
+        "column": 10,
+        "line": 19,
+      },
+    },
     "type": "keyword",
     "value": "sampler2D",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 19,
+      },
+      "start": {
+        "column": 19,
+        "line": 19,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 19,
+      },
+      "start": {
+        "column": 20,
+        "line": 19,
+      },
+    },
     "type": "identifier",
     "value": "map",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 19,
+      },
+      "start": {
+        "column": 23,
+        "line": 19,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 20,
+      },
+      "start": {
+        "column": 24,
+        "line": 19,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 20,
+      },
+      "start": {
+        "column": 2,
+        "line": 20,
+      },
+    },
     "type": "keyword",
     "value": "in",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 20,
+      },
+      "start": {
+        "column": 4,
+        "line": 20,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 20,
+      },
+      "start": {
+        "column": 5,
+        "line": 20,
+      },
+    },
     "type": "keyword",
     "value": "vec2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 20,
+      },
+      "start": {
+        "column": 9,
+        "line": 20,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 20,
+      },
+      "start": {
+        "column": 10,
+        "line": 20,
+      },
+    },
     "type": "identifier",
     "value": "vUv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 20,
+      },
+      "start": {
+        "column": 13,
+        "line": 20,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 21,
+      },
+      "start": {
+        "column": 14,
+        "line": 20,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 21,
+      },
+      "start": {
+        "column": 2,
+        "line": 21,
+      },
+    },
     "type": "keyword",
     "value": "out",
   },
   {
+    "loc": {
+      "end": {
+        "column": 6,
+        "line": 21,
+      },
+      "start": {
+        "column": 5,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 21,
+      },
+      "start": {
+        "column": 6,
+        "line": 21,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 21,
+      },
+      "start": {
+        "column": 10,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 21,
+      },
+      "start": {
+        "column": 11,
+        "line": 21,
+      },
+    },
     "type": "identifier",
     "value": "pc_FragColor",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 21,
+      },
+      "start": {
+        "column": 23,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 23,
+      },
+      "start": {
+        "column": 24,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 23,
+      },
+      "start": {
+        "column": 2,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "#",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 23,
+      },
+      "start": {
+        "column": 3,
+        "line": 23,
+      },
+    },
     "type": "keyword",
     "value": "include",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 23,
+      },
+      "start": {
+        "column": 10,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 23,
+      },
+      "start": {
+        "column": 11,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 23,
+      },
+      "start": {
+        "column": 12,
+        "line": 23,
+      },
+    },
     "type": "identifier",
     "value": "three_test",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 23,
+      },
+      "start": {
+        "column": 22,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 25,
+      },
+      "start": {
+        "column": 23,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 25,
+      },
+      "start": {
+        "column": 2,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "layout",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 25,
+      },
+      "start": {
+        "column": 8,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 25,
+      },
+      "start": {
+        "column": 9,
+        "line": 25,
+      },
+    },
     "type": "identifier",
     "value": "std140",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 25,
+      },
+      "start": {
+        "column": 15,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 25,
+      },
+      "start": {
+        "column": 16,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 25,
+      },
+      "start": {
+        "column": 17,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 25,
+      },
+      "start": {
+        "column": 24,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 25,
+      },
+      "start": {
+        "column": 25,
+        "line": 25,
+      },
+    },
     "type": "identifier",
     "value": "Uniforms1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 25,
+      },
+      "start": {
+        "column": 34,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 25,
+      },
+      "start": {
+        "column": 35,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 26,
+      },
+      "start": {
+        "column": 36,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 26,
+      },
+      "start": {
+        "column": 4,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "mat4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 26,
+      },
+      "start": {
+        "column": 8,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 26,
+      },
+      "start": {
+        "column": 9,
+        "line": 26,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 26,
+      },
+      "start": {
+        "column": 25,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 27,
+      },
+      "start": {
+        "column": 26,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 27,
+      },
+      "start": {
+        "column": 4,
+        "line": 27,
+      },
+    },
     "type": "keyword",
     "value": "mat4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 27,
+      },
+      "start": {
+        "column": 8,
+        "line": 27,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 27,
+      },
+      "start": {
+        "column": 9,
+        "line": 27,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 27,
+      },
+      "start": {
+        "column": 24,
+        "line": 27,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 28,
+      },
+      "start": {
+        "column": 25,
+        "line": 27,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 28,
+      },
+      "start": {
+        "column": 4,
+        "line": 28,
+      },
+    },
     "type": "keyword",
     "value": "mat3",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 28,
+      },
+      "start": {
+        "column": 8,
+        "line": 28,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 28,
+      },
+      "start": {
+        "column": 9,
+        "line": 28,
+      },
+    },
     "type": "identifier",
     "value": "normalMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 28,
+      },
+      "start": {
+        "column": 21,
+        "line": 28,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 29,
+      },
+      "start": {
+        "column": 22,
+        "line": 28,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 29,
+      },
+      "start": {
+        "column": 4,
+        "line": 29,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 29,
+      },
+      "start": {
+        "column": 9,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 29,
+      },
+      "start": {
+        "column": 10,
+        "line": 29,
+      },
+    },
     "type": "identifier",
     "value": "one",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 29,
+      },
+      "start": {
+        "column": 13,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 29,
+      },
+      "start": {
+        "column": 14,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 29,
+      },
+      "start": {
+        "column": 15,
+        "line": 29,
+      },
+    },
     "type": "identifier",
     "value": "two",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 29,
+      },
+      "start": {
+        "column": 18,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 30,
+      },
+      "start": {
+        "column": 19,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 30,
+      },
+      "start": {
+        "column": 2,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 30,
+      },
+      "start": {
+        "column": 3,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 32,
+      },
+      "start": {
+        "column": 4,
+        "line": 30,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 32,
+      },
+      "start": {
+        "column": 2,
+        "line": 32,
+      },
+    },
     "type": "keyword",
     "value": "layout",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 32,
+      },
+      "start": {
+        "column": 8,
+        "line": 32,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 32,
+      },
+      "start": {
+        "column": 9,
+        "line": 32,
+      },
+    },
     "type": "identifier",
     "value": "std140",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 32,
+      },
+      "start": {
+        "column": 15,
+        "line": 32,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 32,
+      },
+      "start": {
+        "column": 16,
+        "line": 32,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 32,
+      },
+      "start": {
+        "column": 17,
+        "line": 32,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 32,
+      },
+      "start": {
+        "column": 24,
+        "line": 32,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 32,
+      },
+      "start": {
+        "column": 25,
+        "line": 32,
+      },
+    },
     "type": "identifier",
     "value": "Uniforms2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 32,
+      },
+      "start": {
+        "column": 34,
+        "line": 32,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 32,
+      },
+      "start": {
+        "column": 35,
+        "line": 32,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 33,
+      },
+      "start": {
+        "column": 36,
+        "line": 32,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 33,
+      },
+      "start": {
+        "column": 4,
+        "line": 33,
+      },
+    },
     "type": "keyword",
     "value": "mat4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 33,
+      },
+      "start": {
+        "column": 8,
+        "line": 33,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 33,
+      },
+      "start": {
+        "column": 9,
+        "line": 33,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 33,
+      },
+      "start": {
+        "column": 25,
+        "line": 33,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 34,
+      },
+      "start": {
+        "column": 26,
+        "line": 33,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 34,
+      },
+      "start": {
+        "column": 4,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "mat4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 34,
+      },
+      "start": {
+        "column": 8,
+        "line": 34,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 34,
+      },
+      "start": {
+        "column": 9,
+        "line": 34,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 34,
+      },
+      "start": {
+        "column": 24,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 35,
+      },
+      "start": {
+        "column": 25,
+        "line": 34,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 35,
+      },
+      "start": {
+        "column": 4,
+        "line": 35,
+      },
+    },
     "type": "keyword",
     "value": "mat3",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 35,
+      },
+      "start": {
+        "column": 8,
+        "line": 35,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 35,
+      },
+      "start": {
+        "column": 9,
+        "line": 35,
+      },
+    },
     "type": "identifier",
     "value": "normalMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 35,
+      },
+      "start": {
+        "column": 21,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 36,
+      },
+      "start": {
+        "column": 22,
+        "line": 35,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 36,
+      },
+      "start": {
+        "column": 4,
+        "line": 36,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 36,
+      },
+      "start": {
+        "column": 9,
+        "line": 36,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 36,
+      },
+      "start": {
+        "column": 10,
+        "line": 36,
+      },
+    },
     "type": "identifier",
     "value": "one",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 36,
+      },
+      "start": {
+        "column": 13,
+        "line": 36,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 36,
+      },
+      "start": {
+        "column": 14,
+        "line": 36,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 36,
+      },
+      "start": {
+        "column": 15,
+        "line": 36,
+      },
+    },
     "type": "identifier",
     "value": "two",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 36,
+      },
+      "start": {
+        "column": 18,
+        "line": 36,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 37,
+      },
+      "start": {
+        "column": 19,
+        "line": 36,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 37,
+      },
+      "start": {
+        "column": 2,
+        "line": 37,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 37,
+      },
+      "start": {
+        "column": 3,
+        "line": 37,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 37,
+      },
+      "start": {
+        "column": 4,
+        "line": 37,
+      },
+    },
     "type": "identifier",
     "value": "globals",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 37,
+      },
+      "start": {
+        "column": 11,
+        "line": 37,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 39,
+      },
+      "start": {
+        "column": 12,
+        "line": 37,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 39,
+      },
+      "start": {
+        "column": 2,
+        "line": 39,
+      },
+    },
     "type": "keyword",
     "value": "struct",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 39,
+      },
+      "start": {
+        "column": 8,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 39,
+      },
+      "start": {
+        "column": 9,
+        "line": 39,
+      },
+    },
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 39,
+      },
+      "start": {
+        "column": 18,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 39,
+      },
+      "start": {
+        "column": 19,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 40,
+      },
+      "start": {
+        "column": 20,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 40,
+      },
+      "start": {
+        "column": 4,
+        "line": 40,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 40,
+      },
+      "start": {
+        "column": 9,
+        "line": 40,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 40,
+      },
+      "start": {
+        "column": 10,
+        "line": 40,
+      },
+    },
     "type": "identifier",
     "value": "intensity",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 40,
+      },
+      "start": {
+        "column": 19,
+        "line": 40,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 41,
+      },
+      "start": {
+        "column": 20,
+        "line": 40,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 41,
+      },
+      "start": {
+        "column": 4,
+        "line": 41,
+      },
+    },
     "type": "keyword",
     "value": "vec3",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 41,
+      },
+      "start": {
+        "column": 8,
+        "line": 41,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 41,
+      },
+      "start": {
+        "column": 9,
+        "line": 41,
+      },
+    },
     "type": "identifier",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 41,
+      },
+      "start": {
+        "column": 17,
+        "line": 41,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 42,
+      },
+      "start": {
+        "column": 18,
+        "line": 41,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 42,
+      },
+      "start": {
+        "column": 4,
+        "line": 42,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 42,
+      },
+      "start": {
+        "column": 9,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 42,
+      },
+      "start": {
+        "column": 10,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "one",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 42,
+      },
+      "start": {
+        "column": 13,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 42,
+      },
+      "start": {
+        "column": 14,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 42,
+      },
+      "start": {
+        "column": 15,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "two",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 42,
+      },
+      "start": {
+        "column": 18,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 43,
+      },
+      "start": {
+        "column": 19,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 43,
+      },
+      "start": {
+        "column": 2,
+        "line": 43,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 43,
+      },
+      "start": {
+        "column": 3,
+        "line": 43,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 44,
+      },
+      "start": {
+        "column": 4,
+        "line": 43,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 44,
+      },
+      "start": {
+        "column": 2,
+        "line": 44,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 44,
+      },
+      "start": {
+        "column": 9,
+        "line": 44,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 44,
+      },
+      "start": {
+        "column": 10,
+        "line": 44,
+      },
+    },
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 44,
+      },
+      "start": {
+        "column": 19,
+        "line": 44,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 44,
+      },
+      "start": {
+        "column": 20,
+        "line": 44,
+      },
+    },
     "type": "identifier",
     "value": "Light",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 44,
+      },
+      "start": {
+        "column": 25,
+        "line": 44,
+      },
+    },
     "type": "symbol",
     "value": "[",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 44,
+      },
+      "start": {
+        "column": 26,
+        "line": 44,
+      },
+    },
     "type": "int",
     "value": "4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 44,
+      },
+      "start": {
+        "column": 27,
+        "line": 44,
+      },
+    },
     "type": "symbol",
     "value": "]",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 44,
+      },
+      "start": {
+        "column": 28,
+        "line": 44,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 46,
+      },
+      "start": {
+        "column": 29,
+        "line": 44,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 6,
+        "line": 46,
+      },
+      "start": {
+        "column": 2,
+        "line": 46,
+      },
+    },
     "type": "keyword",
     "value": "void",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 46,
+      },
+      "start": {
+        "column": 6,
+        "line": 46,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 46,
+      },
+      "start": {
+        "column": 7,
+        "line": 46,
+      },
+    },
     "type": "identifier",
     "value": "main",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 46,
+      },
+      "start": {
+        "column": 11,
+        "line": 46,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 46,
+      },
+      "start": {
+        "column": 12,
+        "line": 46,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 46,
+      },
+      "start": {
+        "column": 13,
+        "line": 46,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 46,
+      },
+      "start": {
+        "column": 14,
+        "line": 46,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 47,
+      },
+      "start": {
+        "column": 15,
+        "line": 46,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 47,
+      },
+      "start": {
+        "column": 4,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 47,
+      },
+      "start": {
+        "column": 8,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 47,
+      },
+      "start": {
+        "column": 9,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "lightNormal",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 47,
+      },
+      "start": {
+        "column": 20,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 47,
+      },
+      "start": {
+        "column": 21,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 47,
+      },
+      "start": {
+        "column": 22,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 47,
+      },
+      "start": {
+        "column": 23,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 47,
+      },
+      "start": {
+        "column": 27,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 47,
+      },
+      "start": {
+        "column": 28,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "Light",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 47,
+      },
+      "start": {
+        "column": 33,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "[",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 47,
+      },
+      "start": {
+        "column": 34,
+        "line": 47,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 47,
+      },
+      "start": {
+        "column": 35,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "]",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 47,
+      },
+      "start": {
+        "column": 36,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 45,
+        "line": 47,
+      },
+      "start": {
+        "column": 37,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 46,
+        "line": 47,
+      },
+      "start": {
+        "column": 45,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 49,
+        "line": 47,
+      },
+      "start": {
+        "column": 46,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "xyz",
   },
   {
+    "loc": {
+      "end": {
+        "column": 50,
+        "line": 47,
+      },
+      "start": {
+        "column": 49,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 51,
+        "line": 47,
+      },
+      "start": {
+        "column": 50,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 52,
+        "line": 47,
+      },
+      "start": {
+        "column": 51,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 57,
+        "line": 47,
+      },
+      "start": {
+        "column": 52,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "Light",
   },
   {
+    "loc": {
+      "end": {
+        "column": 58,
+        "line": 47,
+      },
+      "start": {
+        "column": 57,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "[",
   },
   {
+    "loc": {
+      "end": {
+        "column": 59,
+        "line": 47,
+      },
+      "start": {
+        "column": 58,
+        "line": 47,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 60,
+        "line": 47,
+      },
+      "start": {
+        "column": 59,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "]",
   },
   {
+    "loc": {
+      "end": {
+        "column": 61,
+        "line": 47,
+      },
+      "start": {
+        "column": 60,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 70,
+        "line": 47,
+      },
+      "start": {
+        "column": 61,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "intensity",
   },
   {
+    "loc": {
+      "end": {
+        "column": 71,
+        "line": 47,
+      },
+      "start": {
+        "column": 70,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 72,
+        "line": 47,
+      },
+      "start": {
+        "column": 71,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 75,
+        "line": 47,
+      },
+      "start": {
+        "column": 72,
+        "line": 47,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 76,
+        "line": 47,
+      },
+      "start": {
+        "column": 75,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 77,
+        "line": 47,
+      },
+      "start": {
+        "column": 76,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 48,
+      },
+      "start": {
+        "column": 77,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 48,
+      },
+      "start": {
+        "column": 4,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 48,
+      },
+      "start": {
+        "column": 8,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 48,
+      },
+      "start": {
+        "column": 9,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "clipPosition",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 48,
+      },
+      "start": {
+        "column": 21,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 48,
+      },
+      "start": {
+        "column": 22,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 48,
+      },
+      "start": {
+        "column": 23,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 40,
+        "line": 48,
+      },
+      "start": {
+        "column": 24,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 48,
+      },
+      "start": {
+        "column": 40,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 42,
+        "line": 48,
+      },
+      "start": {
+        "column": 41,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 48,
+      },
+      "start": {
+        "column": 42,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 58,
+        "line": 48,
+      },
+      "start": {
+        "column": 43,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 59,
+        "line": 48,
+      },
+      "start": {
+        "column": 58,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 60,
+        "line": 48,
+      },
+      "start": {
+        "column": 59,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 61,
+        "line": 48,
+      },
+      "start": {
+        "column": 60,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 65,
+        "line": 48,
+      },
+      "start": {
+        "column": 61,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 66,
+        "line": 48,
+      },
+      "start": {
+        "column": 65,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 67,
+        "line": 48,
+      },
+      "start": {
+        "column": 66,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 68,
+        "line": 48,
+      },
+      "start": {
+        "column": 67,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 69,
+        "line": 48,
+      },
+      "start": {
+        "column": 68,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 70,
+        "line": 48,
+      },
+      "start": {
+        "column": 69,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 71,
+        "line": 48,
+      },
+      "start": {
+        "column": 70,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 72,
+        "line": 48,
+      },
+      "start": {
+        "column": 71,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 73,
+        "line": 48,
+      },
+      "start": {
+        "column": 72,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 74,
+        "line": 48,
+      },
+      "start": {
+        "column": 73,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 75,
+        "line": 48,
+      },
+      "start": {
+        "column": 74,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 76,
+        "line": 48,
+      },
+      "start": {
+        "column": 75,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 77,
+        "line": 48,
+      },
+      "start": {
+        "column": 76,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 78,
+        "line": 48,
+      },
+      "start": {
+        "column": 77,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 49,
+      },
+      "start": {
+        "column": 78,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 49,
+      },
+      "start": {
+        "column": 4,
+        "line": 49,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 49,
+      },
+      "start": {
+        "column": 8,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 49,
+      },
+      "start": {
+        "column": 9,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "clipPositionGlobals",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 49,
+      },
+      "start": {
+        "column": 28,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 49,
+      },
+      "start": {
+        "column": 29,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 49,
+      },
+      "start": {
+        "column": 30,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 38,
+        "line": 49,
+      },
+      "start": {
+        "column": 31,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "globals",
   },
   {
+    "loc": {
+      "end": {
+        "column": 39,
+        "line": 49,
+      },
+      "start": {
+        "column": 38,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 55,
+        "line": 49,
+      },
+      "start": {
+        "column": 39,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 56,
+        "line": 49,
+      },
+      "start": {
+        "column": 55,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 57,
+        "line": 49,
+      },
+      "start": {
+        "column": 56,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 58,
+        "line": 49,
+      },
+      "start": {
+        "column": 57,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 65,
+        "line": 49,
+      },
+      "start": {
+        "column": 58,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "globals",
   },
   {
+    "loc": {
+      "end": {
+        "column": 66,
+        "line": 49,
+      },
+      "start": {
+        "column": 65,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 81,
+        "line": 49,
+      },
+      "start": {
+        "column": 66,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 82,
+        "line": 49,
+      },
+      "start": {
+        "column": 81,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 83,
+        "line": 49,
+      },
+      "start": {
+        "column": 82,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 84,
+        "line": 49,
+      },
+      "start": {
+        "column": 83,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 88,
+        "line": 49,
+      },
+      "start": {
+        "column": 84,
+        "line": 49,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 89,
+        "line": 49,
+      },
+      "start": {
+        "column": 88,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 90,
+        "line": 49,
+      },
+      "start": {
+        "column": 89,
+        "line": 49,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 91,
+        "line": 49,
+      },
+      "start": {
+        "column": 90,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 92,
+        "line": 49,
+      },
+      "start": {
+        "column": 91,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 93,
+        "line": 49,
+      },
+      "start": {
+        "column": 92,
+        "line": 49,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 94,
+        "line": 49,
+      },
+      "start": {
+        "column": 93,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 95,
+        "line": 49,
+      },
+      "start": {
+        "column": 94,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 96,
+        "line": 49,
+      },
+      "start": {
+        "column": 95,
+        "line": 49,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 97,
+        "line": 49,
+      },
+      "start": {
+        "column": 96,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 98,
+        "line": 49,
+      },
+      "start": {
+        "column": 97,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 99,
+        "line": 49,
+      },
+      "start": {
+        "column": 98,
+        "line": 49,
+      },
+    },
     "type": "int",
     "value": "1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 100,
+        "line": 49,
+      },
+      "start": {
+        "column": 99,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 101,
+        "line": 49,
+      },
+      "start": {
+        "column": 100,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 50,
+      },
+      "start": {
+        "column": 101,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 6,
+        "line": 50,
+      },
+      "start": {
+        "column": 4,
+        "line": 50,
+      },
+    },
     "type": "keyword",
     "value": "if",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 50,
+      },
+      "start": {
+        "column": 6,
+        "line": 50,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 50,
+      },
+      "start": {
+        "column": 7,
+        "line": 50,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 50,
+      },
+      "start": {
+        "column": 8,
+        "line": 50,
+      },
+    },
     "type": "bool",
     "value": "false",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 50,
+      },
+      "start": {
+        "column": 13,
+        "line": 50,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 50,
+      },
+      "start": {
+        "column": 14,
+        "line": 50,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 50,
+      },
+      "start": {
+        "column": 15,
+        "line": 50,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 50,
+      },
+      "start": {
+        "column": 16,
+        "line": 50,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 51,
+      },
+      "start": {
+        "column": 17,
+        "line": 50,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 51,
+      },
+      "start": {
+        "column": 4,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "pc_FragColor",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 51,
+      },
+      "start": {
+        "column": 16,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 51,
+      },
+      "start": {
+        "column": 17,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 51,
+      },
+      "start": {
+        "column": 18,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 51,
+      },
+      "start": {
+        "column": 19,
+        "line": 51,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 51,
+      },
+      "start": {
+        "column": 23,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 51,
+      },
+      "start": {
+        "column": 24,
+        "line": 51,
+      },
+    },
     "type": "keyword",
     "value": "texture",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 51,
+      },
+      "start": {
+        "column": 31,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 51,
+      },
+      "start": {
+        "column": 32,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "map",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 51,
+      },
+      "start": {
+        "column": 35,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 51,
+      },
+      "start": {
+        "column": 36,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 40,
+        "line": 51,
+      },
+      "start": {
+        "column": 37,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "vUv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 51,
+      },
+      "start": {
+        "column": 40,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 42,
+        "line": 51,
+      },
+      "start": {
+        "column": 41,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 45,
+        "line": 51,
+      },
+      "start": {
+        "column": 42,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "rgb",
   },
   {
+    "loc": {
+      "end": {
+        "column": 46,
+        "line": 51,
+      },
+      "start": {
+        "column": 45,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 47,
+        "line": 51,
+      },
+      "start": {
+        "column": 46,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 50,
+        "line": 51,
+      },
+      "start": {
+        "column": 47,
+        "line": 51,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 51,
+        "line": 51,
+      },
+      "start": {
+        "column": 50,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 52,
+        "line": 51,
+      },
+      "start": {
+        "column": 51,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 52,
+      },
+      "start": {
+        "column": 52,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 52,
+      },
+      "start": {
+        "column": 4,
+        "line": 52,
+      },
+    },
     "type": "keyword",
     "value": "float",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 52,
+      },
+      "start": {
+        "column": 9,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 52,
+      },
+      "start": {
+        "column": 10,
+        "line": 52,
+      },
+    },
     "type": "identifier",
     "value": "bar",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 52,
+      },
+      "start": {
+        "column": 13,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 52,
+      },
+      "start": {
+        "column": 14,
+        "line": 52,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 52,
+      },
+      "start": {
+        "column": 15,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 52,
+      },
+      "start": {
+        "column": 16,
+        "line": 52,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 52,
+      },
+      "start": {
+        "column": 19,
+        "line": 52,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 53,
+      },
+      "start": {
+        "column": 20,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 53,
+      },
+      "start": {
+        "column": 4,
+        "line": 53,
+      },
+    },
     "type": "identifier",
     "value": "pc_FragColor",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 53,
+      },
+      "start": {
+        "column": 16,
+        "line": 53,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 53,
+      },
+      "start": {
+        "column": 17,
+        "line": 53,
+      },
+    },
     "type": "identifier",
     "value": "a",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 53,
+      },
+      "start": {
+        "column": 18,
+        "line": 53,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 53,
+      },
+      "start": {
+        "column": 19,
+        "line": 53,
+      },
+    },
     "type": "symbol",
     "value": "+=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 53,
+      },
+      "start": {
+        "column": 21,
+        "line": 53,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 53,
+      },
+      "start": {
+        "column": 22,
+        "line": 53,
+      },
+    },
     "type": "float",
     "value": "1.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 53,
+      },
+      "start": {
+        "column": 25,
+        "line": 53,
+      },
+    },
     "type": "symbol",
     "value": "+",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 53,
+      },
+      "start": {
+        "column": 26,
+        "line": 53,
+      },
+    },
     "type": "identifier",
     "value": "bar",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 53,
+      },
+      "start": {
+        "column": 29,
+        "line": 53,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 54,
+      },
+      "start": {
+        "column": 30,
+        "line": 53,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 54,
+      },
+      "start": {
+        "column": 2,
+        "line": 54,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 0,
+        "line": 55,
+      },
+      "start": {
+        "column": 3,
+        "line": 54,
+      },
+    },
     "type": "whitespace",
     "value": "
 ",
@@ -1701,1783 +5391,6103 @@ exports[`tokenize > can tokenize GLSL 1`] = `
 exports[`tokenize > can tokenize WGSL 1`] = `
 [
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 2,
+      },
+      "start": {
+        "column": 0,
+        "line": 1,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 0,
+        "line": 3,
+      },
+      "start": {
+        "column": 2,
+        "line": 2,
+      },
+    },
     "type": "comment",
     "value": "// single line
 ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 4,
+      },
+      "start": {
+        "column": 0,
+        "line": 3,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 6,
+      },
+      "start": {
+        "column": 2,
+        "line": 4,
+      },
+    },
     "type": "comment",
     "value": "/*
     multiline
   */",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 8,
+      },
+      "start": {
+        "column": 4,
+        "line": 6,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 8,
+      },
+      "start": {
+        "column": 2,
+        "line": 8,
+      },
+    },
     "type": "keyword",
     "value": "struct",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 8,
+      },
+      "start": {
+        "column": 8,
+        "line": 8,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 8,
+      },
+      "start": {
+        "column": 9,
+        "line": 8,
+      },
+    },
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 8,
+      },
+      "start": {
+        "column": 18,
+        "line": 8,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 8,
+      },
+      "start": {
+        "column": 19,
+        "line": 8,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 9,
+      },
+      "start": {
+        "column": 20,
+        "line": 8,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 9,
+      },
+      "start": {
+        "column": 4,
+        "line": 9,
+      },
+    },
     "type": "identifier",
     "value": "intensity",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 9,
+      },
+      "start": {
+        "column": 13,
+        "line": 9,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 9,
+      },
+      "start": {
+        "column": 14,
+        "line": 9,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 9,
+      },
+      "start": {
+        "column": 15,
+        "line": 9,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 9,
+      },
+      "start": {
+        "column": 18,
+        "line": 9,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 10,
+      },
+      "start": {
+        "column": 19,
+        "line": 9,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 10,
+      },
+      "start": {
+        "column": 4,
+        "line": 10,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 10,
+      },
+      "start": {
+        "column": 12,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 10,
+      },
+      "start": {
+        "column": 13,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 10,
+      },
+      "start": {
+        "column": 14,
+        "line": 10,
+      },
+    },
     "type": "keyword",
     "value": "vec3",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 10,
+      },
+      "start": {
+        "column": 18,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 10,
+      },
+      "start": {
+        "column": 19,
+        "line": 10,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 10,
+      },
+      "start": {
+        "column": 22,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 10,
+      },
+      "start": {
+        "column": 23,
+        "line": 10,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 11,
+      },
+      "start": {
+        "column": 24,
+        "line": 10,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 11,
+      },
+      "start": {
+        "column": 4,
+        "line": 11,
+      },
+    },
     "type": "identifier",
     "value": "one",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 11,
+      },
+      "start": {
+        "column": 7,
+        "line": 11,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 11,
+      },
+      "start": {
+        "column": 8,
+        "line": 11,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 11,
+      },
+      "start": {
+        "column": 9,
+        "line": 11,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 11,
+      },
+      "start": {
+        "column": 12,
+        "line": 11,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 12,
+      },
+      "start": {
+        "column": 13,
+        "line": 11,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 12,
+      },
+      "start": {
+        "column": 4,
+        "line": 12,
+      },
+    },
     "type": "identifier",
     "value": "two",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 12,
+      },
+      "start": {
+        "column": 7,
+        "line": 12,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 12,
+      },
+      "start": {
+        "column": 8,
+        "line": 12,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 12,
+      },
+      "start": {
+        "column": 9,
+        "line": 12,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 12,
+      },
+      "start": {
+        "column": 12,
+        "line": 12,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 13,
+      },
+      "start": {
+        "column": 13,
+        "line": 12,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 13,
+      },
+      "start": {
+        "column": 2,
+        "line": 13,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 13,
+      },
+      "start": {
+        "column": 3,
+        "line": 13,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 15,
+      },
+      "start": {
+        "column": 4,
+        "line": 13,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 15,
+      },
+      "start": {
+        "column": 2,
+        "line": 15,
+      },
+    },
     "type": "keyword",
     "value": "struct",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 15,
+      },
+      "start": {
+        "column": 8,
+        "line": 15,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 15,
+      },
+      "start": {
+        "column": 9,
+        "line": 15,
+      },
+    },
     "type": "identifier",
     "value": "Uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 15,
+      },
+      "start": {
+        "column": 17,
+        "line": 15,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 15,
+      },
+      "start": {
+        "column": 18,
+        "line": 15,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 16,
+      },
+      "start": {
+        "column": 19,
+        "line": 15,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 16,
+      },
+      "start": {
+        "column": 4,
+        "line": 16,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 16,
+      },
+      "start": {
+        "column": 20,
+        "line": 16,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 16,
+      },
+      "start": {
+        "column": 21,
+        "line": 16,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 16,
+      },
+      "start": {
+        "column": 22,
+        "line": 16,
+      },
+    },
     "type": "keyword",
     "value": "mat4x4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 16,
+      },
+      "start": {
+        "column": 28,
+        "line": 16,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 16,
+      },
+      "start": {
+        "column": 29,
+        "line": 16,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 16,
+      },
+      "start": {
+        "column": 32,
+        "line": 16,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 16,
+      },
+      "start": {
+        "column": 33,
+        "line": 16,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 17,
+      },
+      "start": {
+        "column": 34,
+        "line": 16,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 17,
+      },
+      "start": {
+        "column": 4,
+        "line": 17,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 17,
+      },
+      "start": {
+        "column": 19,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 17,
+      },
+      "start": {
+        "column": 20,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 17,
+      },
+      "start": {
+        "column": 21,
+        "line": 17,
+      },
+    },
     "type": "keyword",
     "value": "mat4x4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 17,
+      },
+      "start": {
+        "column": 27,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 17,
+      },
+      "start": {
+        "column": 28,
+        "line": 17,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 17,
+      },
+      "start": {
+        "column": 31,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 17,
+      },
+      "start": {
+        "column": 32,
+        "line": 17,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 18,
+      },
+      "start": {
+        "column": 33,
+        "line": 17,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 18,
+      },
+      "start": {
+        "column": 4,
+        "line": 18,
+      },
+    },
     "type": "identifier",
     "value": "normalMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 18,
+      },
+      "start": {
+        "column": 16,
+        "line": 18,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 18,
+      },
+      "start": {
+        "column": 17,
+        "line": 18,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 18,
+      },
+      "start": {
+        "column": 18,
+        "line": 18,
+      },
+    },
     "type": "keyword",
     "value": "mat3x3",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 18,
+      },
+      "start": {
+        "column": 24,
+        "line": 18,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 18,
+      },
+      "start": {
+        "column": 25,
+        "line": 18,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 18,
+      },
+      "start": {
+        "column": 28,
+        "line": 18,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 18,
+      },
+      "start": {
+        "column": 29,
+        "line": 18,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 19,
+      },
+      "start": {
+        "column": 30,
+        "line": 18,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 19,
+      },
+      "start": {
+        "column": 4,
+        "line": 19,
+      },
+    },
     "type": "identifier",
     "value": "one",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 19,
+      },
+      "start": {
+        "column": 7,
+        "line": 19,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 19,
+      },
+      "start": {
+        "column": 8,
+        "line": 19,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 19,
+      },
+      "start": {
+        "column": 9,
+        "line": 19,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 19,
+      },
+      "start": {
+        "column": 12,
+        "line": 19,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 20,
+      },
+      "start": {
+        "column": 13,
+        "line": 19,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 20,
+      },
+      "start": {
+        "column": 4,
+        "line": 20,
+      },
+    },
     "type": "identifier",
     "value": "two",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 20,
+      },
+      "start": {
+        "column": 7,
+        "line": 20,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 20,
+      },
+      "start": {
+        "column": 8,
+        "line": 20,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 20,
+      },
+      "start": {
+        "column": 9,
+        "line": 20,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 20,
+      },
+      "start": {
+        "column": 12,
+        "line": 20,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 21,
+      },
+      "start": {
+        "column": 13,
+        "line": 20,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 21,
+      },
+      "start": {
+        "column": 4,
+        "line": 21,
+      },
+    },
     "type": "identifier",
     "value": "lights",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 21,
+      },
+      "start": {
+        "column": 10,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 21,
+      },
+      "start": {
+        "column": 11,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 21,
+      },
+      "start": {
+        "column": 12,
+        "line": 21,
+      },
+    },
     "type": "keyword",
     "value": "array",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 21,
+      },
+      "start": {
+        "column": 17,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 21,
+      },
+      "start": {
+        "column": 18,
+        "line": 21,
+      },
+    },
     "type": "identifier",
     "value": "LightData",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 21,
+      },
+      "start": {
+        "column": 27,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 21,
+      },
+      "start": {
+        "column": 28,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 21,
+      },
+      "start": {
+        "column": 29,
+        "line": 21,
+      },
+    },
     "type": "int",
     "value": "4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 21,
+      },
+      "start": {
+        "column": 30,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 21,
+      },
+      "start": {
+        "column": 31,
+        "line": 21,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 22,
+      },
+      "start": {
+        "column": 32,
+        "line": 21,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 22,
+      },
+      "start": {
+        "column": 2,
+        "line": 22,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 22,
+      },
+      "start": {
+        "column": 3,
+        "line": 22,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 23,
+      },
+      "start": {
+        "column": 4,
+        "line": 22,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 23,
+      },
+      "start": {
+        "column": 2,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 23,
+      },
+      "start": {
+        "column": 3,
+        "line": 23,
+      },
+    },
     "type": "keyword",
     "value": "binding",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 23,
+      },
+      "start": {
+        "column": 10,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 23,
+      },
+      "start": {
+        "column": 11,
+        "line": 23,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 23,
+      },
+      "start": {
+        "column": 12,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 23,
+      },
+      "start": {
+        "column": 13,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 23,
+      },
+      "start": {
+        "column": 14,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 23,
+      },
+      "start": {
+        "column": 15,
+        "line": 23,
+      },
+    },
     "type": "keyword",
     "value": "group",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 23,
+      },
+      "start": {
+        "column": 20,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 23,
+      },
+      "start": {
+        "column": 21,
+        "line": 23,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 23,
+      },
+      "start": {
+        "column": 22,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 23,
+      },
+      "start": {
+        "column": 23,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 23,
+      },
+      "start": {
+        "column": 24,
+        "line": 23,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 23,
+      },
+      "start": {
+        "column": 27,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 23,
+      },
+      "start": {
+        "column": 28,
+        "line": 23,
+      },
+    },
     "type": "keyword",
     "value": "uniform",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 23,
+      },
+      "start": {
+        "column": 35,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 23,
+      },
+      "start": {
+        "column": 36,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 45,
+        "line": 23,
+      },
+      "start": {
+        "column": 37,
+        "line": 23,
+      },
+    },
     "type": "identifier",
     "value": "uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 46,
+        "line": 23,
+      },
+      "start": {
+        "column": 45,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 47,
+        "line": 23,
+      },
+      "start": {
+        "column": 46,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 55,
+        "line": 23,
+      },
+      "start": {
+        "column": 47,
+        "line": 23,
+      },
+    },
     "type": "identifier",
     "value": "Uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 56,
+        "line": 23,
+      },
+      "start": {
+        "column": 55,
+        "line": 23,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 25,
+      },
+      "start": {
+        "column": 56,
+        "line": 23,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 25,
+      },
+      "start": {
+        "column": 2,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 25,
+      },
+      "start": {
+        "column": 3,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "binding",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 25,
+      },
+      "start": {
+        "column": 10,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 25,
+      },
+      "start": {
+        "column": 11,
+        "line": 25,
+      },
+    },
     "type": "int",
     "value": "1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 25,
+      },
+      "start": {
+        "column": 12,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 25,
+      },
+      "start": {
+        "column": 13,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 25,
+      },
+      "start": {
+        "column": 14,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 25,
+      },
+      "start": {
+        "column": 15,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "group",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 25,
+      },
+      "start": {
+        "column": 20,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 25,
+      },
+      "start": {
+        "column": 21,
+        "line": 25,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 25,
+      },
+      "start": {
+        "column": 22,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 25,
+      },
+      "start": {
+        "column": 23,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 25,
+      },
+      "start": {
+        "column": 24,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 25,
+      },
+      "start": {
+        "column": 27,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 25,
+      },
+      "start": {
+        "column": 28,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "sample",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 25,
+      },
+      "start": {
+        "column": 34,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 25,
+      },
+      "start": {
+        "column": 35,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 25,
+      },
+      "start": {
+        "column": 36,
+        "line": 25,
+      },
+    },
     "type": "keyword",
     "value": "sampler",
   },
   {
+    "loc": {
+      "end": {
+        "column": 44,
+        "line": 25,
+      },
+      "start": {
+        "column": 43,
+        "line": 25,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 26,
+      },
+      "start": {
+        "column": 44,
+        "line": 25,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 26,
+      },
+      "start": {
+        "column": 2,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 26,
+      },
+      "start": {
+        "column": 3,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "binding",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 26,
+      },
+      "start": {
+        "column": 10,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 26,
+      },
+      "start": {
+        "column": 11,
+        "line": 26,
+      },
+    },
     "type": "int",
     "value": "2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 26,
+      },
+      "start": {
+        "column": 12,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 26,
+      },
+      "start": {
+        "column": 13,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 26,
+      },
+      "start": {
+        "column": 14,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 26,
+      },
+      "start": {
+        "column": 15,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "group",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 26,
+      },
+      "start": {
+        "column": 20,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 26,
+      },
+      "start": {
+        "column": 21,
+        "line": 26,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 26,
+      },
+      "start": {
+        "column": 22,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 26,
+      },
+      "start": {
+        "column": 23,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 26,
+      },
+      "start": {
+        "column": 24,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 26,
+      },
+      "start": {
+        "column": 27,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 26,
+      },
+      "start": {
+        "column": 28,
+        "line": 26,
+      },
+    },
     "type": "identifier",
     "value": "map",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 26,
+      },
+      "start": {
+        "column": 31,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 26,
+      },
+      "start": {
+        "column": 32,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 26,
+      },
+      "start": {
+        "column": 33,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "texture_2d",
   },
   {
+    "loc": {
+      "end": {
+        "column": 44,
+        "line": 26,
+      },
+      "start": {
+        "column": 43,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 47,
+        "line": 26,
+      },
+      "start": {
+        "column": 44,
+        "line": 26,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 48,
+        "line": 26,
+      },
+      "start": {
+        "column": 47,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 49,
+        "line": 26,
+      },
+      "start": {
+        "column": 48,
+        "line": 26,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 28,
+      },
+      "start": {
+        "column": 49,
+        "line": 26,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 28,
+      },
+      "start": {
+        "column": 2,
+        "line": 28,
+      },
+    },
     "type": "keyword",
     "value": "struct",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 28,
+      },
+      "start": {
+        "column": 8,
+        "line": 28,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 28,
+      },
+      "start": {
+        "column": 9,
+        "line": 28,
+      },
+    },
     "type": "identifier",
     "value": "VertexIn",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 28,
+      },
+      "start": {
+        "column": 17,
+        "line": 28,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 28,
+      },
+      "start": {
+        "column": 18,
+        "line": 28,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 29,
+      },
+      "start": {
+        "column": 19,
+        "line": 28,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 29,
+      },
+      "start": {
+        "column": 4,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 29,
+      },
+      "start": {
+        "column": 5,
+        "line": 29,
+      },
+    },
     "type": "keyword",
     "value": "location",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 29,
+      },
+      "start": {
+        "column": 13,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 29,
+      },
+      "start": {
+        "column": 14,
+        "line": 29,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 29,
+      },
+      "start": {
+        "column": 15,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 29,
+      },
+      "start": {
+        "column": 16,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 29,
+      },
+      "start": {
+        "column": 17,
+        "line": 29,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 29,
+      },
+      "start": {
+        "column": 25,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 29,
+      },
+      "start": {
+        "column": 26,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 29,
+      },
+      "start": {
+        "column": 27,
+        "line": 29,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 29,
+      },
+      "start": {
+        "column": 31,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 29,
+      },
+      "start": {
+        "column": 32,
+        "line": 29,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 29,
+      },
+      "start": {
+        "column": 35,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 29,
+      },
+      "start": {
+        "column": 36,
+        "line": 29,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 30,
+      },
+      "start": {
+        "column": 37,
+        "line": 29,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 30,
+      },
+      "start": {
+        "column": 4,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 30,
+      },
+      "start": {
+        "column": 5,
+        "line": 30,
+      },
+    },
     "type": "keyword",
     "value": "location",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 30,
+      },
+      "start": {
+        "column": 13,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 30,
+      },
+      "start": {
+        "column": 14,
+        "line": 30,
+      },
+    },
     "type": "int",
     "value": "1",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 30,
+      },
+      "start": {
+        "column": 15,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 30,
+      },
+      "start": {
+        "column": 16,
+        "line": 30,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 30,
+      },
+      "start": {
+        "column": 17,
+        "line": 30,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 30,
+      },
+      "start": {
+        "column": 19,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 30,
+      },
+      "start": {
+        "column": 20,
+        "line": 30,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 30,
+      },
+      "start": {
+        "column": 21,
+        "line": 30,
+      },
+    },
     "type": "keyword",
     "value": "vec2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 30,
+      },
+      "start": {
+        "column": 25,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 30,
+      },
+      "start": {
+        "column": 26,
+        "line": 30,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 30,
+      },
+      "start": {
+        "column": 29,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 30,
+      },
+      "start": {
+        "column": 30,
+        "line": 30,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 31,
+      },
+      "start": {
+        "column": 31,
+        "line": 30,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 31,
+      },
+      "start": {
+        "column": 2,
+        "line": 31,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 31,
+      },
+      "start": {
+        "column": 3,
+        "line": 31,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 33,
+      },
+      "start": {
+        "column": 4,
+        "line": 31,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 33,
+      },
+      "start": {
+        "column": 2,
+        "line": 33,
+      },
+    },
     "type": "keyword",
     "value": "struct",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 33,
+      },
+      "start": {
+        "column": 8,
+        "line": 33,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 33,
+      },
+      "start": {
+        "column": 9,
+        "line": 33,
+      },
+    },
     "type": "identifier",
     "value": "VertexOut",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 33,
+      },
+      "start": {
+        "column": 18,
+        "line": 33,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 33,
+      },
+      "start": {
+        "column": 19,
+        "line": 33,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 34,
+      },
+      "start": {
+        "column": 20,
+        "line": 33,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 34,
+      },
+      "start": {
+        "column": 4,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 34,
+      },
+      "start": {
+        "column": 5,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "builtin",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 34,
+      },
+      "start": {
+        "column": 12,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 34,
+      },
+      "start": {
+        "column": 13,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 34,
+      },
+      "start": {
+        "column": 21,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 34,
+      },
+      "start": {
+        "column": 22,
+        "line": 34,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 34,
+      },
+      "start": {
+        "column": 23,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 34,
+      },
+      "start": {
+        "column": 31,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 34,
+      },
+      "start": {
+        "column": 32,
+        "line": 34,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 34,
+      },
+      "start": {
+        "column": 33,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 38,
+        "line": 34,
+      },
+      "start": {
+        "column": 37,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 34,
+      },
+      "start": {
+        "column": 38,
+        "line": 34,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 42,
+        "line": 34,
+      },
+      "start": {
+        "column": 41,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 34,
+      },
+      "start": {
+        "column": 42,
+        "line": 34,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 35,
+      },
+      "start": {
+        "column": 43,
+        "line": 34,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 35,
+      },
+      "start": {
+        "column": 4,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 35,
+      },
+      "start": {
+        "column": 5,
+        "line": 35,
+      },
+    },
     "type": "keyword",
     "value": "location",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 35,
+      },
+      "start": {
+        "column": 13,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 35,
+      },
+      "start": {
+        "column": 14,
+        "line": 35,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 35,
+      },
+      "start": {
+        "column": 15,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 35,
+      },
+      "start": {
+        "column": 16,
+        "line": 35,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 35,
+      },
+      "start": {
+        "column": 17,
+        "line": 35,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 35,
+      },
+      "start": {
+        "column": 19,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 35,
+      },
+      "start": {
+        "column": 20,
+        "line": 35,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 35,
+      },
+      "start": {
+        "column": 21,
+        "line": 35,
+      },
+    },
     "type": "keyword",
     "value": "vec2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 35,
+      },
+      "start": {
+        "column": 25,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 35,
+      },
+      "start": {
+        "column": 26,
+        "line": 35,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 35,
+      },
+      "start": {
+        "column": 29,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 35,
+      },
+      "start": {
+        "column": 30,
+        "line": 35,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 36,
+      },
+      "start": {
+        "column": 31,
+        "line": 35,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 36,
+      },
+      "start": {
+        "column": 2,
+        "line": 36,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 36,
+      },
+      "start": {
+        "column": 3,
+        "line": 36,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 38,
+      },
+      "start": {
+        "column": 4,
+        "line": 36,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 38,
+      },
+      "start": {
+        "column": 2,
+        "line": 38,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 38,
+      },
+      "start": {
+        "column": 3,
+        "line": 38,
+      },
+    },
     "type": "keyword",
     "value": "vertex",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 39,
+      },
+      "start": {
+        "column": 9,
+        "line": 38,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 39,
+      },
+      "start": {
+        "column": 2,
+        "line": 39,
+      },
+    },
     "type": "keyword",
     "value": "fn",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 39,
+      },
+      "start": {
+        "column": 4,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 39,
+      },
+      "start": {
+        "column": 5,
+        "line": 39,
+      },
+    },
     "type": "identifier",
     "value": "vert_main",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 39,
+      },
+      "start": {
+        "column": 14,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 39,
+      },
+      "start": {
+        "column": 15,
+        "line": 39,
+      },
+    },
     "type": "identifier",
     "value": "input",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 39,
+      },
+      "start": {
+        "column": 20,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 39,
+      },
+      "start": {
+        "column": 21,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 39,
+      },
+      "start": {
+        "column": 22,
+        "line": 39,
+      },
+    },
     "type": "identifier",
     "value": "VertexIn",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 39,
+      },
+      "start": {
+        "column": 30,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 39,
+      },
+      "start": {
+        "column": 31,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 39,
+      },
+      "start": {
+        "column": 32,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": "->",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 39,
+      },
+      "start": {
+        "column": 34,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 44,
+        "line": 39,
+      },
+      "start": {
+        "column": 35,
+        "line": 39,
+      },
+    },
     "type": "identifier",
     "value": "VertexOut",
   },
   {
+    "loc": {
+      "end": {
+        "column": 45,
+        "line": 39,
+      },
+      "start": {
+        "column": 44,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 46,
+        "line": 39,
+      },
+      "start": {
+        "column": 45,
+        "line": 39,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 40,
+      },
+      "start": {
+        "column": 46,
+        "line": 39,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 40,
+      },
+      "start": {
+        "column": 4,
+        "line": 40,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 40,
+      },
+      "start": {
+        "column": 7,
+        "line": 40,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 40,
+      },
+      "start": {
+        "column": 8,
+        "line": 40,
+      },
+    },
     "type": "identifier",
     "value": "output",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 40,
+      },
+      "start": {
+        "column": 14,
+        "line": 40,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 40,
+      },
+      "start": {
+        "column": 15,
+        "line": 40,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 40,
+      },
+      "start": {
+        "column": 16,
+        "line": 40,
+      },
+    },
     "type": "identifier",
     "value": "VertexOut",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 40,
+      },
+      "start": {
+        "column": 25,
+        "line": 40,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 41,
+      },
+      "start": {
+        "column": 26,
+        "line": 40,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 41,
+      },
+      "start": {
+        "column": 4,
+        "line": 41,
+      },
+    },
     "type": "identifier",
     "value": "output",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 41,
+      },
+      "start": {
+        "column": 10,
+        "line": 41,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 41,
+      },
+      "start": {
+        "column": 11,
+        "line": 41,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 41,
+      },
+      "start": {
+        "column": 19,
+        "line": 41,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 41,
+      },
+      "start": {
+        "column": 20,
+        "line": 41,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 41,
+      },
+      "start": {
+        "column": 21,
+        "line": 41,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 41,
+      },
+      "start": {
+        "column": 22,
+        "line": 41,
+      },
+    },
     "type": "identifier",
     "value": "input",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 41,
+      },
+      "start": {
+        "column": 27,
+        "line": 41,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 36,
+        "line": 41,
+      },
+      "start": {
+        "column": 28,
+        "line": 41,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 41,
+      },
+      "start": {
+        "column": 36,
+        "line": 41,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 42,
+      },
+      "start": {
+        "column": 37,
+        "line": 41,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 42,
+      },
+      "start": {
+        "column": 4,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "output",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 42,
+      },
+      "start": {
+        "column": 10,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 42,
+      },
+      "start": {
+        "column": 11,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 42,
+      },
+      "start": {
+        "column": 13,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 42,
+      },
+      "start": {
+        "column": 14,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 42,
+      },
+      "start": {
+        "column": 15,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 42,
+      },
+      "start": {
+        "column": 16,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "input",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 42,
+      },
+      "start": {
+        "column": 21,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 42,
+      },
+      "start": {
+        "column": 22,
+        "line": 42,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 25,
+        "line": 42,
+      },
+      "start": {
+        "column": 24,
+        "line": 42,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 43,
+      },
+      "start": {
+        "column": 25,
+        "line": 42,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 43,
+      },
+      "start": {
+        "column": 4,
+        "line": 43,
+      },
+    },
     "type": "keyword",
     "value": "return",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 43,
+      },
+      "start": {
+        "column": 10,
+        "line": 43,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 43,
+      },
+      "start": {
+        "column": 11,
+        "line": 43,
+      },
+    },
     "type": "identifier",
     "value": "output",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 43,
+      },
+      "start": {
+        "column": 17,
+        "line": 43,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 44,
+      },
+      "start": {
+        "column": 18,
+        "line": 43,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 44,
+      },
+      "start": {
+        "column": 2,
+        "line": 44,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 46,
+      },
+      "start": {
+        "column": 3,
+        "line": 44,
+      },
+    },
     "type": "whitespace",
     "value": "
 
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 46,
+      },
+      "start": {
+        "column": 2,
+        "line": 46,
+      },
+    },
     "type": "symbol",
     "value": "@",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 46,
+      },
+      "start": {
+        "column": 3,
+        "line": 46,
+      },
+    },
     "type": "keyword",
     "value": "fragment",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 47,
+      },
+      "start": {
+        "column": 11,
+        "line": 46,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 47,
+      },
+      "start": {
+        "column": 2,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "fn",
   },
   {
+    "loc": {
+      "end": {
+        "column": 5,
+        "line": 47,
+      },
+      "start": {
+        "column": 4,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 47,
+      },
+      "start": {
+        "column": 5,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "frag_main",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 47,
+      },
+      "start": {
+        "column": 14,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 47,
+      },
+      "start": {
+        "column": 15,
+        "line": 47,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 47,
+      },
+      "start": {
+        "column": 17,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ":",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 47,
+      },
+      "start": {
+        "column": 18,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 47,
+      },
+      "start": {
+        "column": 19,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "vec2",
   },
   {
+    "loc": {
+      "end": {
+        "column": 24,
+        "line": 47,
+      },
+      "start": {
+        "column": 23,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 47,
+      },
+      "start": {
+        "column": 24,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 28,
+        "line": 47,
+      },
+      "start": {
+        "column": 27,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 47,
+      },
+      "start": {
+        "column": 28,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 47,
+      },
+      "start": {
+        "column": 29,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 47,
+      },
+      "start": {
+        "column": 30,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "->",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 47,
+      },
+      "start": {
+        "column": 32,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 37,
+        "line": 47,
+      },
+      "start": {
+        "column": 33,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 38,
+        "line": 47,
+      },
+      "start": {
+        "column": 37,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 47,
+      },
+      "start": {
+        "column": 38,
+        "line": 47,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 42,
+        "line": 47,
+      },
+      "start": {
+        "column": 41,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 47,
+      },
+      "start": {
+        "column": 42,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 44,
+        "line": 47,
+      },
+      "start": {
+        "column": 43,
+        "line": 47,
+      },
+    },
     "type": "symbol",
     "value": "{",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 48,
+      },
+      "start": {
+        "column": 44,
+        "line": 47,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 48,
+      },
+      "start": {
+        "column": 4,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 48,
+      },
+      "start": {
+        "column": 7,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 48,
+      },
+      "start": {
+        "column": 8,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "lightNormal",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 48,
+      },
+      "start": {
+        "column": 19,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 48,
+      },
+      "start": {
+        "column": 20,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 48,
+      },
+      "start": {
+        "column": 21,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 26,
+        "line": 48,
+      },
+      "start": {
+        "column": 22,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 27,
+        "line": 48,
+      },
+      "start": {
+        "column": 26,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 48,
+      },
+      "start": {
+        "column": 27,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 48,
+      },
+      "start": {
+        "column": 30,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 48,
+      },
+      "start": {
+        "column": 31,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 40,
+        "line": 48,
+      },
+      "start": {
+        "column": 32,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 48,
+      },
+      "start": {
+        "column": 40,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 47,
+        "line": 48,
+      },
+      "start": {
+        "column": 41,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "lights",
   },
   {
+    "loc": {
+      "end": {
+        "column": 48,
+        "line": 48,
+      },
+      "start": {
+        "column": 47,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "[",
   },
   {
+    "loc": {
+      "end": {
+        "column": 49,
+        "line": 48,
+      },
+      "start": {
+        "column": 48,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 50,
+        "line": 48,
+      },
+      "start": {
+        "column": 49,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "]",
   },
   {
+    "loc": {
+      "end": {
+        "column": 51,
+        "line": 48,
+      },
+      "start": {
+        "column": 50,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 59,
+        "line": 48,
+      },
+      "start": {
+        "column": 51,
+        "line": 48,
+      },
+    },
     "type": "keyword",
     "value": "position",
   },
   {
+    "loc": {
+      "end": {
+        "column": 60,
+        "line": 48,
+      },
+      "start": {
+        "column": 59,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 61,
+        "line": 48,
+      },
+      "start": {
+        "column": 60,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 62,
+        "line": 48,
+      },
+      "start": {
+        "column": 61,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 70,
+        "line": 48,
+      },
+      "start": {
+        "column": 62,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 71,
+        "line": 48,
+      },
+      "start": {
+        "column": 70,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 77,
+        "line": 48,
+      },
+      "start": {
+        "column": 71,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "lights",
   },
   {
+    "loc": {
+      "end": {
+        "column": 78,
+        "line": 48,
+      },
+      "start": {
+        "column": 77,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "[",
   },
   {
+    "loc": {
+      "end": {
+        "column": 79,
+        "line": 48,
+      },
+      "start": {
+        "column": 78,
+        "line": 48,
+      },
+    },
     "type": "int",
     "value": "0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 80,
+        "line": 48,
+      },
+      "start": {
+        "column": 79,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": "]",
   },
   {
+    "loc": {
+      "end": {
+        "column": 81,
+        "line": 48,
+      },
+      "start": {
+        "column": 80,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 90,
+        "line": 48,
+      },
+      "start": {
+        "column": 81,
+        "line": 48,
+      },
+    },
     "type": "identifier",
     "value": "intensity",
   },
   {
+    "loc": {
+      "end": {
+        "column": 91,
+        "line": 48,
+      },
+      "start": {
+        "column": 90,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 92,
+        "line": 48,
+      },
+      "start": {
+        "column": 91,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 95,
+        "line": 48,
+      },
+      "start": {
+        "column": 92,
+        "line": 48,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 96,
+        "line": 48,
+      },
+      "start": {
+        "column": 95,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 97,
+        "line": 48,
+      },
+      "start": {
+        "column": 96,
+        "line": 48,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 49,
+      },
+      "start": {
+        "column": 97,
+        "line": 48,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 49,
+      },
+      "start": {
+        "column": 4,
+        "line": 49,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 49,
+      },
+      "start": {
+        "column": 7,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 20,
+        "line": 49,
+      },
+      "start": {
+        "column": 8,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "clipPosition",
   },
   {
+    "loc": {
+      "end": {
+        "column": 21,
+        "line": 49,
+      },
+      "start": {
+        "column": 20,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 22,
+        "line": 49,
+      },
+      "start": {
+        "column": 21,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 23,
+        "line": 49,
+      },
+      "start": {
+        "column": 22,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 31,
+        "line": 49,
+      },
+      "start": {
+        "column": 23,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 32,
+        "line": 49,
+      },
+      "start": {
+        "column": 31,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 48,
+        "line": 49,
+      },
+      "start": {
+        "column": 32,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "projectionMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 49,
+        "line": 49,
+      },
+      "start": {
+        "column": 48,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 50,
+        "line": 49,
+      },
+      "start": {
+        "column": 49,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 51,
+        "line": 49,
+      },
+      "start": {
+        "column": 50,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 59,
+        "line": 49,
+      },
+      "start": {
+        "column": 51,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "uniforms",
   },
   {
+    "loc": {
+      "end": {
+        "column": 60,
+        "line": 49,
+      },
+      "start": {
+        "column": 59,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 75,
+        "line": 49,
+      },
+      "start": {
+        "column": 60,
+        "line": 49,
+      },
+    },
     "type": "identifier",
     "value": "modelViewMatrix",
   },
   {
+    "loc": {
+      "end": {
+        "column": 76,
+        "line": 49,
+      },
+      "start": {
+        "column": 75,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 77,
+        "line": 49,
+      },
+      "start": {
+        "column": 76,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "*",
   },
   {
+    "loc": {
+      "end": {
+        "column": 78,
+        "line": 49,
+      },
+      "start": {
+        "column": 77,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 82,
+        "line": 49,
+      },
+      "start": {
+        "column": 78,
+        "line": 49,
+      },
+    },
     "type": "keyword",
     "value": "vec4",
   },
   {
+    "loc": {
+      "end": {
+        "column": 83,
+        "line": 49,
+      },
+      "start": {
+        "column": 82,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "<",
   },
   {
+    "loc": {
+      "end": {
+        "column": 86,
+        "line": 49,
+      },
+      "start": {
+        "column": 83,
+        "line": 49,
+      },
+    },
     "type": "keyword",
     "value": "f32",
   },
   {
+    "loc": {
+      "end": {
+        "column": 87,
+        "line": 49,
+      },
+      "start": {
+        "column": 86,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ">",
   },
   {
+    "loc": {
+      "end": {
+        "column": 88,
+        "line": 49,
+      },
+      "start": {
+        "column": 87,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 91,
+        "line": 49,
+      },
+      "start": {
+        "column": 88,
+        "line": 49,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 92,
+        "line": 49,
+      },
+      "start": {
+        "column": 91,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 93,
+        "line": 49,
+      },
+      "start": {
+        "column": 92,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 96,
+        "line": 49,
+      },
+      "start": {
+        "column": 93,
+        "line": 49,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 97,
+        "line": 49,
+      },
+      "start": {
+        "column": 96,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 98,
+        "line": 49,
+      },
+      "start": {
+        "column": 97,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 101,
+        "line": 49,
+      },
+      "start": {
+        "column": 98,
+        "line": 49,
+      },
+    },
     "type": "float",
     "value": "0.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 102,
+        "line": 49,
+      },
+      "start": {
+        "column": 101,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 103,
+        "line": 49,
+      },
+      "start": {
+        "column": 102,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 106,
+        "line": 49,
+      },
+      "start": {
+        "column": 103,
+        "line": 49,
+      },
+    },
     "type": "float",
     "value": "1.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 107,
+        "line": 49,
+      },
+      "start": {
+        "column": 106,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 108,
+        "line": 49,
+      },
+      "start": {
+        "column": 107,
+        "line": 49,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 51,
+      },
+      "start": {
+        "column": 108,
+        "line": 49,
+      },
+    },
     "type": "whitespace",
     "value": "
 
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 7,
+        "line": 51,
+      },
+      "start": {
+        "column": 4,
+        "line": 51,
+      },
+    },
     "type": "keyword",
     "value": "var",
   },
   {
+    "loc": {
+      "end": {
+        "column": 8,
+        "line": 51,
+      },
+      "start": {
+        "column": 7,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 13,
+        "line": 51,
+      },
+      "start": {
+        "column": 8,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "color",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 51,
+      },
+      "start": {
+        "column": 13,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 51,
+      },
+      "start": {
+        "column": 14,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": "=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 51,
+      },
+      "start": {
+        "column": 15,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 29,
+        "line": 51,
+      },
+      "start": {
+        "column": 16,
+        "line": 51,
+      },
+    },
     "type": "keyword",
     "value": "textureSample",
   },
   {
+    "loc": {
+      "end": {
+        "column": 30,
+        "line": 51,
+      },
+      "start": {
+        "column": 29,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": "(",
   },
   {
+    "loc": {
+      "end": {
+        "column": 33,
+        "line": 51,
+      },
+      "start": {
+        "column": 30,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "map",
   },
   {
+    "loc": {
+      "end": {
+        "column": 34,
+        "line": 51,
+      },
+      "start": {
+        "column": 33,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 35,
+        "line": 51,
+      },
+      "start": {
+        "column": 34,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 41,
+        "line": 51,
+      },
+      "start": {
+        "column": 35,
+        "line": 51,
+      },
+    },
     "type": "keyword",
     "value": "sample",
   },
   {
+    "loc": {
+      "end": {
+        "column": 42,
+        "line": 51,
+      },
+      "start": {
+        "column": 41,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ",",
   },
   {
+    "loc": {
+      "end": {
+        "column": 43,
+        "line": 51,
+      },
+      "start": {
+        "column": 42,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 45,
+        "line": 51,
+      },
+      "start": {
+        "column": 43,
+        "line": 51,
+      },
+    },
     "type": "identifier",
     "value": "uv",
   },
   {
+    "loc": {
+      "end": {
+        "column": 46,
+        "line": 51,
+      },
+      "start": {
+        "column": 45,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ")",
   },
   {
+    "loc": {
+      "end": {
+        "column": 47,
+        "line": 51,
+      },
+      "start": {
+        "column": 46,
+        "line": 51,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 52,
+      },
+      "start": {
+        "column": 47,
+        "line": 51,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 9,
+        "line": 52,
+      },
+      "start": {
+        "column": 4,
+        "line": 52,
+      },
+    },
     "type": "identifier",
     "value": "color",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 52,
+      },
+      "start": {
+        "column": 9,
+        "line": 52,
+      },
+    },
     "type": "symbol",
     "value": ".",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 52,
+      },
+      "start": {
+        "column": 10,
+        "line": 52,
+      },
+    },
     "type": "identifier",
     "value": "a",
   },
   {
+    "loc": {
+      "end": {
+        "column": 12,
+        "line": 52,
+      },
+      "start": {
+        "column": 11,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 14,
+        "line": 52,
+      },
+      "start": {
+        "column": 12,
+        "line": 52,
+      },
+    },
     "type": "symbol",
     "value": "+=",
   },
   {
+    "loc": {
+      "end": {
+        "column": 15,
+        "line": 52,
+      },
+      "start": {
+        "column": 14,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 18,
+        "line": 52,
+      },
+      "start": {
+        "column": 15,
+        "line": 52,
+      },
+    },
     "type": "float",
     "value": "1.0",
   },
   {
+    "loc": {
+      "end": {
+        "column": 19,
+        "line": 52,
+      },
+      "start": {
+        "column": 18,
+        "line": 52,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 4,
+        "line": 53,
+      },
+      "start": {
+        "column": 19,
+        "line": 52,
+      },
+    },
     "type": "whitespace",
     "value": "
     ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 10,
+        "line": 53,
+      },
+      "start": {
+        "column": 4,
+        "line": 53,
+      },
+    },
     "type": "keyword",
     "value": "return",
   },
   {
+    "loc": {
+      "end": {
+        "column": 11,
+        "line": 53,
+      },
+      "start": {
+        "column": 10,
+        "line": 53,
+      },
+    },
     "type": "whitespace",
     "value": " ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 16,
+        "line": 53,
+      },
+      "start": {
+        "column": 11,
+        "line": 53,
+      },
+    },
     "type": "identifier",
     "value": "color",
   },
   {
+    "loc": {
+      "end": {
+        "column": 17,
+        "line": 53,
+      },
+      "start": {
+        "column": 16,
+        "line": 53,
+      },
+    },
     "type": "symbol",
     "value": ";",
   },
   {
+    "loc": {
+      "end": {
+        "column": 2,
+        "line": 54,
+      },
+      "start": {
+        "column": 17,
+        "line": 53,
+      },
+    },
     "type": "whitespace",
     "value": "
   ",
   },
   {
+    "loc": {
+      "end": {
+        "column": 3,
+        "line": 54,
+      },
+      "start": {
+        "column": 2,
+        "line": 54,
+      },
+    },
     "type": "symbol",
     "value": "}",
   },
   {
+    "loc": {
+      "end": {
+        "column": 0,
+        "line": 55,
+      },
+      "start": {
+        "column": 3,
+        "line": 54,
+      },
+    },
     "type": "whitespace",
     "value": "
 ",
