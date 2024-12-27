@@ -186,6 +186,7 @@ describe('parser', () => {
     }
 
     {
+      // TODO: AssignmentExpression with arrays
       const statement = parse('float foo = 0.0, bar = foo + 1.0, baz[3];')[0] as VariableDeclaration
       expect(statement).toBeInstanceOf(VariableDeclaration)
       expect(statement.type).toBeInstanceOf(Type)

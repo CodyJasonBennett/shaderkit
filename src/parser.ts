@@ -63,27 +63,6 @@ function consume(expected?: string): Token {
   return token
 }
 
-function readUntil(value: string, body: Token[], offset: number = 0): Token[] {
-  const output: Token[] = []
-  let scopeIndex = 0
-
-  while (offset < body.length) {
-    const token = body[offset++]
-    output.push(token)
-
-    scopeIndex += getScopeDelta(token)
-    if (scopeIndex === 0 && token.value === value) break
-  }
-
-  return output
-}
-
-function consumeUntil(value: string): Token[] {
-  const output = readUntil(value, tokens, i)
-  i += output.length
-  return output
-}
-
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
@@ -220,6 +199,25 @@ function consumeExpression(minBindingPower: number = 0): Expression {
   return expression
 }
 
+function parseVariableDeclarator(type: Type): VariableDeclarator {
+  const name = consume().value
+
+  let value: AST | null = null
+
+  if (tokens[i]?.value === '[') {
+    consume('[')
+    value = new ArrayExpression(new Type(type.name, [consumeExpression() as Literal | Identifier]), [])
+    consume(']')
+  }
+
+  if (tokens[i]?.value === '=') {
+    consume('=')
+    value = consumeExpression()
+  }
+
+  return new VariableDeclarator(name, value)
+}
+
 function parseVariable(
   qualifiers: string[] = [],
   layout: Record<string, string | boolean> | null = null,
@@ -229,32 +227,17 @@ function parseVariable(
 
   const declarations: VariableDeclarator[] = []
 
-  const body = consumeUntil(';')
-  let j = 0
+  while (i < tokens.length) {
+    declarations.push(parseVariableDeclarator(type))
 
-  while (j < body.length) {
-    const name = body[j++].value
-
-    // TODO: validate consumed tokens
-    let prefix: AST | null = null
-    if (body[j].value === '[') {
-      j++ // skip [
-      prefix = new ArrayExpression(new Type(type.name, [parseExpression([body[j++]]) as any]), [])
-      j++ // skip ]
+    if (tokens[i]?.value === ',') {
+      consume(',')
+    } else {
+      break
     }
-
-    let value: AST | null = null
-
-    const delimiter = body[j++]
-    if (delimiter?.value === '=') {
-      const right = readUntil(',', body, j)
-      j += right.length
-
-      value = parseExpression(right.slice(0, -1))
-    }
-
-    declarations.push(new VariableDeclarator(name, value ?? prefix))
   }
+
+  consume(';')
 
   return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
 }
@@ -262,39 +245,26 @@ function parseVariable(
 function parseFunction(qualifiers: string[]): FunctionDeclaration {
   const type = new Type(consume().value, null)
   const name = consume().value
+
+  consume('(')
+
   const args: VariableDeclaration[] = []
-
-  // TODO: merge with parseVariable
-  const header = consumeUntil(')').slice(1, -1)
-  let j = 0
-  while (j < header.length) {
+  while (tokens[i] && tokens[i].value !== ')') {
     const qualifiers: string[] = []
-    while (header[j] && header[j].type !== 'identifier') {
-      qualifiers.push(header[j++].value)
+    while (tokens[i] && QUALIFIER_REGEX.test(tokens[i].value)) {
+      qualifiers.push(consume().value)
     }
-    const type = new Type(qualifiers.pop()!, null)
+    const kind = null // TODO: WGSL
+    const type = new Type(consume().value, null)
 
-    const line = readUntil(',', header, j)
-    j += line.length
+    const declarations: VariableDeclarator[] = [parseVariableDeclarator(type)]
 
-    const name = line.shift()!.value
+    args.push(new VariableDeclaration(null, qualifiers, kind, type, declarations))
 
-    // TODO: validate consumed tokens
-    let prefix: AST | null = null
-    if (line[0]?.value === '[') {
-      line.shift() // skip [
-      prefix = new ArrayExpression(new Type(type.name, [parseExpression([line.shift()!]) as any]), [])
-      line.shift() // skip ]
-    }
-
-    if (line[line.length - 1]?.value === ',') line.pop() // skip ,
-
-    const value = line.length ? parseExpression(line) : prefix
-
-    const declarations: VariableDeclarator[] = [new VariableDeclarator(name, value)]
-
-    args.push(new VariableDeclaration(null, qualifiers, null, type, declarations))
+    if (tokens[i]?.value === ',') consume(',')
   }
+
+  consume(')')
 
   let body = null
   if (tokens[i].value === ';') consume(';')
