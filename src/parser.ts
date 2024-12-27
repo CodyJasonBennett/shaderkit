@@ -29,40 +29,6 @@ import {
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
-// TODO: this is GLSL-only, separate language constants
-const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
-const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
-const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
-
-const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
-
-const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
-const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
-
-function getScopeDelta(token: Token): number {
-  if (isOpen(token.value)) return 1
-  if (isClose(token.value)) return -1
-  return 0
-}
-
-let tokens: Token[] = []
-let i: number = 0
-
-// TODO: merge with advance()
-function consume(expected?: string): Token {
-  const token = tokens[i++]
-
-  if (token === undefined && expected !== undefined) {
-    throw new SyntaxError(`Expected "${expected}"`)
-  } else if (token === undefined) {
-    throw new SyntaxError('Unexpected end of input')
-  } else if (expected !== undefined && token.value !== expected) {
-    throw new SyntaxError(`Expected "${expected}" got "${token.value}"`)
-  }
-
-  return token
-}
-
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
@@ -105,8 +71,27 @@ const INFIX_BINDING_POWERS: Record<string, [left: number, right: number]> = {
   '>': [14, 13],
 }
 
-function advance(tokens: Token[], expected?: string): Token {
-  const token = tokens.shift()
+// TODO: this is GLSL-only, separate language constants
+const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
+const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
+const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
+
+const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
+
+const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
+const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
+
+function getScopeDelta(token: Token): number {
+  if (isOpen(token.value)) return 1
+  if (isClose(token.value)) return -1
+  return 0
+}
+
+let tokens: Token[] = []
+let i: number = 0
+
+function consume(expected?: string): Token {
+  const token = tokens[i++]
 
   if (token === undefined && expected !== undefined) {
     throw new SyntaxError(`Expected "${expected}"`)
@@ -119,8 +104,8 @@ function advance(tokens: Token[], expected?: string): Token {
   return token
 }
 
-function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression {
-  let token = advance(tokens)
+function parseExpression(minBindingPower: number = 0): Expression {
+  let token = consume()
 
   let lhs: Expression
   if (token.type === 'identifier' || token.type === 'keyword') {
@@ -128,18 +113,18 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
     lhs = new Literal(token.value)
   } else if (token.type === 'symbol' && token.value === '(') {
-    lhs = parseExpression(tokens, 0)
-    advance(tokens, ')')
+    lhs = parseExpression(0)
+    consume(')')
   } else if (token.type === 'symbol' && token.value in PREFIX_BINDING_POWERS) {
     const [_, rightBindingPower] = PREFIX_BINDING_POWERS[token.value]
-    const rhs = parseExpression(tokens, rightBindingPower)
+    const rhs = parseExpression(rightBindingPower)
     lhs = new UnaryExpression(token.value, null, rhs)
   } else {
     throw new SyntaxError(`Unexpected token: "${token.value}"`)
   }
 
-  while (tokens.length) {
-    token = tokens[0]
+  while (i < tokens.length) {
+    token = tokens[i]
 
     const bindingPower = POSTFIX_BINDING_POWERS[token.value] || INFIX_BINDING_POWERS[token.value]
     if (!bindingPower) break
@@ -147,17 +132,17 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
     const [leftBindingPower, rightBindingPower] = bindingPower
     if (leftBindingPower < minBindingPower) break
 
-    advance(tokens)
+    consume()
 
     if (rightBindingPower === null) {
       if (token.value === '(') {
         const args: AST[] = []
 
-        while (tokens[0]?.value !== ')') {
-          args.push(parseExpression(tokens, 0))
-          if (tokens[0]?.value !== ')') advance(tokens, ',')
+        while (tokens[i]?.value !== ')') {
+          args.push(parseExpression(0))
+          if (tokens[i]?.value !== ')') consume(',')
         }
-        advance(tokens, ')')
+        consume(')')
 
         if (lhs instanceof MemberExpression) {
           const type = new Type((lhs.object as Identifier).value, [lhs.property as Literal])
@@ -166,37 +151,29 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
           lhs = new CallExpression(lhs, args)
         }
       } else if (token.value === '[') {
-        const rhs = parseExpression(tokens, 0)
-        advance(tokens, ']')
+        const rhs = parseExpression(0)
+        consume(']')
         lhs = new MemberExpression(lhs, rhs)
       } else if (token.value === '.') {
-        const rhs = parseExpression(tokens, 0)
+        const rhs = parseExpression(0)
         lhs = new MemberExpression(lhs, rhs)
       } else {
         lhs = new UnaryExpression(token.value, lhs, null)
       }
     } else {
       if (token.value === '?') {
-        const mhs = parseExpression(tokens, 0)
-        advance(tokens, ':')
-        const rhs = parseExpression(tokens, rightBindingPower)
+        const mhs = parseExpression(0)
+        consume(':')
+        const rhs = parseExpression(rightBindingPower)
         lhs = new TernaryExpression(lhs, mhs, rhs)
       } else {
-        const rhs = parseExpression(tokens, rightBindingPower)
+        const rhs = parseExpression(rightBindingPower)
         lhs = new BinaryExpression(token.value, lhs, rhs)
       }
     }
   }
 
   return lhs
-}
-
-function consumeExpression(minBindingPower: number = 0): Expression {
-  const line = tokens.slice(i)
-  let total = line.length
-  const expression = parseExpression(line, minBindingPower)
-  i += total - line.length
-  return expression
 }
 
 function parseVariableDeclarator(type: Type): VariableDeclarator {
@@ -206,13 +183,13 @@ function parseVariableDeclarator(type: Type): VariableDeclarator {
 
   if (tokens[i]?.value === '[') {
     consume('[')
-    value = new ArrayExpression(new Type(type.name, [consumeExpression() as Literal | Identifier]), [])
+    value = new ArrayExpression(new Type(type.name, [parseExpression() as Literal | Identifier]), [])
     consume(']')
   }
 
   if (tokens[i]?.value === '=') {
     consume('=')
-    value = consumeExpression()
+    value = parseExpression()
   }
 
   return new VariableDeclarator(name, value)
@@ -282,7 +259,7 @@ function parseIndeterminate(): VariableDeclaration | FunctionDeclaration {
     layout = {}
 
     while (tokens[i] && tokens[i].value !== ')') {
-      const expression = consumeExpression()
+      const expression = parseExpression()
 
       if (
         expression instanceof BinaryExpression &&
@@ -352,7 +329,7 @@ function parseReturn(): ReturnStatement {
   consume('return')
 
   let argument: Expression | null = null
-  if (tokens[i]?.value !== ';') argument = consumeExpression()
+  if (tokens[i]?.value !== ';') argument = parseExpression()
   consume(';')
 
   return new ReturnStatement(argument)
@@ -361,7 +338,7 @@ function parseReturn(): ReturnStatement {
 function parseIf(): IfStatement {
   consume('if')
   consume('(')
-  const test = consumeExpression()
+  const test = parseExpression()
   consume(')')
 
   const consequent = parseBlock()
@@ -383,7 +360,7 @@ function parseIf(): IfStatement {
 function parseWhile(): WhileStatement {
   consume('while')
   consume('(')
-  const test = consumeExpression()
+  const test = parseExpression()
   consume(')')
   const body = parseBlock()
 
@@ -396,9 +373,9 @@ function parseFor(): ForStatement {
   consume('(')
   const init = parseVariable()
   // consume(';')
-  const test = consumeExpression()
+  const test = parseExpression()
   consume(';')
-  const update = consumeExpression()
+  const update = parseExpression()
   consume(')')
 
   const body = parseBlock()
@@ -411,7 +388,7 @@ function parseDoWhile(): DoWhileStatement {
   const body = parseBlock()
   consume('while')
   consume('(')
-  const test = consumeExpression()
+  const test = parseExpression()
   consume(')')
   consume(';')
 
@@ -420,7 +397,7 @@ function parseDoWhile(): DoWhileStatement {
 
 function parseSwitch(): SwitchStatement {
   consume('switch')
-  const discriminant = consumeExpression()
+  const discriminant = parseExpression()
 
   const cases: SwitchCase[] = []
   while (i < tokens.length) {
@@ -428,7 +405,7 @@ function parseSwitch(): SwitchStatement {
     if (token.value === '}') break
 
     if (token.value === 'case') {
-      const test = consumeExpression()
+      const test = parseExpression()
       consume(':')
       const consequent = parseStatements()
       cases.push(new SwitchCase(test, consequent))
@@ -456,20 +433,20 @@ function parsePreprocessor(): PreprocessorStatement {
 
   let value: AST[] | null = null
   if (name === 'define') {
-    const left = consumeExpression()
-    const right = consumeExpression()
+    const left = parseExpression()
+    const right = parseExpression()
     value = [left, right]
   } else if (name === 'extension') {
-    const left = consumeExpression()
+    const left = parseExpression()
     consume(':')
-    const right = consumeExpression()
+    const right = parseExpression()
     value = [left, right]
   } else if (name === 'include') {
     consume('<')
     value = [new Identifier(consume().value)]
     consume('>')
   } else if (name !== 'else' && name !== 'endif') {
-    value = [consumeExpression()]
+    value = [parseExpression()]
   }
   consume('\\')
 
@@ -503,7 +480,7 @@ function parseStatements(): AST[] {
     else if (token.value === 'precision') statement = parsePrecision()
     else if (isDeclaration(token.value) && tokens[i + 1].value !== '[') statement = parseIndeterminate()
     else {
-      statement = consumeExpression()
+      statement = parseExpression()
       consume(';')
     }
 
