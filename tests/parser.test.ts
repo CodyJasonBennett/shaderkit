@@ -30,14 +30,14 @@ import {
 
 describe('parser', () => {
   it('parses identifiers', () => {
-    const identifier = parse('identifier')[0] as Identifier
+    const identifier = parse('identifier;')[0] as Identifier
     expect(identifier).toBeInstanceOf(Identifier)
     expect(identifier.value).toBe('identifier')
   })
 
   it('parses literals', () => {
     for (const value of ['true', 'false', '0', '0.0']) {
-      const literal = parse(value)[0] as Literal
+      const literal = parse(`${value};`)[0] as Literal
       expect(literal).toBeInstanceOf(Literal)
       expect(literal.value).toBe(value)
     }
@@ -45,7 +45,7 @@ describe('parser', () => {
 
   it('parses unary expressions', () => {
     for (const operator of ['+', '-', '~', '!']) {
-      const right = parse(`${operator}1`)[0] as UnaryExpression
+      const right = parse(`${operator}1;`)[0] as UnaryExpression
       expect(right).toBeInstanceOf(UnaryExpression)
       expect(right.operator).toBe(operator)
       expect(right.right).toBeInstanceOf(Literal)
@@ -53,7 +53,7 @@ describe('parser', () => {
     }
 
     for (const operator of ['++', '--']) {
-      const left = parse(`0${operator}`)[0] as UnaryExpression
+      const left = parse(`0${operator};`)[0] as UnaryExpression
       expect(left).toBeInstanceOf(UnaryExpression)
       expect(left.operator).toBe(operator)
       expect(left.left).toBeInstanceOf(Literal)
@@ -62,7 +62,7 @@ describe('parser', () => {
   })
 
   it('parses binary expressions', () => {
-    const expression = parse('0 == 1')[0] as BinaryExpression
+    const expression = parse('0 == 1;')[0] as BinaryExpression
     expect(expression).toBeInstanceOf(BinaryExpression)
     expect(expression.operator).toBe('==')
     expect(expression.left).toBeInstanceOf(Literal)
@@ -72,7 +72,7 @@ describe('parser', () => {
   })
 
   it('parses ternary expressions', () => {
-    const expression = parse('true ? 0 : 1')[0] as TernaryExpression
+    const expression = parse('true ? 0 : 1;')[0] as TernaryExpression
     expect(expression).toBeInstanceOf(TernaryExpression)
     expect(expression.test).toBeInstanceOf(Literal)
     expect((expression.test as Literal).value).toBe('true')
@@ -84,7 +84,7 @@ describe('parser', () => {
 
   it('parses call expressions', () => {
     {
-      const expression = parse('main()')[0] as CallExpression
+      const expression = parse('main();')[0] as CallExpression
       expect(expression).toBeInstanceOf(CallExpression)
       expect(expression.callee).toBeInstanceOf(Identifier)
       expect((expression.callee as Identifier).value).toBe('main')
@@ -92,7 +92,7 @@ describe('parser', () => {
     }
 
     {
-      const expression = parse('all(true, false)')[0] as CallExpression
+      const expression = parse('all(true, false);')[0] as CallExpression
       expect(expression).toBeInstanceOf(CallExpression)
       expect(expression.callee).toBeInstanceOf(Identifier)
       expect((expression.callee as Identifier).value).toBe('all')
@@ -106,7 +106,7 @@ describe('parser', () => {
 
   it('parses member expressions', () => {
     {
-      const expression = parse('foo.bar')[0] as MemberExpression
+      const expression = parse('foo.bar;')[0] as MemberExpression
       expect(expression).toBeInstanceOf(MemberExpression)
       expect(expression.object).toBeInstanceOf(Identifier)
       expect((expression.object as Identifier).value).toBe('foo')
@@ -115,7 +115,7 @@ describe('parser', () => {
     }
 
     {
-      const expression = parse('array.length()')[0] as MemberExpression
+      const expression = parse('array.length();')[0] as MemberExpression
       expect(expression).toBeInstanceOf(MemberExpression)
       expect(expression.object).toBeInstanceOf(Identifier)
       expect((expression.object as Identifier).value).toBe('array')
@@ -126,7 +126,7 @@ describe('parser', () => {
     }
 
     {
-      const expression = parse('texture().rgb')[0] as MemberExpression
+      const expression = parse('texture().rgb;')[0] as MemberExpression
       expect(expression).toBeInstanceOf(MemberExpression)
       expect(expression.object).toBeInstanceOf(CallExpression)
       expect((expression.object as CallExpression).callee).toBeInstanceOf(Identifier)

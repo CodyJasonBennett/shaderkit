@@ -211,6 +211,14 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   return lhs
 }
 
+function consumeExpression(minBindingPower: number = 0): Expression {
+  const line = tokens.slice(i)
+  let total = line.length
+  const expression = parseExpression(line, minBindingPower)
+  i += total - line.length
+  return expression
+}
+
 function parseVariable(
   qualifiers: string[] = [],
   layout: Record<string, string | boolean> | null = null,
@@ -367,18 +375,20 @@ function parseDiscard(): DiscardStatement {
 
 function parseReturn(): ReturnStatement {
   consume('return')
-  // TODO: validate consumed tokens
-  const body = consumeUntil(';')
-  body.pop() // skip ;
 
-  const argument = body.length ? parseExpression(body) : null
+  let argument: Expression | null = null
+  if (tokens[i]?.value !== ';') argument = consumeExpression()
+  consume(';')
 
   return new ReturnStatement(argument)
 }
 
 function parseIf(): IfStatement {
   consume('if')
-  const test = parseExpression(consumeUntil(')'))
+  consume('(')
+  const test = consumeExpression()
+  consume(')')
+
   const consequent = parseBlock()
 
   let alternate = null
@@ -397,7 +407,9 @@ function parseIf(): IfStatement {
 
 function parseWhile(): WhileStatement {
   consume('while')
-  const test = parseExpression(consumeUntil(')'))
+  consume('(')
+  const test = consumeExpression()
+  consume(')')
   const body = parseBlock()
 
   return new WhileStatement(test, body)
@@ -405,15 +417,13 @@ function parseWhile(): WhileStatement {
 
 function parseFor(): ForStatement {
   consume('for')
-  const delimiterIndex = i + (readUntil(')', tokens, i).length - 1)
 
   consume('(')
-
   const init = parseVariable()
-  const test = parseExpression(consumeUntil(';').slice(0, -1))
-  const update = parseExpression(tokens.slice(i, delimiterIndex))
-
-  i = delimiterIndex
+  // consume(';')
+  const test = consumeExpression()
+  consume(';')
+  const update = consumeExpression()
   consume(')')
 
   const body = parseBlock()
@@ -425,7 +435,9 @@ function parseDoWhile(): DoWhileStatement {
   consume('do')
   const body = parseBlock()
   consume('while')
-  const test = parseExpression(consumeUntil(')'))
+  consume('(')
+  const test = consumeExpression()
+  consume(')')
   consume(';')
 
   return new DoWhileStatement(test, body)
@@ -433,15 +445,16 @@ function parseDoWhile(): DoWhileStatement {
 
 function parseSwitch(): SwitchStatement {
   consume('switch')
-  const discriminant = parseExpression(consumeUntil(')'))
-  const delimiterIndex = i + readUntil('}', tokens, i).length - 1
+  const discriminant = consumeExpression()
 
   const cases: SwitchCase[] = []
-  while (i < delimiterIndex) {
+  while (i < tokens.length) {
     const token = consume()
+    if (token.value === '}') break
 
     if (token.value === 'case') {
-      const test = parseExpression(consumeUntil(':').slice(0, -1))
+      const test = consumeExpression()
+      consume(':')
       const consequent = parseStatements()
       cases.push(new SwitchCase(test, consequent))
     } else if (token.value === 'default') {
@@ -466,27 +479,24 @@ function parsePreprocessor(): PreprocessorStatement {
   consume('#')
   const name = consume().value
 
-  const body = consumeUntil('\\').slice(0, -1)
   let value: AST[] | null = null
-
-  if (name !== 'else' && name !== 'endif') {
-    value = []
-
-    if (name === 'define') {
-      const left = parseExpression([body.shift()!])
-      const right = parseExpression(body)
-      value.push(left, right)
-    } else if (name === 'extension') {
-      const left = parseExpression([body.shift()!])
-      body.shift() // skip :
-      const right = parseExpression(body)
-      value.push(left, right)
-    } else if (name === 'include') {
-      value.push(parseExpression(body.slice(1, -1)))
-    } else {
-      value.push(parseExpression(body))
-    }
+  if (name === 'define') {
+    const left = consumeExpression()
+    const right = consumeExpression()
+    value = [left, right]
+  } else if (name === 'extension') {
+    const left = consumeExpression()
+    consume(':')
+    const right = consumeExpression()
+    value = [left, right]
+  } else if (name === 'include') {
+    consume('<')
+    value = [new Identifier(consume().value)]
+    consume('>')
+  } else if (name !== 'else' && name !== 'endif') {
+    value = [consumeExpression()]
   }
+  consume('\\')
 
   return new PreprocessorStatement(name, value)
 }
@@ -518,10 +528,8 @@ function parseStatements(): AST[] {
     else if (token.value === 'precision') statement = parsePrecision()
     else if (isDeclaration(token.value) && tokens[i + 1].value !== '[') statement = parseIndeterminate()
     else {
-      const line = tokens.slice(i++)
-      let total = line.length
-      statement = parseExpression(line)
-      i += total - line.length
+      statement = consumeExpression()
+      consume(';')
     }
 
     body.push(statement)
