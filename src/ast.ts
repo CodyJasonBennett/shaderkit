@@ -19,14 +19,14 @@ export class VariableDeclaration {
     public layout: Record<string, string | boolean> | null,
     public qualifiers: string[],
     public kind: 'var' | 'let' | 'const' | null,
-    public type: Type | Identifier,
+    public type: Type | Identifier | StructDeclaration,
     public declarations: VariableDeclarator[],
   ) {}
 }
 
 // TODO: AST for UBO declarations
 export class StructDeclaration {
-  constructor(public name: string, public members: VariableDeclaration[]) {}
+  constructor(public name: string | null, public members: VariableDeclaration[]) {}
 }
 
 export class FunctionDeclaration {

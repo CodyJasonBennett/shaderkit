@@ -32,6 +32,7 @@ import {
 describe('parser', () => {
   it('parses identifiers', () => {
     expect(parse('identifier;')).toStrictEqual([new Identifier('identifier')])
+    expect(parse('ident\\\nifier;')).toStrictEqual([new Identifier('identifier')])
   })
 
   it('parses literals', () => {
@@ -257,6 +258,8 @@ describe('parser', () => {
   })
 
   it('parses preprocessor statements', () => {
+    expect(parse('#\n')).toStrictEqual([new PreprocessorStatement('', null)])
+
     expect(parse('#define TEST 1\n')).toStrictEqual([
       new PreprocessorStatement('define', [new Identifier('TEST'), new Literal('1')]),
     ])

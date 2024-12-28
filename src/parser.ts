@@ -42,6 +42,7 @@ type Expression =
   | MemberExpression
   | ArrayExpression
 
+// 5.1 Operators
 enum Precedence {
   LOWEST,
   COMMA,
@@ -118,6 +119,8 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
 
 // TODO: this is GLSL-only, separate language constants
 const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
+// TODO: must be ordered: invariant interpolation storage precision storage parameter precision
+// const cannot be used with storage or parameter qualifiers
 const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
@@ -259,6 +262,8 @@ function parseVariable(
   layout: Record<string, string | boolean> | null = null,
 ): VariableDeclaration {
   const kind = null // TODO: WGSL
+  // TODO: 4.1.8 Structures; handle named/inline struct as type
+  // TODO: 4.8 Empty Declarations; `int;`
   const type = new Type(consume(tokens).value, null)
 
   const declarations: VariableDeclarator[] = []
@@ -288,6 +293,7 @@ function parseFunction(tokens: Token[], qualifiers: string[]): FunctionDeclarati
 
   const args: VariableDeclaration[] = []
   while (tokens[0] && tokens[0].value !== ')') {
+    // TODO: only the following qualifiers are valid (in order): const in/out/inout precision
     const qualifiers: string[] = []
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
       qualifiers.push(consume(tokens).value)
@@ -340,6 +346,7 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     consume(tokens, ')')
   }
 
+  // TODO: only precision qualifier valid for function return type
   const qualifiers: string[] = []
   while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
     qualifiers.push(consume(tokens).value)
@@ -488,25 +495,32 @@ function parsePrecision(tokens: Token[]): PrecisionStatement {
 
 function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   consume(tokens, '#')
-  const name = consume(tokens).value
 
+  let name = '' // name can be unset for the # directive which is ignored
   let value: AST[] | null = null
-  if (name === 'define') {
-    const left = parseExpression(tokens)
-    if (tokens[0]?.value === '\\') value = [left]
-    else value = [left, parseExpression(tokens)]
-  } else if (name === 'extension') {
-    const left = parseExpression(tokens)
-    consume(tokens, ':')
-    const right = parseExpression(tokens)
-    value = [left, right]
-  } else if (name === 'include') {
-    consume(tokens, '<')
-    value = [new Identifier(consume(tokens).value)]
-    consume(tokens, '>')
-  } else if (name !== 'else' && name !== 'endif') {
-    value = [parseExpression(tokens)]
+
+  if (tokens[0]?.value !== '\\') {
+    name = consume(tokens).value
+
+    if (name === 'define') {
+      const left = parseExpression(tokens)
+      if (tokens[0]?.value === '\\') value = [left]
+      else value = [left, parseExpression(tokens)]
+    } else if (name === 'extension') {
+      // TODO: extension directives must be before declarations
+      const left = parseExpression(tokens)
+      consume(tokens, ':')
+      const right = parseExpression(tokens)
+      value = [left, right]
+    } else if (name === 'include') {
+      consume(tokens, '<')
+      value = [new Identifier(consume(tokens).value)]
+      consume(tokens, '>')
+    } else if (name !== 'else' && name !== 'endif') {
+      value = [parseExpression(tokens)]
+    }
   }
+
   consume(tokens, '\\')
 
   return new PreprocessorStatement(name, value)
@@ -549,6 +563,7 @@ function parseStatements(tokens: Token[]): AST[] {
   return body
 }
 
+// TODO: allow block versus sub-statements for GLSL/WGSL
 function parseBlock(tokens: Token[]): BlockStatement {
   consume(tokens, '{')
   const body = parseStatements(tokens)
@@ -556,6 +571,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
   return new BlockStatement(body)
 }
 
+const NEWLINE_REGEX = /\\\n/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
@@ -564,6 +580,9 @@ const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 export function parse(code: string): AST[] {
   // Remove (implicit) version header
   code = code.replace('#version 300 es', '')
+
+  // Fold newlines
+  code = code.replace(NEWLINE_REGEX, '')
 
   // Escape newlines after directives, skip comments
   code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
