@@ -11,7 +11,7 @@ const glsl = /* glsl */ `#version 300 es
   */
 
   #define PLUS (n) \
-    n += 1;
+    n += 1
 
   #define TEST // inline comment
   #if defined( TEST )

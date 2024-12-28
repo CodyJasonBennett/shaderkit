@@ -32,7 +32,6 @@ import { type Token, tokenize } from './tokenizer'
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
-// TODO: AssignmentExpression
 type Expression =
   | Literal
   | Identifier
@@ -264,13 +263,15 @@ function parseVariable(
 
   const declarations: VariableDeclarator[] = []
 
-  while (tokens.length) {
-    declarations.push(parseVariableDeclarator(tokens, type))
+  if (tokens[0]?.value !== ';') {
+    while (tokens.length) {
+      declarations.push(parseVariableDeclarator(tokens, type))
 
-    if (tokens[0]?.value === ',') {
-      consume(tokens, ',')
-    } else {
-      break
+      if (tokens[0]?.value === ',') {
+        consume(tokens, ',')
+      } else {
+        break
+      }
     }
   }
 
@@ -492,8 +493,8 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   let value: AST[] | null = null
   if (name === 'define') {
     const left = parseExpression(tokens)
-    const right = parseExpression(tokens)
-    value = [left, right]
+    if (tokens[0]?.value === '\\') value = [left]
+    else value = [left, parseExpression(tokens)]
   } else if (name === 'extension') {
     const left = parseExpression(tokens)
     consume(tokens, ':')

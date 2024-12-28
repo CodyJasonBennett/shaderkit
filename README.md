@@ -483,7 +483,16 @@ A return statement with an optional argument.
 
 ```ts
 class ReturnStatement {
-  argument: Literal | Identifier | UnaryExpression | null
+  argument:
+    | Literal
+    | Identifier
+    | UnaryExpression
+    | BinaryExpression
+    | TernaryExpression
+    | CallExpression
+    | MemberExpression
+    | ArrayExpression
+    | null
 }
 ```
 

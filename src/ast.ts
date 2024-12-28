@@ -24,6 +24,7 @@ export class VariableDeclaration {
   ) {}
 }
 
+// TODO: AST for UBO declarations
 export class StructDeclaration {
   constructor(public name: string, public members: VariableDeclaration[]) {}
 }
