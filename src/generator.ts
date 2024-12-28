@@ -82,10 +82,10 @@ function format(node: AST | null): string {
 
         members.push(`${declaration.name}${value}`)
       }
-      body = members.join(', ')
+      body = ' ' + members.join(', ')
     }
 
-    line = `${layout}${qualifiers}${type} ${body};\n`.trimStart()
+    line = `${layout}${qualifiers}${type}${body};\n`.trimStart()
   } else if (node instanceof FunctionDeclaration) {
     const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
     const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
@@ -94,7 +94,10 @@ function format(node: AST | null): string {
   } else if (node instanceof CallExpression) {
     line = `${format(node.callee)}(${node.args.map(format).join(', ')})`
   } else if (node instanceof MemberExpression) {
-    line = `${format(node.object)}.${format(node.property)}`
+    line =
+      node.property instanceof Literal
+        ? `${format(node.object)}[${format(node.property)}]`
+        : `${format(node.object)}.${format(node.property)}`
   } else if (node instanceof ArrayExpression) {
     const params = node.type.parameters ? node.type.parameters?.map(format).join(', ') : ''
     line = `${node.type.name}[${params}](${node.members.map(format).join(', ')})`
