@@ -1,151 +1,295 @@
-export class Literal {
-  constructor(public value: string /*| number | boolean*/) {}
+export interface Position {
+  line: number // >= 1
+  column: number // >= 0
 }
 
-export class Identifier {
-  constructor(public value: string) {}
+export interface SourceLocation {
+  source: string | null
+  start: Position
+  end: Position
 }
 
-export class Type {
-  constructor(public name: string, public parameters: (Type | Literal | Identifier)[] | null) {}
+export interface Node {
+  type: string
+  // loc: SourceLocation | null
 }
 
-export class VariableDeclarator {
-  constructor(public name: string, public value: AST | null) {}
+export interface Program extends Node {
+  type: 'Program'
+  body: Statement[]
 }
 
-export class VariableDeclaration {
-  constructor(
-    public layout: Record<string, string | boolean> | null,
-    public qualifiers: string[],
-    public kind: 'var' | 'let' | 'const' | null,
-    public type: Type | Identifier | StructDeclaration,
-    public declarations: VariableDeclarator[],
-  ) {}
+export interface Identifier extends Node {
+  type: 'Identifier'
+  name: string
 }
 
-// TODO: AST for UBO declarations
-export class StructDeclaration {
-  constructor(public name: string | null, public members: VariableDeclaration[]) {}
+export interface Literal extends Node {
+  type: 'Literal'
+  value: string /*| number | boolean*/
 }
 
-export class FunctionDeclaration {
-  constructor(
-    public name: string,
-    public type: Type | Identifier,
-    public qualifiers: string[],
-    public args: VariableDeclaration[],
-    public body: BlockStatement | null,
-  ) {}
+export interface ArraySpecifier extends Node {
+  type: 'ArraySpecifier'
+  typeSpecifier: Identifier
+  dimensions: (Literal | Identifier | null)[]
 }
 
-export class UnaryExpression {
-  constructor(operator: string, left: AST, right: null)
-  constructor(operator: string, left: null, right: AST)
-  constructor(public operator: string, public left: AST | null, public right: AST | null) {}
+export interface ArrayExpression extends Node {
+  type: 'ArrayExpression'
+  typeSpecifier: ArraySpecifier
+  elements: Expression[]
 }
 
-export class BinaryExpression {
-  constructor(public operator: string, public left: AST, public right: AST) {}
+export type UnaryOperator = '-' | '+' | '!' | '~'
+
+export interface UnaryExpression extends Node {
+  type: 'UnaryExpression'
+  operator: UnaryOperator
+  prefix: boolean
+  argument: Expression
 }
 
-export class TernaryExpression {
-  constructor(public test: AST, public consequent: AST, public alternate: AST) {}
+export interface UpdateExpression extends Node {
+  type: 'UpdateExpression'
+  operator: UpdateOperator
+  argument: Expression
+  prefix: boolean
 }
 
-export class CallExpression {
-  constructor(public callee: AST, public args: AST[]) {}
+export type UpdateOperator = '++' | '--'
+
+export interface BinaryExpression extends Node {
+  type: 'BinaryExpression'
+  operator: BinaryOperator
+  left: Expression
+  right: Expression
 }
 
-export class MemberExpression {
-  constructor(public object: AST, public property: AST) {}
+export type BinaryOperator =
+  | '=='
+  | '!='
+  | '<'
+  | '<='
+  | '>'
+  | '>='
+  | '<<'
+  | '>>'
+  | '+'
+  | '-'
+  | '*'
+  | '/'
+  | '%'
+  | '|'
+  | '^'
+  | '&'
+
+export interface AssignmentExpression extends Node {
+  type: 'AssignmentExpression'
+  operator: AssignmentOperator
+  left: Expression
+  right: Expression
 }
 
-export class ArrayExpression {
-  constructor(public type: Type, public members: AST[]) {}
+export type AssignmentOperator = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '<<=' | '>>=' | '>>>=' | '|=' | '^=' | '&='
+
+export interface LogicalExpression extends Node {
+  type: 'LogicalExpression'
+  operator: LogicalOperator
+  left: Expression
+  right: Expression
 }
 
-export class BlockStatement {
-  constructor(public body: AST[]) {}
+export type LogicalOperator = '||' | '&&' | '^^'
+
+export interface MemberExpression extends Node {
+  type: 'MemberExpression'
+  object: Expression
+  property: Expression
+  computed: boolean
 }
 
-export class IfStatement {
-  constructor(public test: AST, public consequent: AST, public alternate: AST | null) {}
+export interface ConditionalExpression extends Node {
+  type: 'ConditionalExpression'
+  test: Expression
+  alternate: Expression
+  consequent: Expression
 }
 
-export class ForStatement {
-  constructor(public init: AST | null, public test: AST | null, public update: AST | null, public body: AST) {}
+export interface CallExpression extends Node {
+  type: 'CallExpression'
+  callee: Expression
+  arguments: Expression[]
 }
 
-export class WhileStatement {
-  constructor(public test: AST, public body: AST) {}
+export interface ExpressionStatement extends Node {
+  type: 'ExpressionStatement'
+  expression: Expression
 }
 
-export class DoWhileStatement {
-  constructor(public test: AST, public body: AST) {}
+export interface BlockStatement extends Node {
+  type: 'BlockStatement'
+  body: Statement[]
 }
 
-export class SwitchCase {
-  constructor(public test: AST | null, public consequent: AST[]) {}
+export interface ReturnStatement extends Node {
+  type: 'ReturnStatement'
+  argument: Expression | null
 }
 
-export class SwitchStatement {
-  constructor(public discriminant: AST, public cases: SwitchCase[]) {}
+export interface BreakStatement extends Node {
+  type: 'BreakStatement'
 }
 
-export class ReturnStatement {
-  constructor(
-    public argument:
-      | Literal
-      | Identifier
-      | UnaryExpression
-      | BinaryExpression
-      | TernaryExpression
-      | CallExpression
-      | MemberExpression
-      | ArrayExpression
-      | null,
-  ) {}
+export interface ContinueStatement extends Node {
+  type: 'ContinueStatement'
 }
 
-export class PreprocessorStatement {
-  constructor(public name: string, public value: AST[] | null) {}
+export interface DiscardStatement extends Node {
+  type: 'DiscardStatement'
 }
 
-export class PrecisionStatement {
-  constructor(public precision: 'lowp' | 'mediump' | 'highp', public type: Type) {}
+export interface IfStatement extends Node {
+  type: 'IfStatement'
+  test: Expression
+  consequent: Statement
+  alternate: Statement | null
 }
 
-export class ContinueStatement {}
+export interface SwitchStatement extends Node {
+  type: 'SwitchStatement'
+  discriminant: Expression
+  cases: SwitchCase[]
+}
 
-export class BreakStatement {}
+export interface SwitchCase extends Node {
+  type: 'SwitchCase'
+  test: Expression | null
+  consequent: Statement[]
+}
 
-export class DiscardStatement {}
+export interface WhileStatement extends Node {
+  type: 'WhileStatement'
+  test: Expression
+  body: Statement
+}
 
-export type AST =
+export interface DoWhileStatement extends Node {
+  type: 'DoWhileStatement'
+  body: Statement
+  test: Expression
+}
+
+export interface ForStatement extends Node {
+  type: 'ForStatement'
+  init: VariableDeclaration | Expression | null
+  test: Expression | null
+  update: Expression | null
+  body: Statement
+}
+
+export type ConstantQualifier = 'const'
+export type ParameterQualifier = 'in' | 'out' | 'inout'
+export type StorageQualifier = 'uniform' | 'in' | 'out'
+
+export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant'
+export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
+export type PrecisionQualifier = 'highp' | 'mediump' | 'lowp'
+
+export interface FunctionDeclaration extends Node {
+  type: 'FunctionDeclaration'
+  id: Identifier
+  qualifiers: PrecisionQualifier[]
+  typeSpecifier: Identifier | ArraySpecifier
+  params: FunctionParameter[]
+  body: BlockStatement | null
+}
+
+export interface FunctionParameter extends Node {
+  type: 'FunctionParameter'
+  id: Identifier
+  qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+}
+
+export interface VariableDeclaration extends Node {
+  type: 'VariableDeclaration'
+  declarations: VariableDeclarator[]
+}
+
+export interface VariableDeclarator extends Node {
+  type: 'VariableDeclarator'
+  id: Identifier
+  qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  init: Expression | null
+}
+
+export interface UniformDeclarationBlock extends Node {
+  type: 'UniformDeclarationBlock'
+  id: Identifier | null
+  qualifiers: LayoutQualifier[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  members: VariableDeclaration[]
+}
+
+export interface StructDeclaration extends Node {
+  type: 'StructDeclaration'
+  id: Identifier
+  members: VariableDeclaration[]
+}
+
+export interface PreprocessorStatement extends Node {
+  type: 'PreprocessorStatement'
+  name: string
+  value: Expression[] | null
+}
+
+export interface PrecisionStatement extends Node {
+  type: 'PrecisionStatement'
+  precision: PrecisionQualifier
+  typeSpecifier: Identifier
+}
+
+export type Expression =
   | Literal
   | Identifier
-  | Type
-  | VariableDeclarator
-  | VariableDeclaration
-  | StructDeclaration
-  | FunctionDeclaration
-  | UnaryExpression
-  | BinaryExpression
-  | TernaryExpression
-  | CallExpression
-  | MemberExpression
   | ArrayExpression
+  | UnaryExpression
+  | UpdateExpression
+  | BinaryExpression
+  | AssignmentExpression
+  | LogicalExpression
+  | MemberExpression
+  | ConditionalExpression
+  | CallExpression
+
+export type Statement =
+  | ExpressionStatement
   | BlockStatement
+  | ReturnStatement
+  | BreakStatement
+  | ContinueStatement
+  | DiscardStatement
   | IfStatement
-  | ForStatement
+  | SwitchStatement
   | WhileStatement
   | DoWhileStatement
-  | SwitchCase
-  | SwitchStatement
-  | ReturnStatement
+  | ForStatement
+  | FunctionDeclaration
+  | VariableDeclaration
+  | UniformDeclarationBlock
+  | StructDeclaration
   | PreprocessorStatement
   | PrecisionStatement
-  | ContinueStatement
-  | BreakStatement
-  | DiscardStatement
+
+export type AST =
+  | Program
+  | ArraySpecifier
+  | SwitchCase
+  | FunctionParameter
+  | VariableDeclarator
+  | Expression
+  | Statement

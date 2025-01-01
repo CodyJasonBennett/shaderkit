@@ -1,46 +1,43 @@
 import {
-  type AST,
-  Type,
-  Identifier,
-  Literal,
-  CallExpression,
-  UnaryExpression,
-  MemberExpression,
-  TernaryExpression,
-  BinaryExpression,
+  ArraySpecifier,
+  AssignmentOperator,
+  BinaryOperator,
   BlockStatement,
+  BreakStatement,
+  ConstantQualifier,
+  ContinueStatement,
+  DiscardStatement,
+  DoWhileStatement,
+  Expression,
+  ForStatement,
   FunctionDeclaration,
+  FunctionParameter,
+  Identifier,
+  IfStatement,
+  InterpolationQualifier,
+  Literal,
+  LogicalOperator,
+  ParameterQualifier,
+  PrecisionQualifier,
+  PrecisionStatement,
+  PreprocessorStatement,
+  Program,
+  ReturnStatement,
+  Statement,
+  StorageQualifier,
+  StructDeclaration,
+  SwitchCase,
+  SwitchStatement,
+  UnaryOperator,
+  UpdateOperator,
   VariableDeclaration,
   VariableDeclarator,
-  ContinueStatement,
-  BreakStatement,
-  DiscardStatement,
-  ReturnStatement,
-  IfStatement,
   WhileStatement,
-  ForStatement,
-  DoWhileStatement,
-  SwitchStatement,
-  SwitchCase,
-  StructDeclaration,
-  PrecisionStatement,
-  ArrayExpression,
-  PreprocessorStatement,
 } from './ast'
 import { type Token, tokenize } from './tokenizer'
 
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
-
-type Expression =
-  | Literal
-  | Identifier
-  | UnaryExpression
-  | BinaryExpression
-  | TernaryExpression
-  | CallExpression
-  | MemberExpression
-  | ArrayExpression
 
 // 5.1 Operators
 enum Precedence {
@@ -154,16 +151,20 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
 
   let lhs: Expression
   if (token.type === 'identifier' || token.type === 'keyword') {
-    lhs = new Identifier(token.value)
+    lhs = { type: 'Identifier', name: token.value }
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
-    lhs = new Literal(token.value)
+    lhs = { type: 'Literal', value: token.value }
   } else if (token.type === 'symbol' && token.value === '(') {
     lhs = parseExpression(tokens, 0)
     consume(tokens, ')')
   } else if (token.type === 'symbol' && token.value in PREFIX_OPERATOR_PRECEDENCE) {
     const rightBindingPower = PREFIX_OPERATOR_PRECEDENCE[token.value]
     const rhs = parseExpression(tokens, rightBindingPower)
-    lhs = new UnaryExpression(token.value, null, rhs)
+    if (token.value === '--' || token.value === '++') {
+      lhs = { type: 'UpdateExpression', operator: token.value, prefix: true, argument: rhs }
+    } else {
+      lhs = { type: 'UnaryExpression', operator: token.value as UnaryOperator, prefix: true, argument: rhs }
+    }
   } else {
     throw new SyntaxError(`Unexpected token: "${token.value}"`)
   }
@@ -178,7 +179,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
       consume(tokens)
 
       if (token.value === '(') {
-        const args: AST[] = []
+        const args: Expression[] = []
 
         while (tokens[0]?.value !== ')') {
           args.push(parseExpression(tokens, 0))
@@ -186,35 +187,58 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
         }
         consume(tokens, ')')
 
-        if (lhs instanceof MemberExpression) {
-          const type = new Type((lhs.object as Identifier).value, [lhs.property as Literal])
-          lhs = new ArrayExpression(type, args)
-        } else {
-          lhs = new CallExpression(lhs, args)
-        }
+        lhs = { type: 'CallExpression', callee: lhs, arguments: args }
       } else if (token.value === '[') {
-        const rhs = parseExpression(tokens, 0)
+        const rhs = tokens[0]?.value !== ']' ? parseExpression(tokens, 0) : null
         consume(tokens, ']')
-        lhs = new MemberExpression(lhs, rhs)
+
+        if (tokens[0]?.value === '(') {
+          consume(tokens, '(')
+          const elements: Expression[] = []
+
+          while ((tokens[0] as Token | undefined)?.value !== ')') {
+            elements.push(parseExpression(tokens, 0))
+            if ((tokens[0] as Token | undefined)?.value !== ')') consume(tokens, ',')
+          }
+          consume(tokens, ')')
+
+          const typeSpecifier: ArraySpecifier = {
+            type: 'ArraySpecifier',
+            typeSpecifier: lhs as Identifier,
+            dimensions: [rhs as Literal | null],
+          }
+          lhs = { type: 'ArrayExpression', typeSpecifier, elements }
+        } else {
+          lhs = { type: 'MemberExpression', object: lhs, property: rhs!, computed: true }
+        }
       } else if (token.value === '.') {
         const rhs = parseExpression(tokens, 0)
-        lhs = new MemberExpression(lhs, rhs)
+        lhs = { type: 'MemberExpression', object: lhs, property: rhs, computed: false }
+      } else if (token.value === '--' || token.value === '++') {
+        lhs = { type: 'UpdateExpression', operator: token.value as UpdateOperator, prefix: false, argument: lhs }
       } else {
-        lhs = new UnaryExpression(token.value, lhs, null)
+        lhs = { type: 'UnaryExpression', operator: token.value as UnaryOperator, prefix: false, argument: lhs }
       }
-    } else if (token.value in INFIX_OPERATOR_PRECEDENCE_LEFT || token.value in INFIX_OPERATOR_PRECEDENCE_RIGHT) {
-      let leftBindingPower: number
-      let rightBindingPower: number
+    } else if (token.value in INFIX_OPERATOR_PRECEDENCE_LEFT) {
+      const precedence = INFIX_OPERATOR_PRECEDENCE_LEFT[token.value]
+      const leftBindingPower = precedence - 1
+      const rightBindingPower = precedence
 
-      if (token.value in INFIX_OPERATOR_PRECEDENCE_LEFT) {
-        const precedence = INFIX_OPERATOR_PRECEDENCE_LEFT[token.value]
-        leftBindingPower = precedence - 1
-        rightBindingPower = precedence
+      if (leftBindingPower < minBindingPower) break
+
+      consume(tokens)
+
+      if (token.value === '||' || token.value === '&&' || token.value === '^^') {
+        const rhs = parseExpression(tokens, rightBindingPower)
+        lhs = { type: 'LogicalExpression', operator: token.value, left: lhs, right: rhs }
       } else {
-        const precedence = INFIX_OPERATOR_PRECEDENCE_RIGHT[token.value]
-        leftBindingPower = precedence
-        rightBindingPower = precedence - 1
+        const rhs = parseExpression(tokens, rightBindingPower)
+        lhs = { type: 'BinaryExpression', operator: token.value as BinaryOperator, left: lhs, right: rhs }
       }
+    } else if (token.value in INFIX_OPERATOR_PRECEDENCE_RIGHT) {
+      const precedence = INFIX_OPERATOR_PRECEDENCE_RIGHT[token.value]
+      const leftBindingPower = precedence
+      const rightBindingPower = precedence - 1
 
       if (leftBindingPower < minBindingPower) break
 
@@ -224,10 +248,10 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
         const mhs = parseExpression(tokens, 0)
         consume(tokens, ':')
         const rhs = parseExpression(tokens, rightBindingPower)
-        lhs = new TernaryExpression(lhs, mhs, rhs)
+        lhs = { type: 'ConditionalExpression', test: lhs, alternate: mhs, consequent: rhs }
       } else {
         const rhs = parseExpression(tokens, rightBindingPower)
-        lhs = new BinaryExpression(token.value, lhs, rhs)
+        lhs = { type: 'AssignmentExpression', operator: token.value as AssignmentOperator, left: lhs, right: rhs }
       }
     } else {
       break
@@ -237,40 +261,42 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   return lhs
 }
 
-function parseVariableDeclarator(tokens: Token[], type: Type): VariableDeclarator {
-  const name = consume(tokens).value
+function parseVariableDeclarator(
+  tokens: Token[],
+  typeSpecifier: Identifier | ArraySpecifier,
+  qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
+  layout: Record<string, string | boolean> | null,
+): VariableDeclarator {
+  const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
 
-  let value: AST | null = null
+  let init: Expression | null = null
 
   if (tokens[0]?.value === '[') {
     consume(tokens, '[')
-    value = new ArrayExpression(new Type(type.name, [parseExpression(tokens) as Literal | Identifier]), [])
+    init = parseExpression(tokens)
+    // init = new ArrayExpression(new Type(type.name, [parseExpression(tokens) as Literal | Identifier]), [])
     consume(tokens, ']')
   }
 
   if (tokens[0]?.value === '=') {
     consume(tokens, '=')
-    value = parseExpression(tokens)
+    init = parseExpression(tokens)
   }
 
-  return new VariableDeclarator(name, value)
+  return { type: 'VariableDeclarator', id, qualifiers, typeSpecifier, layout, init }
 }
 
 function parseVariable(
   tokens: Token[],
-  qualifiers: string[] = [],
+  qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [],
   layout: Record<string, string | boolean> | null = null,
 ): VariableDeclaration {
-  const kind = null // TODO: WGSL
-  // TODO: 4.1.8 Structures; handle named/inline struct as type
-  // TODO: 4.8 Empty Declarations; `int;`
-  const type = new Type(consume(tokens).value, null)
-
   const declarations: VariableDeclarator[] = []
+  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
 
   if (tokens[0]?.value !== ';') {
     while (tokens.length) {
-      declarations.push(parseVariableDeclarator(tokens, type))
+      declarations.push(parseVariableDeclarator(tokens, typeSpecifier, qualifiers, layout))
 
       if (tokens[0]?.value === ',') {
         consume(tokens, ',')
@@ -282,28 +308,25 @@ function parseVariable(
 
   consume(tokens, ';')
 
-  return new VariableDeclaration(layout, qualifiers, kind, type, declarations)
+  return { type: 'VariableDeclaration', declarations }
 }
 
-function parseFunction(tokens: Token[], qualifiers: string[]): FunctionDeclaration {
-  const type = new Type(consume(tokens).value, null)
-  const name = consume(tokens).value
+function parseFunction(tokens: Token[], qualifiers: PrecisionQualifier[]): FunctionDeclaration {
+  const typeSpecifier = parseExpression(tokens) as ArraySpecifier | Identifier
+  const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
 
   consume(tokens, '(')
 
-  const args: VariableDeclaration[] = []
+  const params: FunctionParameter[] = []
   while (tokens[0] && tokens[0].value !== ')') {
-    // TODO: only the following qualifiers are valid (in order): const in/out/inout precision
-    const qualifiers: string[] = []
+    const qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[] = []
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
-      qualifiers.push(consume(tokens).value)
+      qualifiers.push(consume(tokens).value as ConstantQualifier | ParameterQualifier | PrecisionQualifier)
     }
-    const kind = null // TODO: WGSL
-    const type = new Type(consume(tokens).value, null)
+    const typeSpecifier = parseExpression(tokens) as ArraySpecifier | Identifier
+    const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
 
-    const declarations: VariableDeclarator[] = [parseVariableDeclarator(tokens, type)]
-
-    args.push(new VariableDeclaration(null, qualifiers, kind, type, declarations))
+    params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
 
     if (tokens[0]?.value === ',') consume(tokens, ',')
   }
@@ -314,7 +337,7 @@ function parseFunction(tokens: Token[], qualifiers: string[]): FunctionDeclarati
   if (tokens[0].value === ';') consume(tokens, ';')
   else body = parseBlock(tokens)
 
-  return new FunctionDeclaration(name, type, qualifiers, args, body)
+  return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
 function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration {
@@ -329,13 +352,13 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
       const expression = parseExpression(tokens)
 
       if (
-        expression instanceof BinaryExpression &&
-        expression.left instanceof Identifier &&
-        expression.right instanceof Literal
+        expression.type === 'AssignmentExpression' &&
+        expression.left.type === 'Identifier' &&
+        expression.right.type === 'Literal'
       ) {
-        layout[expression.left.value] = expression.right.value
-      } else if (expression instanceof Identifier) {
-        layout[expression.value] = true
+        layout[expression.left.name] = expression.right.value
+      } else if (expression.type === 'Identifier') {
+        layout[expression.name] = true
       } else {
         throw new TypeError('Unexpected expression')
       }
@@ -352,12 +375,18 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     qualifiers.push(consume(tokens).value)
   }
 
-  return tokens[2]?.value === '(' ? parseFunction(tokens, qualifiers) : parseVariable(tokens, qualifiers, layout)
+  return tokens[2]?.value === '('
+    ? parseFunction(tokens, qualifiers as PrecisionQualifier[])
+    : parseVariable(
+        tokens,
+        qualifiers as (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
+        layout,
+      )
 }
 
 function parseStruct(tokens: Token[]): StructDeclaration {
   consume(tokens, 'struct')
-  const name = consume(tokens).value
+  const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
   while (tokens[0] && tokens[0].value !== '}') {
@@ -366,31 +395,28 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   consume(tokens, '}')
   consume(tokens, ';')
 
-  return new StructDeclaration(name, members)
+  return { type: 'StructDeclaration', id, members }
 }
 
 function parseContinue(tokens: Token[]): ContinueStatement {
   consume(tokens, 'continue')
-  const statement = new ContinueStatement()
   consume(tokens, ';')
 
-  return statement
+  return { type: 'ContinueStatement' }
 }
 
 function parseBreak(tokens: Token[]): BreakStatement {
   consume(tokens, 'break')
-  const statement = new BreakStatement()
   consume(tokens, ';')
 
-  return statement
+  return { type: 'BreakStatement' }
 }
 
 function parseDiscard(tokens: Token[]): DiscardStatement {
   consume(tokens, 'discard')
-  const statement = new DiscardStatement()
   consume(tokens, ';')
 
-  return statement
+  return { type: 'DiscardStatement' }
 }
 
 function parseReturn(tokens: Token[]): ReturnStatement {
@@ -400,7 +426,7 @@ function parseReturn(tokens: Token[]): ReturnStatement {
   if (tokens[0]?.value !== ';') argument = parseExpression(tokens)
   consume(tokens, ';')
 
-  return new ReturnStatement(argument)
+  return { type: 'ReturnStatement', argument }
 }
 
 function parseIf(tokens: Token[]): IfStatement {
@@ -422,7 +448,7 @@ function parseIf(tokens: Token[]): IfStatement {
     }
   }
 
-  return new IfStatement(test, consequent, alternate)
+  return { type: 'IfStatement', test, consequent, alternate }
 }
 
 function parseWhile(tokens: Token[]): WhileStatement {
@@ -432,7 +458,7 @@ function parseWhile(tokens: Token[]): WhileStatement {
   consume(tokens, ')')
   const body = parseBlock(tokens)
 
-  return new WhileStatement(test, body)
+  return { type: 'WhileStatement', test, body }
 }
 
 function parseFor(tokens: Token[]): ForStatement {
@@ -446,7 +472,7 @@ function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, ')')
   const body = parseBlock(tokens)
 
-  return new ForStatement(init, test, update, body)
+  return { type: 'ForStatement', init, test, update, body }
 }
 
 function parseDoWhile(tokens: Token[]): DoWhileStatement {
@@ -458,7 +484,7 @@ function parseDoWhile(tokens: Token[]): DoWhileStatement {
   consume(tokens, ')')
   consume(tokens, ';')
 
-  return new DoWhileStatement(test, body)
+  return { type: 'DoWhileStatement', test, body }
 }
 
 function parseSwitch(tokens: Token[]): SwitchStatement {
@@ -474,30 +500,31 @@ function parseSwitch(tokens: Token[]): SwitchStatement {
       const test = parseExpression(tokens)
       consume(tokens, ':')
       const consequent = parseStatements(tokens)
-      cases.push(new SwitchCase(test, consequent))
+      cases.push({ type: 'SwitchCase', test, consequent })
     } else if (token.value === 'default') {
+      const test = null
       consume(tokens, ':')
       const consequent = parseStatements(tokens)
-      cases.push(new SwitchCase(null, consequent))
+      cases.push({ type: 'SwitchCase', test, consequent })
     }
   }
 
-  return new SwitchStatement(discriminant, cases)
+  return { type: 'SwitchStatement', discriminant, cases }
 }
 
 function parsePrecision(tokens: Token[]): PrecisionStatement {
   consume(tokens, 'precision')
-  const precision = consume(tokens).value
-  const type = new Type(consume(tokens).value, null)
+  const precision = consume(tokens).value as PrecisionQualifier
+  const typeSpecifier: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, ';')
-  return new PrecisionStatement(precision as any, type)
+  return { type: 'PrecisionStatement', precision, typeSpecifier }
 }
 
 function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   consume(tokens, '#')
 
   let name = '' // name can be unset for the # directive which is ignored
-  let value: AST[] | null = null
+  let value: Expression[] | null = null
 
   if (tokens[0]?.value !== '\\') {
     name = consume(tokens).value
@@ -514,7 +541,7 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
       value = [left, right]
     } else if (name === 'include') {
       consume(tokens, '<')
-      value = [new Identifier(consume(tokens).value)]
+      value = [{ type: 'Identifier', name: consume(tokens).value }]
       consume(tokens, '>')
     } else if (name !== 'else' && name !== 'endif') {
       value = [parseExpression(tokens)]
@@ -523,11 +550,11 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
 
   consume(tokens, '\\')
 
-  return new PreprocessorStatement(name, value)
+  return { type: 'PreprocessorStatement', name, value }
 }
 
-function parseStatements(tokens: Token[]): AST[] {
-  const body: AST[] = []
+function parseStatements(tokens: Token[]): Statement[] {
+  const body: Statement[] = []
   let scopeIndex = 0
 
   while (tokens.length) {
@@ -536,7 +563,7 @@ function parseStatements(tokens: Token[]): AST[] {
     scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0) break
 
-    let statement: AST | null = null
+    let statement: Statement | null = null
 
     if (token.value === 'case' || token.value === 'default') break
     else if (token.value === '#') statement = parsePreprocessor(tokens)
@@ -553,8 +580,9 @@ function parseStatements(tokens: Token[]): AST[] {
     else if (token.value === 'precision') statement = parsePrecision(tokens)
     else if (isDeclaration(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
     else {
-      statement = parseExpression(tokens)
+      const expression = parseExpression(tokens)
       consume(tokens, ';')
+      statement = { type: 'ExpressionStatement', expression }
     }
 
     body.push(statement)
@@ -568,7 +596,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
   consume(tokens, '{')
   const body = parseStatements(tokens)
   consume(tokens, '}')
-  return new BlockStatement(body)
+  return { type: 'BlockStatement', body }
 }
 
 const NEWLINE_REGEX = /\\\n/gm
@@ -577,7 +605,7 @@ const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 /**
  * Parses a string of GLSL (WGSL WIP) code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
-export function parse(code: string): AST[] {
+export function parse(code: string): Program {
   // Remove (implicit) version header
   code = code.replace('#version 300 es', '')
 
@@ -590,5 +618,5 @@ export function parse(code: string): AST[] {
   // TODO: preserve
   const tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
-  return parseStatements(tokens)
+  return { type: 'Program', body: parseStatements(tokens) }
 }
