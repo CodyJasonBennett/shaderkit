@@ -271,7 +271,7 @@ function parseVariableDeclarator(
 
   if (tokens[0]?.value === '[') {
     consume(tokens, '[')
-    init = parseExpression(tokens)
+    id = {
       type: 'ArraySpecifier',
       typeSpecifier: id,
       dimensions: [parseExpression(tokens) as Literal | Identifier],
