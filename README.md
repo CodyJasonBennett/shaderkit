@@ -252,7 +252,7 @@ minify(`#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){
 Parses a string of GLSL (WGSL is WIP) code into an [AST](#ast).
 
 ```ts
-const ast: AST[] = parse(code: string)
+const ast: Program = parse(code: string)
 ```
 
 ## Generate
@@ -260,7 +260,7 @@ const ast: AST[] = parse(code: string)
 Generates a string of GLSL (WGSL is WIP) code from an [AST](#ast).
 
 ```ts
-const code: string = generate(ast: AST[], {
+const code: string = generate(program: Program, {
   target: 'GLSL' // | 'WGSL'
 })
 ```

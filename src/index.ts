@@ -1,5 +1,6 @@
 export * from './ast'
 export * from './constants'
+export * from './generator'
 export * from './minifier'
 export * from './parser'
 export * from './tokenizer'
