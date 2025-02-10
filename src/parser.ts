@@ -274,7 +274,6 @@ function parseVariableDeclarator(
   if (tokens[0]?.value === '[') {
     consume(tokens, '[')
     init = parseExpression(tokens)
-    // init = new ArrayExpression(new Type(type.name, [parseExpression(tokens) as Literal | Identifier]), [])
     consume(tokens, ']')
   }
 

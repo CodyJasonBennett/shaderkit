@@ -1,40 +1,64 @@
-export interface Position {
-  line: number // >= 1
-  column: number // >= 0
-}
+/**
+ * A position in the source code.
+ */
+// export interface Position {
+//   line: number // >= 1
+//   column: number // >= 0
+// }
 
-export interface SourceLocation {
-  source: string | null
-  start: Position
-  end: Position
-}
+/**
+ * Represents the source location of a node.
+ */
+// export interface SourceLocation {
+//   source: string | null
+//   start: Position
+//   end: Position
+// }
 
+/**
+ * Base interface for all AST nodes.
+ */
 export interface Node {
   type: string
   // loc: SourceLocation | null
 }
 
+/**
+ * Represents the root of an AST.
+ */
 export interface Program extends Node {
   type: 'Program'
   body: Statement[]
 }
 
+/**
+ * A variable identifier.
+ */
 export interface Identifier extends Node {
   type: 'Identifier'
   name: string
 }
 
+/**
+ * A shader literal representing a `bool`, `float`, `int`, or `uint` type.
+ */
 export interface Literal extends Node {
   type: 'Literal'
   value: string /*| number | boolean*/
 }
 
+/**
+ * An array and its dimensions.
+ */
 export interface ArraySpecifier extends Node {
   type: 'ArraySpecifier'
   typeSpecifier: Identifier
   dimensions: (Literal | Identifier | null)[]
 }
 
+/**
+ * An array initialization expression.
+ */
 export interface ArrayExpression extends Node {
   type: 'ArrayExpression'
   typeSpecifier: ArraySpecifier
@@ -43,6 +67,9 @@ export interface ArrayExpression extends Node {
 
 export type UnaryOperator = '-' | '+' | '!' | '~'
 
+/**
+ * A unary expression with a left or right handed operator.
+ */
 export interface UnaryExpression extends Node {
   type: 'UnaryExpression'
   operator: UnaryOperator
@@ -50,6 +77,9 @@ export interface UnaryExpression extends Node {
   argument: Expression
 }
 
+/**
+ * An update expression with an optionally prefixed operator.
+ */
 export interface UpdateExpression extends Node {
   type: 'UpdateExpression'
   operator: UpdateOperator
@@ -59,6 +89,9 @@ export interface UpdateExpression extends Node {
 
 export type UpdateOperator = '++' | '--'
 
+/**
+ * A binary expression with a left and right operand.
+ */
 export interface BinaryExpression extends Node {
   type: 'BinaryExpression'
   operator: BinaryOperator
@@ -84,6 +117,9 @@ export type BinaryOperator =
   | '^'
   | '&'
 
+/**
+ * An assignment expression.
+ */
 export interface AssignmentExpression extends Node {
   type: 'AssignmentExpression'
   operator: AssignmentOperator
@@ -93,6 +129,9 @@ export interface AssignmentExpression extends Node {
 
 export type AssignmentOperator = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '<<=' | '>>=' | '>>>=' | '|=' | '^=' | '&='
 
+/**
+ * A logical operation between two expressions.
+ */
 export interface LogicalExpression extends Node {
   type: 'LogicalExpression'
   operator: LogicalOperator
@@ -102,6 +141,9 @@ export interface LogicalExpression extends Node {
 
 export type LogicalOperator = '||' | '&&' | '^^'
 
+/**
+ * A member expression.
+ */
 export interface MemberExpression extends Node {
   type: 'MemberExpression'
   object: Expression
@@ -109,6 +151,9 @@ export interface MemberExpression extends Node {
   computed: boolean
 }
 
+/**
+ * A conditional expression or ternary.
+ */
 export interface ConditionalExpression extends Node {
   type: 'ConditionalExpression'
   test: Expression
@@ -116,39 +161,63 @@ export interface ConditionalExpression extends Node {
   consequent: Expression
 }
 
+/**
+ * A function call expression or struct initialization.
+ */
 export interface CallExpression extends Node {
   type: 'CallExpression'
   callee: Expression
   arguments: Expression[]
 }
 
+/**
+ * An expression as a standalone statement.
+ */
 export interface ExpressionStatement extends Node {
   type: 'ExpressionStatement'
   expression: Expression
 }
 
+/**
+ * A block statement.
+ */
 export interface BlockStatement extends Node {
   type: 'BlockStatement'
   body: Statement[]
 }
 
+/**
+ * A return statement with an optional argument.
+ */
 export interface ReturnStatement extends Node {
   type: 'ReturnStatement'
   argument: Expression | null
 }
 
+/**
+ * A break statement.
+ */
 export interface BreakStatement extends Node {
   type: 'BreakStatement'
 }
 
+/**
+ * A continue statement.
+ */
 export interface ContinueStatement extends Node {
   type: 'ContinueStatement'
 }
 
+/**
+ * A discard statement in fragment shaders.
+ */
 export interface DiscardStatement extends Node {
   type: 'DiscardStatement'
 }
 
+/**
+ * An if-else statement.
+ */
 export interface IfStatement extends Node {
   type: 'IfStatement'
   test: Expression
@@ -156,30 +225,45 @@ export interface IfStatement extends Node {
   alternate: Statement | null
 }
 
+/**
+ * A switch statement.
+ */
 export interface SwitchStatement extends Node {
   type: 'SwitchStatement'
   discriminant: Expression
   cases: SwitchCase[]
 }
 
+/**
+ * A switch-case statement. `test` is null for a `default` case.
+ */
 export interface SwitchCase extends Node {
   type: 'SwitchCase'
   test: Expression | null
   consequent: Statement[]
 }
 
+/**
+ * A while statement.
+ */
 export interface WhileStatement extends Node {
   type: 'WhileStatement'
   test: Expression
   body: Statement
 }
 
+/**
+ * A do-while statement.
+ */
 export interface DoWhileStatement extends Node {
   type: 'DoWhileStatement'
   body: Statement
   test: Expression
 }
 
+/**
+ * A for statement.
+ */
 export interface ForStatement extends Node {
   type: 'ForStatement'
   init: VariableDeclaration | Expression | null
@@ -196,6 +280,9 @@ export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant
 export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
 export type PrecisionQualifier = 'highp' | 'mediump' | 'lowp'
 
+/**
+ * A function declaration. `body` is null for overloads.
+ */
 export interface FunctionDeclaration extends Node {
   type: 'FunctionDeclaration'
   id: Identifier
@@ -205,6 +292,9 @@ export interface FunctionDeclaration extends Node {
   body: BlockStatement | null
 }
 
+/**
+ * A function parameter within a function declaration.
+ */
 export interface FunctionParameter extends Node {
   type: 'FunctionParameter'
   id: Identifier
@@ -212,11 +302,17 @@ export interface FunctionParameter extends Node {
   typeSpecifier: Identifier | ArraySpecifier
 }
 
+/**
+ * A variable declaration.
+ */
 export interface VariableDeclaration extends Node {
   type: 'VariableDeclaration'
   declarations: VariableDeclarator[]
 }
 
+/**
+ * A variable declarator within a variable declaration.
+ */
 export interface VariableDeclarator extends Node {
   type: 'VariableDeclarator'
   id: Identifier
@@ -226,6 +322,9 @@ export interface VariableDeclarator extends Node {
   init: Expression | null
 }
 
+/**
+ * A uniform declaration block with optional layout and qualifiers.
+ */
 export interface UniformDeclarationBlock extends Node {
   type: 'UniformDeclarationBlock'
   id: Identifier | null
@@ -235,18 +334,27 @@ export interface UniformDeclarationBlock extends Node {
   members: VariableDeclaration[]
 }
 
+/**
+ * A struct declaration. Can be used as a type or constructor.
+ */
 export interface StructDeclaration extends Node {
   type: 'StructDeclaration'
   id: Identifier
   members: VariableDeclaration[]
 }
 
+/**
+ * A GLSL preprocessor statement with an optional value.
+ */
 export interface PreprocessorStatement extends Node {
   type: 'PreprocessorStatement'
   name: string
   value: Expression[] | null
 }
 
+/**
+ * A GLSL precision statement.
+ */
 export interface PrecisionStatement extends Node {
   type: 'PrecisionStatement'
   precision: PrecisionQualifier
