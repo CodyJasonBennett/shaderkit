@@ -20,6 +20,8 @@ import {
   UpdateOperator,
   VariableDeclaration,
   WhileStatement,
+  Identifier,
+  ArraySpecifier,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -436,13 +438,19 @@ describe('parser', () => {
           },
           {
             id: {
-              name: 'baz',
-              type: 'Identifier',
-            },
-            init: {
-              type: 'Literal',
-              value: '3',
-            },
+              type: 'ArraySpecifier',
+              typeSpecifier: {
+                type: 'Identifier',
+                name: 'baz',
+              },
+              dimensions: [
+                {
+                  type: 'Literal',
+                  value: '3',
+                },
+              ],
+            } satisfies ArraySpecifier as unknown as Identifier, // TODO: revisit VariableDeclarator AST
+            init: null,
             layout: null,
             qualifiers: [],
             type: 'VariableDeclarator',

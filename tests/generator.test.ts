@@ -19,7 +19,7 @@ describe('generator', () => {
     test('struct LightData {float intensity;vec3 position;float one, two;};')
   })
 
-  it.skip('can handle suffix array specifiers', () => {
+  it('can handle suffix array specifiers', () => {
     test('uniform LightData Light[4];')
   })
 

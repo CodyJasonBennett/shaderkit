@@ -267,15 +267,19 @@ function parseVariableDeclarator(
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
   layout: Record<string, string | boolean> | null,
 ): VariableDeclarator {
-  const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
-
-  let init: Expression | null = null
+  let id: Identifier = { type: 'Identifier', name: consume(tokens).value }
 
   if (tokens[0]?.value === '[') {
     consume(tokens, '[')
     init = parseExpression(tokens)
+      type: 'ArraySpecifier',
+      typeSpecifier: id,
+      dimensions: [parseExpression(tokens) as Literal | Identifier],
+    } satisfies ArraySpecifier as unknown as Identifier
     consume(tokens, ']')
   }
+
+  let init: Expression | null = null
 
   if (tokens[0]?.value === '=') {
     consume(tokens, '=')
