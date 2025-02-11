@@ -54,8 +54,23 @@ export function minify(
       isSymbol(token.value) &&
       ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
         (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
-    )
-      minified += ' '
+    ) {
+      // Move padding after #define arguments
+      if (token.value === '(') {
+        while (i < tokens.length) {
+          const next = tokens[i++]
+          minified += next.value
+
+          if (next.value === ')') break
+        }
+
+        minified += ' ' + tokens[i].value
+
+        continue
+      } else {
+        minified += ' '
+      }
+    }
 
     let prefix = token.value
     if (tokens[i - 1]?.value === '.') {
