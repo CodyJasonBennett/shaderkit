@@ -23,7 +23,7 @@ describe('generator', () => {
     test('uniform LightData Light[4];')
   })
 
-  it.skip('can handle uniform declaration blocks', () => {
+  it('can handle uniform declaration blocks', () => {
     test(
       'layout(std140) uniform Uniforms1 {mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one, two;};',
     )

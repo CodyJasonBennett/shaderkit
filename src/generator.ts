@@ -1,5 +1,13 @@
 import { type AST, type Program } from './ast'
 
+function formatLayout(layout: Record<string, string | boolean> | null): string {
+  if (!layout) return ''
+
+  return `layout(${Object.entries(layout)
+    .map(([k, v]) => (v === true ? k : `${k}=${v}`))
+    .join(', ')}) `
+}
+
 // TODO: restore comments/whitespace with sourcemaps, WGSL support
 function format(node: AST | null): string {
   if (!node) return ''
@@ -62,11 +70,7 @@ function format(node: AST | null): string {
     }
     case 'VariableDeclaration': {
       const head = node.declarations[0]
-      const layout = head.layout
-        ? `layout(${Object.entries(head.layout)
-            .map(([k, v]) => `${k}=${v}`)
-            .join(', ')}) `
-        : ''
+      const layout = formatLayout(head.layout)
       const qualifiers = head.qualifiers.length ? `${head.qualifiers.join(' ')} ` : ''
       return `${layout}${qualifiers}${format(head.typeSpecifier)} ${node.declarations.map(format).join(', ')};`
     }
@@ -75,11 +79,7 @@ function format(node: AST | null): string {
       return `${format(node.id)}${init}`
     }
     case 'UniformDeclarationBlock': {
-      const layout = node.layout
-        ? `layout(${Object.entries(node.layout)
-            .map(([k, v]) => `${k}=${v}`)
-            .join(', ')}) `
-        : ''
+      const layout = formatLayout(node.layout)
       const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
       const scope = node.id ? ` ${format(node.id)}` : ''
       return `${layout}${qualifiers}${format(node.typeSpecifier)} {${node.members.map(format).join('')}}${scope};`
@@ -118,5 +118,5 @@ export interface GenerateOptions {
  * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(program: Program, options: GenerateOptions): string {
-  return format(program)
+  return format(program).replaceAll('\n\n', '\n') // NOTE: strips excess whitespace from chained preprocessor
 }

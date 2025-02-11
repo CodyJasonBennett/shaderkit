@@ -15,6 +15,7 @@ import {
   Identifier,
   IfStatement,
   InterpolationQualifier,
+  LayoutQualifier,
   Literal,
   LogicalOperator,
   ParameterQualifier,
@@ -29,6 +30,7 @@ import {
   SwitchCase,
   SwitchStatement,
   UnaryOperator,
+  UniformDeclarationBlock,
   UpdateOperator,
   VariableDeclaration,
   VariableDeclarator,
@@ -291,11 +293,11 @@ function parseVariableDeclarator(
 
 function parseVariable(
   tokens: Token[],
+  typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [],
   layout: Record<string, string | boolean> | null = null,
 ): VariableDeclaration {
   const declarations: VariableDeclarator[] = []
-  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
 
   if (tokens[0]?.value !== ';') {
     while (tokens.length) {
@@ -314,8 +316,26 @@ function parseVariable(
   return { type: 'VariableDeclaration', declarations }
 }
 
-function parseFunction(tokens: Token[], qualifiers: PrecisionQualifier[]): FunctionDeclaration {
-  const typeSpecifier = parseExpression(tokens) as ArraySpecifier | Identifier
+function parseUniformBlock(
+  tokens: Token[],
+  typeSpecifier: Identifier | ArraySpecifier,
+  qualifiers: LayoutQualifier[] = [],
+  layout: Record<string, string | boolean> | null = null,
+): UniformDeclarationBlock {
+  const members = parseBlock(tokens).body as VariableDeclaration[]
+
+  let id: Identifier | null = null
+  if (tokens[0]?.value !== ';') id = parseExpression(tokens) as Identifier
+  consume(tokens, ';')
+
+  return { type: 'UniformDeclarationBlock', id, qualifiers, typeSpecifier, layout, members }
+}
+
+function parseFunction(
+  tokens: Token[],
+  typeSpecifier: ArraySpecifier | Identifier,
+  qualifiers: PrecisionQualifier[] = [],
+): FunctionDeclaration {
   const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
 
   consume(tokens, '(')
@@ -343,7 +363,7 @@ function parseFunction(tokens: Token[], qualifiers: PrecisionQualifier[]): Funct
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
-function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration {
+function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration | UniformDeclarationBlock {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
@@ -378,13 +398,24 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     qualifiers.push(consume(tokens).value)
   }
 
-  return tokens[2]?.value === '('
-    ? parseFunction(tokens, qualifiers as PrecisionQualifier[])
-    : parseVariable(
-        tokens,
-        qualifiers as (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
-        layout,
-      )
+  // TODO: cleanup handling of typeSpecifier
+  if (tokens[2]?.value === '(')
+    return parseFunction(
+      tokens,
+      parseExpression(tokens) as Identifier | ArraySpecifier,
+      qualifiers as PrecisionQualifier[],
+    )
+
+  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
+
+  if (tokens[0]?.value === '{') return parseUniformBlock(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
+  else
+    return parseVariable(
+      tokens,
+      typeSpecifier,
+      qualifiers as (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
+      layout,
+    )
 }
 
 function parseStruct(tokens: Token[]): StructDeclaration {
@@ -467,7 +498,8 @@ function parseWhile(tokens: Token[]): WhileStatement {
 function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, 'for')
   consume(tokens, '(')
-  const init = parseVariable(tokens)
+  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
+  const init = parseVariable(tokens, typeSpecifier)
   // consume(tokens, ';')
   const test = parseExpression(tokens)
   consume(tokens, ';')
