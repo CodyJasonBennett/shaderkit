@@ -1,4 +1,4 @@
-import { type Token, tokenize } from './tokenizer'
+import { type Token, tokenize } from './tokenizer.js'
 
 export type MangleMatcher = (token: Token, index: number, tokens: Token[]) => boolean
 
@@ -11,11 +11,13 @@ export interface MinifyOptions {
   mangleExternals: boolean
 }
 
-const isWord = RegExp.prototype.test.bind(/^\w/)
-const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
-const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isScoped = RegExp.prototype.test.bind(/[;{}\\@]/)
-const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying)$/)
+const isWord = /* @__PURE__ */ RegExp.prototype.test.bind(/^\w/)
+const isSymbol = /* @__PURE__ */ RegExp.prototype.test.bind(/[^\w\\]/)
+const isName = /* @__PURE__ */ RegExp.prototype.test.bind(/^[_A-Za-z]/)
+const isScoped = /* @__PURE__ */ RegExp.prototype.test.bind(/[;{}\\@]/)
+const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
+  /^(binding|group|layout|uniform|in|out|attribute|varying)$/,
+)
 
 /**
  * Minifies a string of GLSL or WGSL code.

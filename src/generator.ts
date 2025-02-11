@@ -1,4 +1,4 @@
-import { type AST, type Program } from './ast'
+import { type AST, type Program } from './ast.js'
 
 function formatLayout(layout: Record<string, string | boolean> | null): string {
   if (!layout) return ''

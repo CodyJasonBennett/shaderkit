@@ -9,10 +9,10 @@ export default vite.defineConfig({
     },
   },
   build: {
-    target: 'es2018',
+    target: 'esnext',
     sourcemap: true,
     lib: {
-      formats: ['es', 'cjs'],
+      formats: ['es'],
       entry: 'src/index.ts',
       fileName: '[name]',
     },
@@ -27,16 +27,19 @@ export default vite.defineConfig({
     {
       name: 'vite-tsc',
       generateBundle(options) {
-        const ext = options.format === 'cjs' ? 'cts' : 'ts'
-        this.emitFile({ type: 'asset', fileName: `index.d.${ext}`, source: `export * from '../src'` })
+        this.emitFile({ type: 'asset', fileName: 'index.d.ts', source: `export * from '../src/index.ts'` })
       },
     },
     {
       name: 'vite-minify',
       renderChunk: {
         order: 'post',
-        handler(code, { fileName }) {
-          return vite.transformWithEsbuild(code, fileName, { minify: true, target: 'es2018' })
+        async handler(code, { fileName }) {
+          // Preserve pure annotations, but remove all other comments and whitespace
+          code = code.replaceAll('/* @__PURE__ */', '__PURE__ || ')
+          const result = await vite.transformWithEsbuild(code, fileName, { minify: true, target: 'es2020' })
+          result.code = result.code.replaceAll('__PURE__||', '/*@__PURE__*/')
+          return result
         },
       },
     },

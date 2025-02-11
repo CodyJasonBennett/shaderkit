@@ -1,4 +1,4 @@
-import { WGSL_KEYWORDS, WGSL_SYMBOLS, GLSL_KEYWORDS, GLSL_SYMBOLS } from './constants'
+import { WGSL_KEYWORDS, WGSL_SYMBOLS, GLSL_KEYWORDS, GLSL_SYMBOLS } from './constants.js'
 
 export type TokenType = 'whitespace' | 'comment' | 'symbol' | 'bool' | 'float' | 'int' | 'identifier' | 'keyword'
 
@@ -8,11 +8,11 @@ export interface Token<T = TokenType, V = string> {
 }
 
 // Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
-const isWGSL = RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/)
+const isWGSL = /* @__PURE__ */ RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/)
 
-const isFloat = RegExp.prototype.test.bind(/^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/)
-const isInt = RegExp.prototype.test.bind(/^(0[xX][\w\d]+|\d+)[iIuU]?$/)
-const isBool = RegExp.prototype.test.bind(/^(true|false)$/)
+const isFloat = /* @__PURE__ */ RegExp.prototype.test.bind(/^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/)
+const isInt = /* @__PURE__ */ RegExp.prototype.test.bind(/^(0[xX][\w\d]+|\d+)[iIuU]?$/)
+const isBool = /* @__PURE__ */ RegExp.prototype.test.bind(/^(true|false)$/)
 
 const ZERO = 48
 const NINE = 57

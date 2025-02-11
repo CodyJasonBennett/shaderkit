@@ -9,7 +9,6 @@
     "pretty": true,
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
     "paths": {
       "shaderkit": ["./src"]
     }

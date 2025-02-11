@@ -35,8 +35,8 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
-} from './ast'
-import { type Token, tokenize } from './tokenizer'
+} from './ast.js'
+import { type Token, tokenize } from './tokenizer.js'
 
 // https://engineering.desmos.com/articles/pratt-parser
 // https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
@@ -123,10 +123,10 @@ const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
 const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
-const isDeclaration = RegExp.prototype.test.bind(VARIABLE_REGEX)
+const isDeclaration = /* @__PURE__ */ RegExp.prototype.test.bind(VARIABLE_REGEX)
 
-const isOpen = RegExp.prototype.test.bind(/^[\(\[\{]$/)
-const isClose = RegExp.prototype.test.bind(/^[\)\]\}]$/)
+const isOpen = /* @__PURE__ */ RegExp.prototype.test.bind(/^[\(\[\{]$/)
+const isClose = /* @__PURE__ */ RegExp.prototype.test.bind(/^[\)\]\}]$/)
 
 function getScopeDelta(token: Token): number {
   if (isOpen(token.value)) return 1
