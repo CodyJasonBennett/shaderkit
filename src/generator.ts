@@ -118,5 +118,5 @@ export interface GenerateOptions {
  * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(program: Program, options: GenerateOptions): string {
-  return '#version 300 es\n' + format(program).replaceAll('\n\n', '\n')
+  return format(program).replaceAll('\n\n', '\n').trim()
 }

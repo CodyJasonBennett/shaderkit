@@ -579,7 +579,10 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
       value = [{ type: 'Identifier', name: consume(tokens).value }]
       consume(tokens, '>')
     } else if (name !== 'else' && name !== 'endif') {
-      value = [parseExpression(tokens)]
+      value = []
+      while (tokens.length && tokens[0].value !== '\\') {
+        value.push(parseExpression(tokens))
+      }
     }
   }
 
@@ -641,9 +644,6 @@ const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
  * Parses a string of GLSL (WGSL WIP) code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function parse(code: string): Program {
-  // Remove (implicit) version header
-  code = code.replace('#version 300 es', '')
-
   // Fold newlines
   code = code.replace(NEWLINE_REGEX, '')
 
