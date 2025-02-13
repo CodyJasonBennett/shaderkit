@@ -427,7 +427,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
   while (tokens[0] && tokens[0].value !== '}') {
-    members.push(parseIndeterminate(tokens) as VariableDeclaration)
+    members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
   }
   consume(tokens, '}')
   consume(tokens, ';')
