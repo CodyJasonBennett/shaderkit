@@ -53,6 +53,8 @@ export function minify(
     if (
       isSymbol(token.value) &&
       ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
+        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'if') ||
+        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'elif') ||
         (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
     ) {
       // Move padding after #define arguments
