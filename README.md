@@ -47,7 +47,7 @@ Tools and IntelliSense for GLSL and WGSL.
     - [StructDeclaration](#structdeclaration)
   - Expressions
     - [ArrayExpression](#arrayexpression)
-    - Unary operations
+    - Unary Operations
       - [UnaryExpression](#unaryexpression)
         - [UnaryOperator](#unaryoperator)
       - [UpdateExpression](#updateexpression)
