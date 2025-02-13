@@ -23,6 +23,7 @@ const CR = 13
 const TAB = 9
 const SPACE = 32
 const UNDERSCORE = 95
+const DOT = 46
 const SLASH = 47
 const STAR = 42
 const HASH = 35
@@ -50,7 +51,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
     if (isSpace(char)) {
       while (isSpace(code.charCodeAt(index))) value += code[index++]
       tokens.push({ type: 'whitespace', value })
-    } else if (isDigit(char)) {
+    } else if (isDigit(char) || (char === DOT && isDigit(code.charCodeAt(index)))) {
       while (isFloat(value + code[index]) || isInt(value + code[index])) value += code[index++]
       if (isFloat(value)) tokens.push({ type: 'float', value })
       else tokens.push({ type: 'int', value })
@@ -62,8 +63,8 @@ export function tokenize(code: string, index: number = 0): Token[] {
       else tokens.push({ type: 'identifier', value })
     } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
       const terminator = code.charCodeAt(index) === STAR ? '*/' : '\n'
-      while (!value.endsWith(terminator)) value += code[index++]
-      tokens.push({ type: 'comment', value })
+      while (index < code.length && !value.endsWith(terminator)) value += code[index++]
+      tokens.push({ type: 'comment', value: value.trim() })
     } else {
       for (const symbol of SYMBOLS) {
         if (symbol.length > value.length && code.startsWith(symbol, index - 1)) value = symbol

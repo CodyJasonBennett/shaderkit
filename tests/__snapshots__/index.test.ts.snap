@@ -226,8 +226,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// single line
-",
+    "value": "// single line",
   },
   {
     "type": "whitespace",
@@ -330,8 +329,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// inline comment
-",
+    "value": "// inline comment",
   },
   {
     "type": "whitespace",
@@ -1703,8 +1701,7 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// single line
-",
+    "value": "// single line",
   },
   {
     "type": "whitespace",
