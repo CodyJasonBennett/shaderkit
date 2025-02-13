@@ -13,6 +13,7 @@ Tools and IntelliSense for GLSL and WGSL.
 - [Minify](#minify)
 - [Parse](#parse)
 - [Generate](#generate)
+- [Visit](#visit)
 - [AST](#ast)
   - [Node Objects](#node-objects)
   - [Identifier](#identifier)
@@ -263,6 +264,29 @@ Generates a string of GLSL (WGSL is WIP) code from an [AST](#ast).
 const code: string = generate(program: Program, {
   target: 'GLSL' // | 'WGSL'
 })
+```
+
+## Visit
+
+Recurses through an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree), calling a visitor object on matching nodes.
+
+```ts
+visit(
+  program: Program,
+  visitors: {
+    Program: {
+      enter(node, ancestors) {
+        // Called before any descendant nodes are processed
+      },
+      exit(node, ancestors) {
+        // Called after all nodes are processed
+      }
+    },
+    Identifier(node, ancestors) {
+      // Called before any descendant nodes are processed (alias to enter)
+    }
+  } satisfies Visitors
+)
 ```
 
 ## AST
