@@ -40,13 +40,13 @@ const glsl = /* glsl */ `#version 300 es
     float one, two;
   } globals;
 
-  // struct X {
-  //   #if !defined(BLA)
-  //     int y;
-  //   #else
-  //     float z;
-  //   #endif
-  // };
+  struct X {
+    #if !defined(BLA)
+      int y;
+    #else
+      float z;
+    #endif
+  };
 
   struct LightData {
     float intensity;
