@@ -26,7 +26,7 @@ export default vite.defineConfig({
   plugins: [
     {
       name: 'vite-tsc',
-      generateBundle(options) {
+      generateBundle() {
         this.emitFile({ type: 'asset', fileName: 'index.d.ts', source: `export * from '../src/index.ts'` })
       },
     },
@@ -37,7 +37,7 @@ export default vite.defineConfig({
         async handler(code, { fileName }) {
           // Preserve pure annotations, but remove all other comments and whitespace
           code = code.replaceAll('/* @__PURE__ */', '__PURE__ || ')
-          const result = await vite.transformWithEsbuild(code, fileName, { minify: true, target: 'es2020' })
+          const result = await vite.transformWithEsbuild(code, fileName, { minify: true, target: 'esnext' })
           result.code = result.code.replaceAll('__PURE__||', '/*@__PURE__*/')
           return result
         },
