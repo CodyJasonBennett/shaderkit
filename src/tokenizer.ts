@@ -10,8 +10,8 @@ export interface Token<T = TokenType, V = string> {
 // Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
 const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/
 
-const FLOAT_REGEX = /^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/
-const INT_REGEX = /^(0[xX][\w\d]+|\d+)[iIuU]?$/
+const FLOAT_REGEX = /((\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?|\d+[eEpP][-+]?\d+)[fFhH]?/y
+const INT_REGEX = /(0[xX][\w\d]+|\d+)[iIuU]?/y
 const BOOL_REGEX = /^(true|false)$/
 
 const ZERO = 48
@@ -36,6 +36,12 @@ const isSpace = (c: number) => isLine(c) || c === TAB || c === SPACE
 const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
 const isMacro = (c: number) => c === HASH || c === AT
 
+// https://mrale.ph/blog/2016/11/23/making-less-dart-faster.html
+function matchAsPrefix(regex: RegExp, string: string, start: number): string | undefined {
+  regex.lastIndex = start
+  return regex.exec(string)?.[0]
+}
+
 /**
  * Tokenizes a string of GLSL or WGSL code.
  */
@@ -52,9 +58,13 @@ export function tokenize(code: string, index: number = 0): Token[] {
       while (isSpace(code.charCodeAt(index))) value += code[index++]
       tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char) || (char === DOT && isDigit(code.charCodeAt(index)))) {
-      while (FLOAT_REGEX.test(value + code[index]) || INT_REGEX.test(value + code[index])) value += code[index++]
-      if (FLOAT_REGEX.test(value)) tokens.push({ type: 'float', value })
-      else tokens.push({ type: 'int', value })
+      if ((value = matchAsPrefix(FLOAT_REGEX, code, index - 1)!)) {
+        index = FLOAT_REGEX.lastIndex
+        tokens.push({ type: 'float', value })
+      } else if ((value = matchAsPrefix(INT_REGEX, code, index - 1)!)) {
+        index = INT_REGEX.lastIndex
+        tokens.push({ type: 'int', value })
+      }
     } else if (isIdent(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
       if (BOOL_REGEX.test(value)) tokens.push({ type: 'bool', value })

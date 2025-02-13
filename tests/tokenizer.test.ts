@@ -19,9 +19,9 @@ describe('tokenizer', () => {
     expect(tokenize('0.0F')).toStrictEqual<Token[]>([{ type: 'float', value: '0.0F' }])
     expect(tokenize('0.0h')).toStrictEqual<Token[]>([{ type: 'float', value: '0.0h' }])
     expect(tokenize('0.0H')).toStrictEqual<Token[]>([{ type: 'float', value: '0.0H' }])
-    // expect(tokenize('1.23e3')).toStrictEqual<Token[]>([{ type: 'float', value: '1.23e3' }])
-    // expect(tokenize('4e-2')).toStrictEqual<Token[]>([{ type: 'float', value: '4e-2' }])
-    // expect(tokenize('3E+4')).toStrictEqual<Token[]>([{ type: 'float', value: '3E+4' }])
+    expect(tokenize('1.23e3')).toStrictEqual<Token[]>([{ type: 'float', value: '1.23e3' }])
+    expect(tokenize('4e-2')).toStrictEqual<Token[]>([{ type: 'float', value: '4e-2' }])
+    expect(tokenize('3E+4')).toStrictEqual<Token[]>([{ type: 'float', value: '3E+4' }])
   })
 
   it('can handle integers', () => {
@@ -30,8 +30,8 @@ describe('tokenizer', () => {
     expect(tokenize('0U')).toStrictEqual<Token[]>([{ type: 'int', value: '0U' }])
     expect(tokenize('0i')).toStrictEqual<Token[]>([{ type: 'int', value: '0i' }])
     expect(tokenize('0I')).toStrictEqual<Token[]>([{ type: 'int', value: '0I' }])
-    // expect(tokenize('0xFF')).toStrictEqual<Token[]>([{ type: 'int', value: '0xFF' }])
-    // expect(tokenize('0XFF')).toStrictEqual<Token[]>([{ type: 'int', value: '0XFF' }])
+    expect(tokenize('0xFF')).toStrictEqual<Token[]>([{ type: 'int', value: '0xFF' }])
+    expect(tokenize('0XFF')).toStrictEqual<Token[]>([{ type: 'int', value: '0XFF' }])
   })
 
   it('can handle identifiers', () => {
