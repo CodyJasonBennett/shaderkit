@@ -8,11 +8,11 @@ export interface Token<T = TokenType, V = string> {
 }
 
 // Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
-const isWGSL = /* @__PURE__ */ RegExp.prototype.test.bind(/\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/)
+const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/
 
-const isFloat = /* @__PURE__ */ RegExp.prototype.test.bind(/^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/)
-const isInt = /* @__PURE__ */ RegExp.prototype.test.bind(/^(0[xX][\w\d]+|\d+)[iIuU]?$/)
-const isBool = /* @__PURE__ */ RegExp.prototype.test.bind(/^(true|false)$/)
+const FLOAT_REGEX = /^(\d+\.\d*|\d*\.\d+)([eEpP][-+]?\d+)?[fFhH]?$/
+const INT_REGEX = /^(0[xX][\w\d]+|\d+)[iIuU]?$/
+const BOOL_REGEX = /^(true|false)$/
 
 const ZERO = 48
 const NINE = 57
@@ -43,7 +43,7 @@ export function tokenize(code: string, index: number = 0): Token[] {
   const tokens: Token[] = []
 
   let prev: number = -1
-  const [KEYWORDS, SYMBOLS] = isWGSL(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
+  const [KEYWORDS, SYMBOLS] = WGSL_REGEX.test(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
   while (index < code.length) {
     let value = code[index]
     const char = code.charCodeAt(index++)
@@ -52,12 +52,12 @@ export function tokenize(code: string, index: number = 0): Token[] {
       while (isSpace(code.charCodeAt(index))) value += code[index++]
       tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char) || (char === DOT && isDigit(code.charCodeAt(index)))) {
-      while (isFloat(value + code[index]) || isInt(value + code[index])) value += code[index++]
-      if (isFloat(value)) tokens.push({ type: 'float', value })
+      while (FLOAT_REGEX.test(value + code[index]) || INT_REGEX.test(value + code[index])) value += code[index++]
+      if (FLOAT_REGEX.test(value)) tokens.push({ type: 'float', value })
       else tokens.push({ type: 'int', value })
     } else if (isIdent(char)) {
       while (isIdent(code.charCodeAt(index))) value += code[index++]
-      if (isBool(value)) tokens.push({ type: 'bool', value })
+      if (BOOL_REGEX.test(value)) tokens.push({ type: 'bool', value })
       else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value))
         tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })

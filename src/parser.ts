@@ -123,15 +123,18 @@ const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
 const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
-const isDeclaration = /* @__PURE__ */ RegExp.prototype.test.bind(VARIABLE_REGEX)
-
-const isOpen = /* @__PURE__ */ RegExp.prototype.test.bind(/^[\(\[\{]$/)
-const isClose = /* @__PURE__ */ RegExp.prototype.test.bind(/^[\)\]\}]$/)
-
+const SCOPE_DELTAS: Record<string, number> = {
+  // Open
+  '(': 1,
+  '[': 1,
+  '{': 1,
+  // Close
+  ')': -1,
+  ']': -1,
+  '}': -1,
+}
 function getScopeDelta(token: Token): number {
-  if (isOpen(token.value)) return 1
-  if (isClose(token.value)) return -1
-  return 0
+  return SCOPE_DELTAS[token.value] ?? 0
 }
 
 function consume(tokens: Token[], expected?: string): Token {
@@ -616,7 +619,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
-    else if (isDeclaration(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
+    else if (VARIABLE_REGEX.test(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)
       consume(tokens, ';')
