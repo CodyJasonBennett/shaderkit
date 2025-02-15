@@ -37,6 +37,8 @@ function format(node: AST | null): string {
     }
     case 'PrecisionStatement':
       return `precision ${node.precision} ${node.typeSpecifier.name};`
+    case 'InvariantStatement':
+      return `invariant ${format(node.typeSpecifier)};`
     case 'ReturnStatement':
       return node.argument ? `return ${format(node.argument)};` : 'return;'
     case 'BreakStatement':
