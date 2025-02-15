@@ -18,7 +18,7 @@ function format(node: AST | null): string {
     case 'Literal':
       return node.value
     case 'ArraySpecifier':
-      return `${node.typeSpecifier.name}[${node.dimensions.map(format).join(',')}]`
+      return `${node.typeSpecifier.name}${node.dimensions.map((d) => `[${format(d)}]`).join('')}`
     case 'ExpressionStatement':
       return `${format(node.expression)};`
     case 'BlockStatement':
@@ -74,7 +74,9 @@ function format(node: AST | null): string {
       const head = node.declarations[0]
       const layout = formatLayout(head.layout)
       const qualifiers = head.qualifiers.length ? `${head.qualifiers.join(' ')} ` : ''
-      return `${layout}${qualifiers}${format(head.typeSpecifier)} ${node.declarations.map(format).join(',')};`
+      const typeSpecifier = format(head.typeSpecifier)
+      const delimiter = typeSpecifier.endsWith(']') ? '' : ' '
+      return `${layout}${qualifiers}${typeSpecifier}${delimiter}${node.declarations.map(format).join(',')};`
     }
     case 'VariableDeclarator': {
       const init = node.init ? `=${format(node.init)}` : ''
