@@ -26,6 +26,7 @@ Tools and IntelliSense for GLSL and WGSL.
     - [DiscardStatement](#discardstatement)
     - [PreprocessorStatement](#preprocessorstatement)
     - [PrecisionStatement](#precisionstatement)
+    - [InvariantStatement](#invariantstatement)
     - Control Flow
       - [ReturnStatement](#returnstatement)
       - [BreakStatement](#breakstatement)
@@ -402,6 +403,17 @@ A GLSL precision statement.
 interface PrecisionStatement extends Node {
   type: 'PrecisionStatement'
   precision: PrecisionQualifier
+  typeSpecifier: Identifier
+}
+```
+
+### InvariantStatement
+
+A GLSL invariant statement.
+
+```ts
+interface InvariantStatement extends Node {
+  type: 'InvariantStatement'
   typeSpecifier: Identifier
 }
 ```
