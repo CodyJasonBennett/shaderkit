@@ -85,7 +85,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       visit(node.id, visitors, ancestors)
       if (node.init) visit(node.init, visitors, ancestors)
       break
-    case 'UniformDeclarationBlock':
+    case 'StructuredBufferDeclaration':
       visit(node.typeSpecifier, visitors, ancestors)
       for (const member of node.members) visit(member, visitors, ancestors)
       if (node.id) visit(node.id, visitors, ancestors)

@@ -55,6 +55,16 @@ const glsl = /* glsl */ `#version 300 es
   };
   uniform LightData Light[4];
 
+  buffer b {
+    vec4 v[];
+  } name[3];
+
+  float a[5];
+  float b[] = a;
+  vec4 a[3][2];
+  vec4[2] a[3];
+  vec4[3][2] a;
+
   invariant pc_FragColor;
 
   void main() {

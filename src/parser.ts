@@ -31,7 +31,7 @@ import {
   SwitchCase,
   SwitchStatement,
   UnaryOperator,
-  UniformDeclarationBlock,
+  StructuredBufferDeclaration,
   UpdateOperator,
   VariableDeclaration,
   VariableDeclarator,
@@ -121,7 +121,7 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
 const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
 // TODO: must be ordered: invariant interpolation storage precision storage parameter precision
 // const cannot be used with storage or parameter qualifiers
-const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
+const QUALIFIER_REGEX = /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
 const SCOPE_DELTAS: Record<string, number> = {
@@ -280,7 +280,7 @@ function parseVariableDeclarator(
     id = {
       type: 'ArraySpecifier',
       typeSpecifier: id,
-      dimensions: [parseExpression(tokens) as Literal | Identifier],
+      dimensions: [(tokens[0]?.value as string) !== ']' ? (parseExpression(tokens) as Literal | Identifier) : null],
     } satisfies ArraySpecifier as unknown as Identifier
     consume(tokens, ']')
   }
@@ -320,19 +320,19 @@ function parseVariable(
   return { type: 'VariableDeclaration', declarations }
 }
 
-function parseUniformBlock(
+function parseBufferInterface(
   tokens: Token[],
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: LayoutQualifier[] = [],
   layout: Record<string, string | boolean> | null = null,
-): UniformDeclarationBlock {
+): StructuredBufferDeclaration {
   const members = parseBlock(tokens).body as VariableDeclaration[]
 
   let id: Identifier | null = null
   if (tokens[0]?.value !== ';') id = parseExpression(tokens) as Identifier
   consume(tokens, ';')
 
-  return { type: 'UniformDeclarationBlock', id, qualifiers, typeSpecifier, layout, members }
+  return { type: 'StructuredBufferDeclaration', id, qualifiers, typeSpecifier, layout, members }
 }
 
 function parseFunction(
@@ -367,7 +367,7 @@ function parseFunction(
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
-function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration | UniformDeclarationBlock {
+function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration | StructuredBufferDeclaration {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
@@ -412,7 +412,8 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
 
   const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
 
-  if (tokens[0]?.value === '{') return parseUniformBlock(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
+  if (tokens[0]?.value === '{')
+    return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
   else
     return parseVariable(
       tokens,

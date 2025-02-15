@@ -16,7 +16,7 @@ int y;
 #else
 float z;
 #endif
-};struct f{float intensity;vec3 position;float one,two;};uniform f Light[4];invariant g;void main(){vec4 h=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 i=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 j=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}g=vec4(texture(map,vUv).rgb,0.0);float k=0.0;g.a+=1.0+k;}"
+};struct f{float intensity;vec3 position;float one,two;};uniform f Light[4];buffer g{vec4 v[];}name[3];float h[5];float g[]=h;vec4 h[3][2];vec4[2]h[3];vec4[3][2]h;invariant i;void main(){vec4 j=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 k=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 l=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}i=vec4(texture(map,vUv).rgb,0.0);float m=0.0;i.a+=1.0+m;}"
 `;
 
 exports[`minify > can mangle GLSL 2`] = `
@@ -52,7 +52,7 @@ int y;
 #else
 float z;
 #endif
-};struct m{float intensity;vec3 position;float one,two;};uniform m n[4];invariant h;void main(){vec4 o=vec4(n[0].position.xyz*n[0].intensity,0.0);vec4 p=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 q=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
+};struct m{float intensity;vec3 position;float one,two;};uniform m n[4];buffer o{vec4 v[];}name[3];float p[5];float o[]=p;vec4 p[3][2];vec4[2]p[3];vec4[3][2]p;invariant h;void main(){vec4 q=vec4(n[0].position.xyz*n[0].intensity,0.0);vec4 r=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 s=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 2`] = `
@@ -116,7 +116,7 @@ int y;
 #else
 float z;
 #endif
-};struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];invariant pc_FragColor;void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}"
+};struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];buffer b{vec4 v[];}name[3];float a[5];float b[]=a;vec4 a[3][2];vec4[2]a[3];vec4[3][2]a;invariant pc_FragColor;void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}"
 `;
 
 exports[`minify > can minify WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn frag_main(uv:vec2<f32>)->vec4<f32>{var lightNormal=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var clipPosition=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var color=textureSample(map,sample,uv);color.a+=1.0;return color;}"`;
@@ -1219,6 +1219,308 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "buffer",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "b",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "v",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "name",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "3",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "5",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "b",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "symbol",
+    "value": "=",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "3",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "2",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "2",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "3",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "vec4",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "3",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": "[",
+  },
+  {
+    "type": "int",
+    "value": "2",
+  },
+  {
+    "type": "symbol",
+    "value": "]",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "a",
   },
   {
     "type": "symbol",

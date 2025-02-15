@@ -44,7 +44,7 @@ Tools and IntelliSense for GLSL and WGSL.
       - [FunctionParameter](#functionparameter)
     - [VariableDeclaration](#variabledeclaration)
       - [VariableDeclarator](#variabledeclarator)
-    - [UniformDeclarationBlock](#uniformdeclarationblock)
+    - [StructuredBufferDeclaration](#structuredbufferdeclaration)
     - [StructDeclaration](#structdeclaration)
   - Expressions
     - [ArrayExpression](#arrayexpression)
@@ -578,15 +578,15 @@ interface VariableDeclarator extends Node {
 }
 ```
 
-### UniformDeclarationBlock
+### StructuredBufferDeclaration
 
-A uniform declaration block with optional layout and qualifiers.
+A buffer interface declaration with optional layout and qualifiers.
 
 ```ts
-interface UniformDeclarationBlock extends Node {
-  type: 'UniformDeclarationBlock'
+interface StructuredBufferDeclaration extends Node {
+  type: 'StructuredBufferDeclaration'
   id: Identifier | null
-  qualifiers: LayoutQualifier[]
+  qualifiers: (InterfaceStorageQualifier | LayoutQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
   layout: Record<string, string | boolean> | null
   members: VariableDeclaration[]

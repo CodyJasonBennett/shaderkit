@@ -275,6 +275,7 @@ export interface ForStatement extends Node {
 export type ConstantQualifier = 'const'
 export type ParameterQualifier = 'in' | 'out' | 'inout'
 export type StorageQualifier = 'uniform' | 'in' | 'out'
+export type InterfaceStorageQualifier = 'uniform' | 'buffer'
 
 export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant'
 export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
@@ -325,10 +326,10 @@ export interface VariableDeclarator extends Node {
 /**
  * A uniform declaration block with optional layout and qualifiers.
  */
-export interface UniformDeclarationBlock extends Node {
-  type: 'UniformDeclarationBlock'
+export interface StructuredBufferDeclaration extends Node {
+  type: 'StructuredBufferDeclaration'
   id: Identifier | null
-  qualifiers: LayoutQualifier[]
+  qualifiers: (InterfaceStorageQualifier | LayoutQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
   layout: Record<string, string | boolean> | null
   members: VariableDeclaration[]
@@ -396,7 +397,7 @@ export type Statement =
   | ForStatement
   | FunctionDeclaration
   | VariableDeclaration
-  | UniformDeclarationBlock
+  | StructuredBufferDeclaration
   | StructDeclaration
   | PreprocessorStatement
   | PrecisionStatement

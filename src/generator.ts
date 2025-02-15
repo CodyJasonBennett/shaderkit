@@ -80,11 +80,12 @@ function format(node: AST | null): string {
       const init = node.init ? `=${format(node.init)}` : ''
       return `${format(node.id)}${init}`
     }
-    case 'UniformDeclarationBlock': {
+    case 'StructuredBufferDeclaration': {
       const layout = formatLayout(node.layout)
-      const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
       const scope = node.id ? `${format(node.id)}` : ''
-      return `${layout}${qualifiers}${format(node.typeSpecifier)}{${node.members.map(format).join('')}}${scope};`
+      return `${layout}${node.qualifiers.join(' ')} ${format(node.typeSpecifier)}{${node.members
+        .map(format)
+        .join('')}}${scope};`
     }
     case 'StructDeclaration':
       return `struct ${format(node.id)}{${node.members.map(format).join('')}};`
