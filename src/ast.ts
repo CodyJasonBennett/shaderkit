@@ -361,6 +361,14 @@ export interface PrecisionStatement extends Node {
   typeSpecifier: Identifier
 }
 
+/**
+ * A GLSL invariant statement.
+ */
+export interface InvariantStatement extends Node {
+  type: 'InvariantStatement'
+  typeSpecifier: Identifier
+}
+
 export type Expression =
   | Literal
   | Identifier
@@ -392,6 +400,7 @@ export type Statement =
   | StructDeclaration
   | PreprocessorStatement
   | PrecisionStatement
+  | InvariantStatement
 
 export type AST =
   | Program

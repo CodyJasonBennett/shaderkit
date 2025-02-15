@@ -22,6 +22,7 @@ import {
   WhileStatement,
   Identifier,
   ArraySpecifier,
+  InvariantStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -767,6 +768,18 @@ describe('parser', () => {
         type: 'PrecisionStatement',
         typeSpecifier: {
           name: 'float',
+          type: 'Identifier',
+        },
+      },
+    ])
+  })
+
+  it('parses invariant statements', () => {
+    expect(parse('invariant position;').body).toStrictEqual<[InvariantStatement]>([
+      {
+        type: 'InvariantStatement',
+        typeSpecifier: {
+          name: 'position',
           type: 'Identifier',
         },
       },

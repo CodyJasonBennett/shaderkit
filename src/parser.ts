@@ -15,6 +15,7 @@ import {
   Identifier,
   IfStatement,
   InterpolationQualifier,
+  InvariantStatement,
   LayoutQualifier,
   Literal,
   LogicalOperator,
@@ -594,6 +595,13 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   return { type: 'PreprocessorStatement', name, value }
 }
 
+function parseInvariant(tokens: Token[]): InvariantStatement {
+  consume(tokens, 'invariant')
+  const typeSpecifier = parseExpression(tokens) as Identifier
+  consume(tokens, ';')
+  return { type: 'InvariantStatement', typeSpecifier }
+}
+
 function parseStatements(tokens: Token[]): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
@@ -619,6 +627,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
+    else if (token.value === 'invariant') statement = parseInvariant(tokens)
     else if (VARIABLE_REGEX.test(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)

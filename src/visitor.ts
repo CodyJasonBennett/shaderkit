@@ -38,6 +38,9 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
     case 'PrecisionStatement':
       visit(node.typeSpecifier, visitors, ancestors)
       break
+    case 'InvariantStatement':
+      visit(node.typeSpecifier, visitors, ancestors)
+      break
     case 'ReturnStatement':
       if (node.argument) visit(node.argument, visitors, ancestors)
       break
