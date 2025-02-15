@@ -586,7 +586,7 @@ A buffer interface declaration with optional layout and qualifiers.
 interface StructuredBufferDeclaration extends Node {
   type: 'StructuredBufferDeclaration'
   id: Identifier | null
-  qualifiers: (InterfaceStorageQualifier | LayoutQualifier)[]
+  qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
   layout: Record<string, string | boolean> | null
   members: VariableDeclaration[]

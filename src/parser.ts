@@ -121,7 +121,8 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
 const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
 // TODO: must be ordered: invariant interpolation storage precision storage parameter precision
 // const cannot be used with storage or parameter qualifiers
-const QUALIFIER_REGEX = /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
+const QUALIFIER_REGEX =
+  /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp|coherent|volatile|restrict|readonly|writeonly)$/
 const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
 const SCOPE_DELTAS: Record<string, number> = {

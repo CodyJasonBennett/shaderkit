@@ -276,6 +276,7 @@ export type ConstantQualifier = 'const'
 export type ParameterQualifier = 'in' | 'out' | 'inout'
 export type StorageQualifier = 'uniform' | 'in' | 'out'
 export type InterfaceStorageQualifier = 'uniform' | 'buffer'
+export type MemoryQualifier = 'coherent' | 'volatile' | 'restrict' | 'readonly' | 'writeonly'
 
 export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant'
 export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
@@ -329,7 +330,7 @@ export interface VariableDeclarator extends Node {
 export interface StructuredBufferDeclaration extends Node {
   type: 'StructuredBufferDeclaration'
   id: Identifier | null
-  qualifiers: (InterfaceStorageQualifier | LayoutQualifier)[]
+  qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
   layout: Record<string, string | boolean> | null
   members: VariableDeclaration[]

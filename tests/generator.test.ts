@@ -59,6 +59,14 @@ const glsl = /* glsl */ `#version 300 es
     vec4 v[];
   } name[3];
 
+  layout(binding = 0) writeonly buffer Output {
+    uint elements[];
+  } output_data;
+
+  layout(binding = 1) readonly buffer Input0 {
+    uint elements[];
+  } input_data0;
+
   float a[5];
   float b[] = a;
   vec4 a[3][2];
