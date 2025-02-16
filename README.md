@@ -421,12 +421,13 @@ interface InvariantQualifierStatement extends Node {
 
 ### LayoutQualifierStatement
 
-An input layout qualifier statement.
+A layout qualifier statement.
 
 ```ts
 interface LayoutQualifierStatement extends Node {
   type: 'LayoutQualifierStatement'
   layout: Record<string, string | boolean>
+  qualifier: StorageQualifier
 }
 ```
 
@@ -558,7 +559,7 @@ A function parameter within a function declaration.
 ```ts
 interface FunctionParameter extends Node {
   type: 'FunctionParameter'
-  id: Identifier
+  id: Identifier | null
   qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
 }

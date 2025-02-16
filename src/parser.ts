@@ -365,8 +365,10 @@ function parseFunction(
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
       qualifiers.push(consume(tokens).value as ConstantQualifier | ParameterQualifier | PrecisionQualifier)
     }
-    const typeSpecifier = parseExpression(tokens) as ArraySpecifier | Identifier
-    const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
+    const typeSpecifier = parseTypeSpecifier(tokens)
+
+    let id: Identifier | null = null
+    if (tokens[0]?.type !== 'symbol') id = parseTypeSpecifier(tokens) as Identifier
 
     params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
 
@@ -383,14 +385,26 @@ function parseFunction(
 }
 
 function parseLayoutQualifier(tokens: Token[], layout: Record<string, string | boolean>): LayoutQualifierStatement {
-  consume(tokens, 'in')
+  const qualifier = consume(tokens).value as StorageQualifier
   consume(tokens, ';')
-  return { type: 'LayoutQualifierStatement', layout }
+  return { type: 'LayoutQualifierStatement', layout, qualifier }
+}
+
+function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
+  consume(tokens, 'invariant')
+  const typeSpecifier = parseExpression(tokens) as Identifier
+  consume(tokens, ';')
+  return { type: 'InvariantQualifierStatement', typeSpecifier }
 }
 
 function parseIndeterminate(
   tokens: Token[],
-): VariableDeclaration | FunctionDeclaration | StructuredBufferDeclaration | LayoutQualifierStatement {
+):
+  | VariableDeclaration
+  | FunctionDeclaration
+  | StructuredBufferDeclaration
+  | LayoutQualifierStatement
+  | InvariantQualifierStatement {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
@@ -424,27 +438,31 @@ function parseIndeterminate(
     return parseLayoutQualifier(tokens, layout)
   }
 
+  // Invariant qualifiers will terminate with an identifier
+  if (layout === null && tokens[0]?.value === 'invariant' && tokens[1]?.type === 'identifier') {
+    return parseInvariant(tokens)
+  }
+
   // TODO: only precision qualifier valid for function return type
   const qualifiers: string[] = []
   while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
     qualifiers.push(consume(tokens).value)
   }
 
-  // TODO: cleanup handling of typeSpecifier
-  if (tokens[2]?.value === '(')
-    return parseFunction(tokens, parseTypeSpecifier(tokens), qualifiers as PrecisionQualifier[])
-
   const typeSpecifier = parseTypeSpecifier(tokens)
 
-  if (tokens[0]?.value === '{')
+  if (tokens[0]?.value === '{') {
     return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
-  else
+  } else if (tokens[1]?.value === '(') {
+    return parseFunction(tokens, typeSpecifier, qualifiers as PrecisionQualifier[])
+  } else {
     return parseVariable(
       tokens,
       typeSpecifier,
       qualifiers as (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
       layout,
     )
+  }
 }
 
 function parseStruct(tokens: Token[]): StructDeclaration {
@@ -620,13 +638,6 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   return { type: 'PreprocessorStatement', name, value }
 }
 
-function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
-  consume(tokens, 'invariant')
-  const typeSpecifier = parseExpression(tokens) as Identifier
-  consume(tokens, ';')
-  return { type: 'InvariantQualifierStatement', typeSpecifier }
-}
-
 function isVariable(tokens: Token[]): boolean {
   const token = tokens[0]
 
@@ -672,7 +683,6 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
-    else if (token.value === 'invariant') statement = parseInvariant(tokens)
     else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)

@@ -299,7 +299,7 @@ export interface FunctionDeclaration extends Node {
  */
 export interface FunctionParameter extends Node {
   type: 'FunctionParameter'
-  id: Identifier
+  id: Identifier | null
   qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
 }
@@ -372,11 +372,12 @@ export interface InvariantQualifierStatement extends Node {
 }
 
 /**
- * An input layout qualifier statement.
+ * A layout qualifier statement.
  */
 export interface LayoutQualifierStatement extends Node {
   type: 'LayoutQualifierStatement'
   layout: Record<string, string | boolean>
+  qualifier: StorageQualifier
 }
 
 export type Expression =

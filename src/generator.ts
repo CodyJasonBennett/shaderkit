@@ -40,7 +40,7 @@ function format(node: AST | null): string {
     case 'InvariantQualifierStatement':
       return `invariant ${format(node.typeSpecifier)};`
     case 'LayoutQualifierStatement':
-      return `${formatLayout(node.layout)}in;`
+      return `${formatLayout(node.layout)}${node.qualifier};`
     case 'ReturnStatement':
       return node.argument ? `return ${format(node.argument)};` : 'return;'
     case 'BreakStatement':
@@ -70,15 +70,14 @@ function format(node: AST | null): string {
     }
     case 'FunctionParameter': {
       const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
-      return `${qualifiers}${format(node.typeSpecifier)} ${format(node.id)}`
+      const id = node.id ? ` ${format(node.id)}` : ''
+      return `${qualifiers}${format(node.typeSpecifier)}${id}`
     }
     case 'VariableDeclaration': {
       const head = node.declarations[0]
       const layout = formatLayout(head.layout)
       const qualifiers = head.qualifiers.length ? `${head.qualifiers.join(' ')} ` : ''
-      const typeSpecifier = format(head.typeSpecifier)
-      const delimiter = typeSpecifier.endsWith(']') ? '' : ' '
-      return `${layout}${qualifiers}${typeSpecifier}${delimiter}${node.declarations.map(format).join(',')};`
+      return `${layout}${qualifiers}${format(head.typeSpecifier)} ${node.declarations.map(format).join(',')};`
     }
     case 'VariableDeclarator': {
       const init = node.init ? `=${format(node.init)}` : ''
@@ -125,5 +124,5 @@ export interface GenerateOptions {
  * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(program: Program, options: GenerateOptions): string {
-  return format(program).replaceAll('\n\n', '\n').trim()
+  return format(program).replaceAll('\n\n', '\n').replaceAll('] ', ']').trim()
 }
