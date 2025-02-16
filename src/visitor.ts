@@ -75,7 +75,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       break
     case 'FunctionParameter':
       visit(node.typeSpecifier, visitors, ancestors)
-      visit(node.id, visitors, ancestors)
+      if (node.id) visit(node.id, visitors, ancestors)
       break
     case 'VariableDeclaration':
       for (const declaration of node.declarations) visit(declaration, visitors, ancestors)
