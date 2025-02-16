@@ -183,4 +183,11 @@ describe('minify', () => {
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
+
+  it('avoids reserved words like as during mangle', () => {
+    const mangleMap = new Map()
+    const shader = /* glsl */ `${Array.from({ length: 53 }, (_, i) => `var u${i} = 0;`).join('')}`
+    expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
+  })
 })
