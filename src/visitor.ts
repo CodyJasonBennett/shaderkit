@@ -35,10 +35,10 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
     case 'PreprocessorStatement':
       if (node.value) for (const expression of node.value) visit(expression, visitors, ancestors)
       break
-    case 'PrecisionStatement':
+    case 'PrecisionQualifierStatement':
       visit(node.typeSpecifier, visitors, ancestors)
       break
-    case 'InvariantStatement':
+    case 'InvariantQualifierStatement':
       visit(node.typeSpecifier, visitors, ancestors)
       break
     case 'ReturnStatement':

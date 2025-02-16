@@ -355,20 +355,28 @@ export interface PreprocessorStatement extends Node {
 }
 
 /**
- * A GLSL precision statement.
+ * A GLSL precision qualifier statement.
  */
-export interface PrecisionStatement extends Node {
-  type: 'PrecisionStatement'
+export interface PrecisionQualifierStatement extends Node {
+  type: 'PrecisionQualifierStatement'
   precision: PrecisionQualifier
   typeSpecifier: Identifier
 }
 
 /**
- * A GLSL invariant statement.
+ * A GLSL invariant qualifier statement.
  */
-export interface InvariantStatement extends Node {
-  type: 'InvariantStatement'
+export interface InvariantQualifierStatement extends Node {
+  type: 'InvariantQualifierStatement'
   typeSpecifier: Identifier
+}
+
+/**
+ * A layout interface qualifier statement.
+ */
+export interface LayoutQualifierStatement extends Node {
+  type: 'LayoutQualifierStatement'
+  layout: Record<string, string | boolean>
 }
 
 export type Expression =
@@ -401,8 +409,9 @@ export type Statement =
   | StructuredBufferDeclaration
   | StructDeclaration
   | PreprocessorStatement
-  | PrecisionStatement
-  | InvariantStatement
+  | PrecisionQualifierStatement
+  | InvariantQualifierStatement
+  | LayoutQualifierStatement
 
 export type AST =
   | Program

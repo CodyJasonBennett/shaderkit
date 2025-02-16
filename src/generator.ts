@@ -35,10 +35,12 @@ function format(node: AST | null): string {
 
       return `\n#${node.name}${value}\n`
     }
-    case 'PrecisionStatement':
+    case 'PrecisionQualifierStatement':
       return `precision ${node.precision} ${node.typeSpecifier.name};`
-    case 'InvariantStatement':
+    case 'InvariantQualifierStatement':
       return `invariant ${format(node.typeSpecifier)};`
+    case 'LayoutQualifierStatement':
+      return `${formatLayout(node.layout)}in;`
     case 'ReturnStatement':
       return node.argument ? `return ${format(node.argument)};` : 'return;'
     case 'BreakStatement':

@@ -25,8 +25,9 @@ Tools and IntelliSense for GLSL and WGSL.
     - [BlockStatement](#blockstatement)
     - [DiscardStatement](#discardstatement)
     - [PreprocessorStatement](#preprocessorstatement)
-    - [PrecisionStatement](#precisionstatement)
-    - [InvariantStatement](#invariantstatement)
+    - [PrecisionQualifierStatement](#precisionqualifierstatement)
+    - [InvariantQualifierStatement](#invariantqualifierstatement)
+    - [LayoutQualifierStatement](#layoutqualifierstatement)
     - Control Flow
       - [ReturnStatement](#returnstatement)
       - [BreakStatement](#breakstatement)
@@ -395,26 +396,37 @@ interface PreprocessorStatement extends Node {
 }
 ```
 
-### PrecisionStatement
+### PrecisionQualifierStatement
 
-A GLSL precision statement.
+A GLSL precision qualifier statement.
 
 ```ts
-interface PrecisionStatement extends Node {
-  type: 'PrecisionStatement'
+interface PrecisionQualifierStatement extends Node {
+  type: 'PrecisionQualifierStatement'
   precision: PrecisionQualifier
   typeSpecifier: Identifier
 }
 ```
 
-### InvariantStatement
+### InvariantQualifierStatement
 
-A GLSL invariant statement.
+A GLSL invariant qualifier statement.
 
 ```ts
-interface InvariantStatement extends Node {
-  type: 'InvariantStatement'
+interface InvariantQualifierStatement extends Node {
+  type: 'InvariantQualifierStatement'
   typeSpecifier: Identifier
+}
+```
+
+### LayoutQualifierStatement
+
+A layout interface qualifier statement.
+
+```ts
+interface LayoutQualifierStatement extends Node {
+  type: 'LayoutQualifierStatement'
+  layout: Record<string, string | boolean>
 }
 ```
 

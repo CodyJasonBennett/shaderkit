@@ -11,7 +11,7 @@ import {
   FunctionDeclaration,
   IfStatement,
   LogicalOperator,
-  PrecisionStatement,
+  PrecisionQualifierStatement,
   PreprocessorStatement,
   ReturnStatement,
   StructDeclaration,
@@ -22,7 +22,7 @@ import {
   WhileStatement,
   Identifier,
   ArraySpecifier,
-  InvariantStatement,
+  InvariantQualifierStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -762,10 +762,10 @@ describe('parser', () => {
   })
 
   it('parses precision statements', () => {
-    expect(parse('precision highp float;').body).toStrictEqual<[PrecisionStatement]>([
+    expect(parse('precision highp float;').body).toStrictEqual<[PrecisionQualifierStatement]>([
       {
         precision: 'highp',
-        type: 'PrecisionStatement',
+        type: 'PrecisionQualifierStatement',
         typeSpecifier: {
           name: 'float',
           type: 'Identifier',
@@ -775,9 +775,9 @@ describe('parser', () => {
   })
 
   it('parses invariant statements', () => {
-    expect(parse('invariant position;').body).toStrictEqual<[InvariantStatement]>([
+    expect(parse('invariant position;').body).toStrictEqual<[InvariantQualifierStatement]>([
       {
-        type: 'InvariantStatement',
+        type: 'InvariantQualifierStatement',
         typeSpecifier: {
           name: 'position',
           type: 'Identifier',

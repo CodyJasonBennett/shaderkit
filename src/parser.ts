@@ -15,13 +15,13 @@ import {
   Identifier,
   IfStatement,
   InterpolationQualifier,
-  InvariantStatement,
+  InvariantQualifierStatement,
   LayoutQualifier,
   Literal,
   LogicalOperator,
   ParameterQualifier,
   PrecisionQualifier,
-  PrecisionStatement,
+  PrecisionQualifierStatement,
   PreprocessorStatement,
   Program,
   ReturnStatement,
@@ -36,6 +36,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
+  LayoutQualifierStatement,
 } from './ast.js'
 import { type Token, tokenize } from './tokenizer.js'
 
@@ -381,7 +382,15 @@ function parseFunction(
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
-function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration | StructuredBufferDeclaration {
+function parseLayoutQualifier(tokens: Token[], layout: Record<string, string | boolean>): LayoutQualifierStatement {
+  consume(tokens, 'in')
+  consume(tokens, ';')
+  return { type: 'LayoutQualifierStatement', layout }
+}
+
+function parseIndeterminate(
+  tokens: Token[],
+): VariableDeclaration | FunctionDeclaration | StructuredBufferDeclaration | LayoutQualifierStatement {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
@@ -408,6 +417,11 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     }
 
     consume(tokens, ')')
+  }
+
+  // Input qualifiers will suddenly terminate
+  if (layout !== null && tokens[1]?.value === ';') {
+    return parseLayoutQualifier(tokens, layout)
   }
 
   // TODO: only precision qualifier valid for function return type
@@ -562,12 +576,12 @@ function parseSwitch(tokens: Token[]): SwitchStatement {
   return { type: 'SwitchStatement', discriminant, cases }
 }
 
-function parsePrecision(tokens: Token[]): PrecisionStatement {
+function parsePrecision(tokens: Token[]): PrecisionQualifierStatement {
   consume(tokens, 'precision')
   const precision = consume(tokens).value as PrecisionQualifier
   const typeSpecifier: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, ';')
-  return { type: 'PrecisionStatement', precision, typeSpecifier }
+  return { type: 'PrecisionQualifierStatement', precision, typeSpecifier }
 }
 
 function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
@@ -606,11 +620,11 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   return { type: 'PreprocessorStatement', name, value }
 }
 
-function parseInvariant(tokens: Token[]): InvariantStatement {
+function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
   consume(tokens, 'invariant')
   const typeSpecifier = parseExpression(tokens) as Identifier
   consume(tokens, ';')
-  return { type: 'InvariantStatement', typeSpecifier }
+  return { type: 'InvariantQualifierStatement', typeSpecifier }
 }
 
 function isVariable(tokens: Token[]): boolean {
