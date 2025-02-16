@@ -284,7 +284,7 @@ function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
 
     typeSpecifier = {
       type: 'ArraySpecifier',
-      typeSpecifier: typeSpecifier,
+      typeSpecifier,
       dimensions,
     }
   }
