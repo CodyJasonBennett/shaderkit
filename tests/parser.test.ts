@@ -500,6 +500,36 @@ describe('parser', () => {
         type: 'StructDeclaration',
       },
     ])
+
+    expect(parse('struct a {} b;').body).toStrictEqual<[StructDeclaration, VariableDeclaration]>([
+      {
+        type: 'StructDeclaration',
+        id: {
+          type: 'Identifier',
+          name: 'a',
+        },
+        members: [],
+      },
+      {
+        type: 'VariableDeclaration',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            layout: null,
+            qualifiers: [],
+            id: {
+              type: 'Identifier',
+              name: 'b',
+            },
+            typeSpecifier: {
+              type: 'Identifier',
+              name: 'a',
+            },
+            init: null,
+          },
+        ],
+      },
+    ])
   })
 
   it('parses function declarations', () => {

@@ -474,6 +474,19 @@ function parseStruct(tokens: Token[]): StructDeclaration {
     members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
   }
   consume(tokens, '}')
+
+  // Hack to append a separate variable declaration in the next iterator
+  // `struct a {} name;` is parsed as `struct a {}; a name;`
+  if (tokens[0]?.type === 'identifier') {
+    const type = id.name
+    const name = tokens.shift()!.value
+    tokens.push(
+      { type: 'identifier', value: type },
+      { type: 'identifier', value: name },
+      { type: 'symbol', value: ';' },
+    )
+  }
+
   consume(tokens, ';')
 
   return { type: 'StructDeclaration', id, members }
