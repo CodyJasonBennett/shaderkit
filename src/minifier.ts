@@ -1,4 +1,5 @@
 import { type Token, tokenize } from './tokenizer.js'
+import { GLSL_KEYWORDS, WGSL_KEYWORDS } from './constants.js'
 
 export type MangleMatcher = (token: Token, index: number, tokens: Token[]) => boolean
 
@@ -19,6 +20,9 @@ const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
   /^(binding|group|layout|uniform|in|out|attribute|varying)$/,
 )
 
+// Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
+const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/
+
 const NEWLINE_REGEX = /\\\s+/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
@@ -34,6 +38,8 @@ export function minify(
 
   // Escape newlines after directives, skip comments
   code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
+
+  const KEYWORDS = WGSL_REGEX.test(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
 
   const mangleCache = new Map()
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
@@ -127,7 +133,7 @@ export function minify(
           (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
         const cache = isExternal ? mangleMap : mangleCache
 
-        while (!renamed || cache.has(renamed)) {
+        while (!renamed || cache.has(renamed) || KEYWORDS.includes(renamed)) {
           renamed = ''
           mangleIndex++
 
