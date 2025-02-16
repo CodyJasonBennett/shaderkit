@@ -29,8 +29,8 @@ function format(node: AST | null): string {
       let value = ''
       if (node.value) {
         if (node.name === 'include') value = ` <${format(node.value[0])}>` // three is whitespace sensitive
-        else if (node.name === 'extension') value = `${node.value.map(format).join(':')}`
-        else value = ` ${node.value.map(format).join(' ')}`
+        else if (node.name === 'extension') value = ` ${node.value.map(format).join(':')}`
+        else if (node.value.length) value = ` ${node.value.map(format).join(' ')}`
       }
 
       return `\n#${node.name}${value}\n`
