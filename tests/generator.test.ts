@@ -143,6 +143,5 @@ describe('generator', () => {
     const program = parse(compute)
     const output = generate(program, { target: 'GLSL' })
     expect(output).toBe(minify(compute))
-    console.log(compute)
   })
 })
