@@ -117,13 +117,8 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
   '?': Precedence.TERNARY,
 }
 
-// TODO: this is GLSL-only, separate language constants
-const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
-// TODO: must be ordered: invariant interpolation storage precision storage parameter precision
-// const cannot be used with storage or parameter qualifiers
 const QUALIFIER_REGEX =
   /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp|coherent|volatile|restrict|readonly|writeonly)$/
-const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
 
 const SCOPE_DELTAS: Record<string, number> = {
   // Open
@@ -619,20 +614,19 @@ function parseInvariant(tokens: Token[]): InvariantStatement {
 }
 
 function isVariable(tokens: Token[]): boolean {
-  let i = 0
-  let token = tokens[i++]
+  const token = tokens[0]
 
   // Skip first token if EOF or not type qualifier/specifier
-  if (!token || !VARIABLE_REGEX.test(token.value)) return false
+  if (!token || (token.type !== 'identifier' && token.type !== 'keyword')) return false
 
   // Layout qualifiers are only valid for declarations
   if (token.value === 'layout') return true
 
-  // Skip to end of array specifier(s)
-  while (tokens[i]?.value === '[') {
-    i++ // skip [
-    i++ // skip const expr
-    i++ // skip ]
+  // Skip to end of possible expression statement (e.g. callexpr -> fndecl)
+  let i = 1
+  let scopeIndex = 0
+  while (i < tokens.length && (scopeIndex > 0 || getScopeDelta(tokens[i]) > 0)) {
+    scopeIndex += getScopeDelta(tokens[i++])
   }
 
   // A variable declaration must follow with an identifier or type
