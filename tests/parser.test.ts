@@ -11,7 +11,7 @@ import {
   FunctionDeclaration,
   IfStatement,
   LogicalOperator,
-  PrecisionStatement,
+  PrecisionQualifierStatement,
   PreprocessorStatement,
   ReturnStatement,
   StructDeclaration,
@@ -22,7 +22,7 @@ import {
   WhileStatement,
   Identifier,
   ArraySpecifier,
-  InvariantStatement,
+  InvariantQualifierStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -500,6 +500,36 @@ describe('parser', () => {
         type: 'StructDeclaration',
       },
     ])
+
+    expect(parse('struct a {} b;').body).toStrictEqual<[StructDeclaration, VariableDeclaration]>([
+      {
+        type: 'StructDeclaration',
+        id: {
+          type: 'Identifier',
+          name: 'a',
+        },
+        members: [],
+      },
+      {
+        type: 'VariableDeclaration',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            layout: null,
+            qualifiers: [],
+            id: {
+              type: 'Identifier',
+              name: 'b',
+            },
+            typeSpecifier: {
+              type: 'Identifier',
+              name: 'a',
+            },
+            init: null,
+          },
+        ],
+      },
+    ])
   })
 
   it('parses function declarations', () => {
@@ -762,10 +792,10 @@ describe('parser', () => {
   })
 
   it('parses precision statements', () => {
-    expect(parse('precision highp float;').body).toStrictEqual<[PrecisionStatement]>([
+    expect(parse('precision highp float;').body).toStrictEqual<[PrecisionQualifierStatement]>([
       {
         precision: 'highp',
-        type: 'PrecisionStatement',
+        type: 'PrecisionQualifierStatement',
         typeSpecifier: {
           name: 'float',
           type: 'Identifier',
@@ -775,9 +805,9 @@ describe('parser', () => {
   })
 
   it('parses invariant statements', () => {
-    expect(parse('invariant position;').body).toStrictEqual<[InvariantStatement]>([
+    expect(parse('invariant position;').body).toStrictEqual<[InvariantQualifierStatement]>([
       {
-        type: 'InvariantStatement',
+        type: 'InvariantQualifierStatement',
         typeSpecifier: {
           name: 'position',
           type: 'Identifier',

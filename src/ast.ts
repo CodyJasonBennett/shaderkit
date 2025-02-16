@@ -275,6 +275,8 @@ export interface ForStatement extends Node {
 export type ConstantQualifier = 'const'
 export type ParameterQualifier = 'in' | 'out' | 'inout'
 export type StorageQualifier = 'uniform' | 'in' | 'out'
+export type InterfaceStorageQualifier = 'uniform' | 'buffer'
+export type MemoryQualifier = 'coherent' | 'volatile' | 'restrict' | 'readonly' | 'writeonly'
 
 export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant'
 export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
@@ -297,7 +299,7 @@ export interface FunctionDeclaration extends Node {
  */
 export interface FunctionParameter extends Node {
   type: 'FunctionParameter'
-  id: Identifier
+  id: Identifier | null
   qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
 }
@@ -325,10 +327,10 @@ export interface VariableDeclarator extends Node {
 /**
  * A uniform declaration block with optional layout and qualifiers.
  */
-export interface UniformDeclarationBlock extends Node {
-  type: 'UniformDeclarationBlock'
+export interface StructuredBufferDeclaration extends Node {
+  type: 'StructuredBufferDeclaration'
   id: Identifier | null
-  qualifiers: LayoutQualifier[]
+  qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
   typeSpecifier: Identifier | ArraySpecifier
   layout: Record<string, string | boolean> | null
   members: VariableDeclaration[]
@@ -353,20 +355,29 @@ export interface PreprocessorStatement extends Node {
 }
 
 /**
- * A GLSL precision statement.
+ * A GLSL precision qualifier statement.
  */
-export interface PrecisionStatement extends Node {
-  type: 'PrecisionStatement'
+export interface PrecisionQualifierStatement extends Node {
+  type: 'PrecisionQualifierStatement'
   precision: PrecisionQualifier
   typeSpecifier: Identifier
 }
 
 /**
- * A GLSL invariant statement.
+ * A GLSL invariant qualifier statement.
  */
-export interface InvariantStatement extends Node {
-  type: 'InvariantStatement'
+export interface InvariantQualifierStatement extends Node {
+  type: 'InvariantQualifierStatement'
   typeSpecifier: Identifier
+}
+
+/**
+ * A layout qualifier statement.
+ */
+export interface LayoutQualifierStatement extends Node {
+  type: 'LayoutQualifierStatement'
+  layout: Record<string, string | boolean>
+  qualifier: StorageQualifier
 }
 
 export type Expression =
@@ -396,11 +407,12 @@ export type Statement =
   | ForStatement
   | FunctionDeclaration
   | VariableDeclaration
-  | UniformDeclarationBlock
+  | StructuredBufferDeclaration
   | StructDeclaration
   | PreprocessorStatement
-  | PrecisionStatement
-  | InvariantStatement
+  | PrecisionQualifierStatement
+  | InvariantQualifierStatement
+  | LayoutQualifierStatement
 
 export type AST =
   | Program

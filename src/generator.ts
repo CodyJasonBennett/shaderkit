@@ -18,7 +18,7 @@ function format(node: AST | null): string {
     case 'Literal':
       return node.value
     case 'ArraySpecifier':
-      return `${node.typeSpecifier.name}[${node.dimensions.map(format).join(',')}]`
+      return `${node.typeSpecifier.name}${node.dimensions.map((d) => `[${format(d)}]`).join('')}`
     case 'ExpressionStatement':
       return `${format(node.expression)};`
     case 'BlockStatement':
@@ -29,16 +29,18 @@ function format(node: AST | null): string {
       let value = ''
       if (node.value) {
         if (node.name === 'include') value = ` <${format(node.value[0])}>` // three is whitespace sensitive
-        else if (node.name === 'extension') value = `${node.value.map(format).join(':')}`
-        else value = ` ${node.value.map(format).join(' ')}`
+        else if (node.name === 'extension') value = ` ${node.value.map(format).join(':')}`
+        else if (node.value.length) value = ` ${node.value.map(format).join(' ')}`
       }
 
       return `\n#${node.name}${value}\n`
     }
-    case 'PrecisionStatement':
+    case 'PrecisionQualifierStatement':
       return `precision ${node.precision} ${node.typeSpecifier.name};`
-    case 'InvariantStatement':
+    case 'InvariantQualifierStatement':
       return `invariant ${format(node.typeSpecifier)};`
+    case 'LayoutQualifierStatement':
+      return `${formatLayout(node.layout)}${node.qualifier};`
     case 'ReturnStatement':
       return node.argument ? `return ${format(node.argument)};` : 'return;'
     case 'BreakStatement':
@@ -68,7 +70,8 @@ function format(node: AST | null): string {
     }
     case 'FunctionParameter': {
       const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
-      return `${qualifiers}${format(node.typeSpecifier)} ${format(node.id)}`
+      const id = node.id ? ` ${format(node.id)}` : ''
+      return `${qualifiers}${format(node.typeSpecifier)}${id}`
     }
     case 'VariableDeclaration': {
       const head = node.declarations[0]
@@ -80,11 +83,12 @@ function format(node: AST | null): string {
       const init = node.init ? `=${format(node.init)}` : ''
       return `${format(node.id)}${init}`
     }
-    case 'UniformDeclarationBlock': {
+    case 'StructuredBufferDeclaration': {
       const layout = formatLayout(node.layout)
-      const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
       const scope = node.id ? `${format(node.id)}` : ''
-      return `${layout}${qualifiers}${format(node.typeSpecifier)}{${node.members.map(format).join('')}}${scope};`
+      return `${layout}${node.qualifiers.join(' ')} ${format(node.typeSpecifier)}{${node.members
+        .map(format)
+        .join('')}}${scope};`
     }
     case 'StructDeclaration':
       return `struct ${format(node.id)}{${node.members.map(format).join('')}};`
@@ -120,5 +124,5 @@ export interface GenerateOptions {
  * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(program: Program, options: GenerateOptions): string {
-  return format(program).replaceAll('\n\n', '\n').trim()
+  return format(program).replaceAll('\n\n', '\n').replaceAll('] ', ']').trim()
 }

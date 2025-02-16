@@ -19,6 +19,9 @@ const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
   /^(binding|group|layout|uniform|in|out|attribute|varying)$/,
 )
 
+const NEWLINE_REGEX = /\\\s+/gm
+const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
+
 /**
  * Minifies a string of GLSL or WGSL code.
  */
@@ -26,8 +29,11 @@ export function minify(
   code: string,
   { mangle = false, mangleMap = new Map(), mangleExternals = false }: Partial<MinifyOptions> = {},
 ): string {
+  // Fold newlines
+  code = code.replace(NEWLINE_REGEX, '')
+
   // Escape newlines after directives, skip comments
-  code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
+  code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
 
   const mangleCache = new Map()
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')

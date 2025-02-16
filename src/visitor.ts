@@ -35,10 +35,10 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
     case 'PreprocessorStatement':
       if (node.value) for (const expression of node.value) visit(expression, visitors, ancestors)
       break
-    case 'PrecisionStatement':
+    case 'PrecisionQualifierStatement':
       visit(node.typeSpecifier, visitors, ancestors)
       break
-    case 'InvariantStatement':
+    case 'InvariantQualifierStatement':
       visit(node.typeSpecifier, visitors, ancestors)
       break
     case 'ReturnStatement':
@@ -75,7 +75,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       break
     case 'FunctionParameter':
       visit(node.typeSpecifier, visitors, ancestors)
-      visit(node.id, visitors, ancestors)
+      if (node.id) visit(node.id, visitors, ancestors)
       break
     case 'VariableDeclaration':
       for (const declaration of node.declarations) visit(declaration, visitors, ancestors)
@@ -85,7 +85,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       visit(node.id, visitors, ancestors)
       if (node.init) visit(node.init, visitors, ancestors)
       break
-    case 'UniformDeclarationBlock':
+    case 'StructuredBufferDeclaration':
       visit(node.typeSpecifier, visitors, ancestors)
       for (const member of node.members) visit(member, visitors, ancestors)
       if (node.id) visit(node.id, visitors, ancestors)

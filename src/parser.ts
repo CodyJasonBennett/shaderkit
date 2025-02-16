@@ -15,13 +15,13 @@ import {
   Identifier,
   IfStatement,
   InterpolationQualifier,
-  InvariantStatement,
+  InvariantQualifierStatement,
   LayoutQualifier,
   Literal,
   LogicalOperator,
   ParameterQualifier,
   PrecisionQualifier,
-  PrecisionStatement,
+  PrecisionQualifierStatement,
   PreprocessorStatement,
   Program,
   ReturnStatement,
@@ -31,11 +31,12 @@ import {
   SwitchCase,
   SwitchStatement,
   UnaryOperator,
-  UniformDeclarationBlock,
+  StructuredBufferDeclaration,
   UpdateOperator,
   VariableDeclaration,
   VariableDeclarator,
   WhileStatement,
+  LayoutQualifierStatement,
 } from './ast.js'
 import { type Token, tokenize } from './tokenizer.js'
 
@@ -117,12 +118,8 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
   '?': Precedence.TERNARY,
 }
 
-// TODO: this is GLSL-only, separate language constants
-const TYPE_REGEX = /^(void|bool|float|u?int|[uib]?vec\d|mat\d(x\d)?)$/
-// TODO: must be ordered: invariant interpolation storage precision storage parameter precision
-// const cannot be used with storage or parameter qualifiers
-const QUALIFIER_REGEX = /^(const|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp)$/
-const VARIABLE_REGEX = new RegExp(`${TYPE_REGEX.source}|${QUALIFIER_REGEX.source}|layout`)
+const QUALIFIER_REGEX =
+  /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp|coherent|volatile|restrict|readonly|writeonly)$/
 
 const SCOPE_DELTAS: Record<string, number> = {
   // Open
@@ -267,23 +264,41 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   return lhs
 }
 
+function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
+  let typeSpecifier: Identifier | ArraySpecifier = { type: 'Identifier', name: consume(tokens).value }
+
+  if (tokens[0]?.value === '[') {
+    const dimensions: (Literal | Identifier | null)[] = []
+
+    while (tokens[0]?.value === '[') {
+      consume(tokens, '[')
+
+      if ((tokens[0]?.value as string) !== ']') {
+        dimensions.push(parseExpression(tokens) as Literal | Identifier)
+      } else {
+        dimensions.push(null)
+      }
+
+      consume(tokens, ']')
+    }
+
+    typeSpecifier = {
+      type: 'ArraySpecifier',
+      typeSpecifier,
+      dimensions,
+    }
+  }
+
+  return typeSpecifier
+}
+
 function parseVariableDeclarator(
   tokens: Token[],
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
   layout: Record<string, string | boolean> | null,
 ): VariableDeclarator {
-  let id: Identifier = { type: 'Identifier', name: consume(tokens).value }
-
-  if (tokens[0]?.value === '[') {
-    consume(tokens, '[')
-    id = {
-      type: 'ArraySpecifier',
-      typeSpecifier: id,
-      dimensions: [parseExpression(tokens) as Literal | Identifier],
-    } satisfies ArraySpecifier as unknown as Identifier
-    consume(tokens, ']')
-  }
+  const id = parseTypeSpecifier(tokens) as Identifier
 
   let init: Expression | null = null
 
@@ -320,19 +335,19 @@ function parseVariable(
   return { type: 'VariableDeclaration', declarations }
 }
 
-function parseUniformBlock(
+function parseBufferInterface(
   tokens: Token[],
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: LayoutQualifier[] = [],
   layout: Record<string, string | boolean> | null = null,
-): UniformDeclarationBlock {
+): StructuredBufferDeclaration {
   const members = parseBlock(tokens).body as VariableDeclaration[]
 
   let id: Identifier | null = null
   if (tokens[0]?.value !== ';') id = parseExpression(tokens) as Identifier
   consume(tokens, ';')
 
-  return { type: 'UniformDeclarationBlock', id, qualifiers, typeSpecifier, layout, members }
+  return { type: 'StructuredBufferDeclaration', id, qualifiers, typeSpecifier, layout, members }
 }
 
 function parseFunction(
@@ -350,8 +365,10 @@ function parseFunction(
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
       qualifiers.push(consume(tokens).value as ConstantQualifier | ParameterQualifier | PrecisionQualifier)
     }
-    const typeSpecifier = parseExpression(tokens) as ArraySpecifier | Identifier
-    const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
+    const typeSpecifier = parseTypeSpecifier(tokens)
+
+    let id: Identifier | null = null
+    if (tokens[0]?.type !== 'symbol') id = parseTypeSpecifier(tokens) as Identifier
 
     params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
 
@@ -367,7 +384,27 @@ function parseFunction(
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
-function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDeclaration | UniformDeclarationBlock {
+function parseLayoutQualifier(tokens: Token[], layout: Record<string, string | boolean>): LayoutQualifierStatement {
+  const qualifier = consume(tokens).value as StorageQualifier
+  consume(tokens, ';')
+  return { type: 'LayoutQualifierStatement', layout, qualifier }
+}
+
+function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
+  consume(tokens, 'invariant')
+  const typeSpecifier = parseExpression(tokens) as Identifier
+  consume(tokens, ';')
+  return { type: 'InvariantQualifierStatement', typeSpecifier }
+}
+
+function parseIndeterminate(
+  tokens: Token[],
+):
+  | VariableDeclaration
+  | FunctionDeclaration
+  | StructuredBufferDeclaration
+  | LayoutQualifierStatement
+  | InvariantQualifierStatement {
   let layout: Record<string, string | boolean> | null = null
   if (tokens[0].value === 'layout') {
     consume(tokens, 'layout')
@@ -396,30 +433,36 @@ function parseIndeterminate(tokens: Token[]): VariableDeclaration | FunctionDecl
     consume(tokens, ')')
   }
 
+  // Input qualifiers will suddenly terminate
+  if (layout !== null && tokens[1]?.value === ';') {
+    return parseLayoutQualifier(tokens, layout)
+  }
+
+  // Invariant qualifiers will terminate with an identifier
+  if (layout === null && tokens[0]?.value === 'invariant' && tokens[1]?.type === 'identifier') {
+    return parseInvariant(tokens)
+  }
+
   // TODO: only precision qualifier valid for function return type
   const qualifiers: string[] = []
   while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
     qualifiers.push(consume(tokens).value)
   }
 
-  // TODO: cleanup handling of typeSpecifier
-  if (tokens[2]?.value === '(')
-    return parseFunction(
-      tokens,
-      parseExpression(tokens) as Identifier | ArraySpecifier,
-      qualifiers as PrecisionQualifier[],
-    )
+  const typeSpecifier = parseTypeSpecifier(tokens)
 
-  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
-
-  if (tokens[0]?.value === '{') return parseUniformBlock(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
-  else
+  if (tokens[0]?.value === '{') {
+    return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
+  } else if (tokens[1]?.value === '(') {
+    return parseFunction(tokens, typeSpecifier, qualifiers as PrecisionQualifier[])
+  } else {
     return parseVariable(
       tokens,
       typeSpecifier,
       qualifiers as (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
       layout,
     )
+  }
 }
 
 function parseStruct(tokens: Token[]): StructDeclaration {
@@ -431,6 +474,19 @@ function parseStruct(tokens: Token[]): StructDeclaration {
     members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
   }
   consume(tokens, '}')
+
+  // Hack to append a separate variable declaration in the next iterator
+  // `struct a {} name;` is parsed as `struct a {}; a name;`
+  if (tokens[0]?.type === 'identifier') {
+    const type = id.name
+    const name = tokens.shift()!.value
+    tokens.push(
+      { type: 'identifier', value: type },
+      { type: 'identifier', value: name },
+      { type: 'symbol', value: ';' },
+    )
+  }
+
   consume(tokens, ';')
 
   return { type: 'StructDeclaration', id, members }
@@ -551,12 +607,12 @@ function parseSwitch(tokens: Token[]): SwitchStatement {
   return { type: 'SwitchStatement', discriminant, cases }
 }
 
-function parsePrecision(tokens: Token[]): PrecisionStatement {
+function parsePrecision(tokens: Token[]): PrecisionQualifierStatement {
   consume(tokens, 'precision')
   const precision = consume(tokens).value as PrecisionQualifier
   const typeSpecifier: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, ';')
-  return { type: 'PrecisionStatement', precision, typeSpecifier }
+  return { type: 'PrecisionQualifierStatement', precision, typeSpecifier }
 }
 
 function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
@@ -595,11 +651,24 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   return { type: 'PreprocessorStatement', name, value }
 }
 
-function parseInvariant(tokens: Token[]): InvariantStatement {
-  consume(tokens, 'invariant')
-  const typeSpecifier = parseExpression(tokens) as Identifier
-  consume(tokens, ';')
-  return { type: 'InvariantStatement', typeSpecifier }
+function isVariable(tokens: Token[]): boolean {
+  const token = tokens[0]
+
+  // Skip first token if EOF or not type qualifier/specifier
+  if (!token || (token.type !== 'identifier' && token.type !== 'keyword')) return false
+
+  // Layout qualifiers are only valid for declarations
+  if (token.value === 'layout') return true
+
+  // Skip to end of possible expression statement (e.g. callexpr -> fndecl)
+  let i = 1
+  let scopeIndex = 0
+  while (i < tokens.length && (scopeIndex > 0 || getScopeDelta(tokens[i]) > 0)) {
+    scopeIndex += getScopeDelta(tokens[i++])
+  }
+
+  // A variable declaration must follow with an identifier or type
+  return tokens[i]?.type !== 'symbol'
 }
 
 function parseStatements(tokens: Token[]): Statement[] {
@@ -627,8 +696,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
-    else if (token.value === 'invariant') statement = parseInvariant(tokens)
-    else if (VARIABLE_REGEX.test(token.value) && tokens[1].value !== '[') statement = parseIndeterminate(tokens)
+    else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)
       consume(tokens, ';')
@@ -649,7 +717,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
   return { type: 'BlockStatement', body }
 }
 
-const NEWLINE_REGEX = /\\\n/gm
+const NEWLINE_REGEX = /\\\s+/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
