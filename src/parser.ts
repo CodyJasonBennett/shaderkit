@@ -717,7 +717,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
   return { type: 'BlockStatement', body }
 }
 
-const NEWLINE_REGEX = /\\\n/gm
+const NEWLINE_REGEX = /\\\s+/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
