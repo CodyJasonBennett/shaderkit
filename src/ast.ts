@@ -372,7 +372,7 @@ export interface InvariantQualifierStatement extends Node {
 }
 
 /**
- * A layout interface qualifier statement.
+ * An input layout qualifier statement.
  */
 export interface LayoutQualifierStatement extends Node {
   type: 'LayoutQualifierStatement'

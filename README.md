@@ -421,7 +421,7 @@ interface InvariantQualifierStatement extends Node {
 
 ### LayoutQualifierStatement
 
-A layout interface qualifier statement.
+An input layout qualifier statement.
 
 ```ts
 interface LayoutQualifierStatement extends Node {
