@@ -1,6 +1,6 @@
 {
   "name": "shaderkit",
-  "version": "0.1.14",
+  "version": "0.5.0",
   "description": "Tools and IntelliSense for GLSL and WGSL.",
   "keywords": [
     "shaders",
@@ -22,24 +22,14 @@
     "src/*"
   ],
   "type": "module",
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "exports": {
-    "require": {
-      "types": "./dist/index.d.cts",
-      "default": "./dist/index.cjs"
-    },
-    "import": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "sideEffects": false,
   "devDependencies": {
-    "typescript": "^4.9.5",
-    "vite": "^4.1.2",
-    "vitest": "^0.28.5"
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "vitest": "^2.1.8"
   },
   "scripts": {
     "dev": "vite",

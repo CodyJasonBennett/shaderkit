@@ -1,170 +1,128 @@
-import {
-  type AST,
-  Literal,
-  Identifier,
-  Type,
-  BlockStatement,
-  VariableDeclaration,
-  FunctionDeclaration,
-  CallExpression,
-  MemberExpression,
-  ArrayExpression,
-  IfStatement,
-  WhileStatement,
-  ForStatement,
-  DoWhileStatement,
-  SwitchStatement,
-  SwitchCase,
-  StructDeclaration,
-  UnaryExpression,
-  BinaryExpression,
-  TernaryExpression,
-  ReturnStatement,
-  PrecisionStatement,
-  ContinueStatement,
-  BreakStatement,
-  DiscardStatement,
-  PreprocessorStatement,
-} from './ast'
+import { type AST, type Program } from './ast.js'
 
-const EOL_REGEX = /\n$/
+function formatLayout(layout: Record<string, string | boolean> | null): string {
+  if (!layout) return ''
 
-// Punctuates expression statements
-function punctuate(line: string): string {
-  if (!line.endsWith('\n')) line = line + ';\n'
-  return line
+  return `layout(${Object.entries(layout)
+    .map(([k, v]) => (v === true ? k : `${k}=${v}`))
+    .join(',')})`
 }
 
-// TODO: GLSL-only
+// TODO: restore comments/whitespace with sourcemaps, WGSL support
 function format(node: AST | null): string {
-  let line = ''
+  if (!node) return ''
 
-  if (node instanceof Literal || node instanceof Identifier) {
-    line = node.value
-  } else if (node instanceof Type) {
-    line = node.parameters ? `${node.name}<${node.parameters.map(format).join(', ')}>` : node.name
-  } else if (node instanceof BlockStatement) {
-    const cr = node.body.length ? '\n' : ''
-    line = `{${cr}${node.body.map((node) => '  ' + punctuate(format(node))).join('')}}\n`
-  } else if (node instanceof VariableDeclaration) {
-    let layout = ''
-    if (node.layout) {
-      const args: string[] = []
-      for (const key in node.layout) {
-        const value = node.layout[key]
-        if (typeof value === 'string') args.push(`${key} = ${value}`)
-        else args.push(key)
+  switch (node.type) {
+    case 'Identifier':
+      return node.name
+    case 'Literal':
+      return node.value
+    case 'ArraySpecifier':
+      return `${node.typeSpecifier.name}${node.dimensions.map((d) => `[${format(d)}]`).join('')}`
+    case 'ExpressionStatement':
+      return `${format(node.expression)};`
+    case 'BlockStatement':
+      return `{${node.body.map(format).join('')}}`
+    case 'DiscardStatement':
+      return 'discard;'
+    case 'PreprocessorStatement': {
+      let value = ''
+      if (node.value) {
+        if (node.name === 'include') value = ` <${format(node.value[0])}>` // three is whitespace sensitive
+        else if (node.name === 'extension') value = ` ${node.value.map(format).join(':')}`
+        else if (node.value.length) value = ` ${node.value.map(format).join(' ')}`
       }
-      layout = `layout(${args.join(', ')}) `
+
+      return `\n#${node.name}${value}\n`
     }
-
-    const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
-
-    let type = format(node.type)
-
-    let body = ''
-    if (node.declarations.length) {
-      const members: string[] = []
-      for (const declaration of node.declarations) {
-        let value = ''
-
-        if (declaration.value instanceof ArrayExpression) {
-          const t = declaration.value.type
-          const params = t.parameters ? t.parameters?.map(format).join(', ') : ''
-          value = `[${params}]`
-
-          if (declaration.value.members.length) {
-            value += ` = ${type}[${params}](${declaration.value.members.map(format).join(', ')})`
-          }
-        } else if (declaration.value) {
-          value = ` = ${format(declaration.value)}`
-        }
-
-        members.push(`${declaration.name}${value}`)
-      }
-      body = members.join(', ')
+    case 'PrecisionQualifierStatement':
+      return `precision ${node.precision} ${node.typeSpecifier.name};`
+    case 'InvariantQualifierStatement':
+      return `invariant ${format(node.typeSpecifier)};`
+    case 'LayoutQualifierStatement':
+      return `${formatLayout(node.layout)}${node.qualifier};`
+    case 'ReturnStatement':
+      return node.argument ? `return ${format(node.argument)};` : 'return;'
+    case 'BreakStatement':
+      return 'break;'
+    case 'ContinueStatement':
+      return 'continue;'
+    case 'IfStatement': {
+      const alternate = node.alternate ? ` else${format(node.consequent)}` : ''
+      return `if(${format(node.test)})${format(node.consequent)}${alternate}`
     }
-
-    line = `${layout}${qualifiers}${type} ${body};\n`.trimStart()
-  } else if (node instanceof FunctionDeclaration) {
-    const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
-    const args = node.args.map((node) => format(node).replace(';\n', '')).join(', ')
-    const body = node.body ? ` ${format(node.body)}` : ';\n'
-    line = `${qualifiers}${format(node.type)} ${node.name}(${args})${body}`
-  } else if (node instanceof CallExpression) {
-    line = `${format(node.callee)}(${node.args.map(format).join(', ')})`
-  } else if (node instanceof MemberExpression) {
-    line = `${format(node.object)}.${format(node.property)}`
-  } else if (node instanceof ArrayExpression) {
-    const params = node.type.parameters ? node.type.parameters?.map(format).join(', ') : ''
-    line = `${node.type.name}[${params}](${node.members.map(format).join(', ')})`
-  } else if (node instanceof IfStatement) {
-    const consequent = format(node.consequent).replace(EOL_REGEX, '')
-    const alternate = node.alternate ? ` else ${format(node.alternate).replace(EOL_REGEX, '')}` : ''
-    line = `if (${format(node.test)}) ${consequent}${alternate}\n`
-  } else if (node instanceof WhileStatement) {
-    line = `while (${format(node.test)}) ${format(node.body)}`
-  } else if (node instanceof ForStatement) {
-    const init = format(node.init).replace(';\n', '')
-    line = `for (${init}; ${format(node.test)}; ${format(node.update)}) ${format(node.body)}`
-  } else if (node instanceof DoWhileStatement) {
-    line = `do ${format(node.body).replace(EOL_REGEX, '')} while (${format(node.test)});\n`
-  } else if (node instanceof SwitchStatement) {
-    const cr = node.cases.length ? '\n' : ''
-    line = `switch (${format(node.discriminant)}) {${cr}${node.cases.map(format).join('')}}\n`
-  } else if (node instanceof SwitchCase) {
-    const header = node.test ? `case ${format(node.test)}:` : 'default:'
-    line = `  ${header}\n${node.consequent.map((node) => `    ${punctuate(format(node))}`).join('')}`
-  } else if (node instanceof StructDeclaration) {
-    const cr = node.members.length ? '\n' : ''
-    line = `struct ${node.name} {${cr}${node.members.map((node) => `  ${format(node)}`).join('')}};\n`
-  } else if (node instanceof UnaryExpression) {
-    line = node.left ? `${format(node.left)}${node.operator}` : `${node.operator}${format(node.right)}`
-  } else if (node instanceof BinaryExpression) {
-    line = `${format(node.left)} ${node.operator} ${format(node.right)}`
-  } else if (node instanceof TernaryExpression) {
-    line = `${format(node.test)} ? ${format(node.consequent)} : ${format(node.alternate)}`
-  } else if (node instanceof ReturnStatement) {
-    line = node.argument ? `return ${format(node.argument)};\n` : `return;\n`
-  } else if (node instanceof PrecisionStatement) {
-    line = `precision ${node.precision} ${node.type.name};\n`
-  } else if (node instanceof ContinueStatement) {
-    line = 'continue;\n'
-  } else if (node instanceof BreakStatement) {
-    line = 'break;\n'
-  } else if (node instanceof DiscardStatement) {
-    line = 'discard;\n'
-  } else if (node instanceof PreprocessorStatement) {
-    let value = ''
-    if (node.value) {
-      if (node.name === 'include') {
-        value = ` <${format(node.value[0])}>`
-      } else if (node.name === 'extension') {
-        value = ` ${node.value.map(format).join(': ')}`
-      } else {
-        value = ` ${node.value.map(format).join(' ')}`
-      }
+    case 'SwitchStatement':
+      return `switch(${format(node.discriminant)}){${node.cases.map(format).join('')}}`
+    case 'SwitchCase':
+      return `case ${node.test ? format(node.test) : 'default'}:{${node.consequent.map(format).join(';')}}`
+    case 'WhileStatement':
+      return `while (${format(node.test)}) ${format(node.body)}`
+    case 'DoWhileStatement':
+      return `do ${format(node.body)}while(${format(node.test)})`
+    case 'ForStatement':
+      return `for(${format(node.init)};${format(node.test)};${format(node.update)})${format(node.body)}`
+    case 'FunctionDeclaration': {
+      const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : '' // precision
+      const body = node.body ? format(node.body) : ';'
+      return `${qualifiers}${format(node.typeSpecifier)} ${format(node.id)}(${node.params
+        .map(format)
+        .join(',')})${body}`
     }
-
-    line = `#${node.name}${value}\n`
+    case 'FunctionParameter': {
+      const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : ''
+      const id = node.id ? ` ${format(node.id)}` : ''
+      return `${qualifiers}${format(node.typeSpecifier)}${id}`
+    }
+    case 'VariableDeclaration': {
+      const head = node.declarations[0]
+      const layout = formatLayout(head.layout)
+      const qualifiers = head.qualifiers.length ? `${head.qualifiers.join(' ')} ` : ''
+      return `${layout}${qualifiers}${format(head.typeSpecifier)} ${node.declarations.map(format).join(',')};`
+    }
+    case 'VariableDeclarator': {
+      const init = node.init ? `=${format(node.init)}` : ''
+      return `${format(node.id)}${init}`
+    }
+    case 'StructuredBufferDeclaration': {
+      const layout = formatLayout(node.layout)
+      const scope = node.id ? `${format(node.id)}` : ''
+      return `${layout}${node.qualifiers.join(' ')} ${format(node.typeSpecifier)}{${node.members
+        .map(format)
+        .join('')}}${scope};`
+    }
+    case 'StructDeclaration':
+      return `struct ${format(node.id)}{${node.members.map(format).join('')}};`
+    case 'ArrayExpression':
+      return `${format(node.typeSpecifier)}(${node.elements.map(format).join(',')})`
+    case 'UnaryExpression':
+    case 'UpdateExpression':
+      return node.prefix ? `${node.operator}${format(node.argument)}` : `${format(node.argument)}${node.operator}`
+    case 'BinaryExpression':
+    case 'AssignmentExpression':
+    case 'LogicalExpression':
+      return `${format(node.left)}${node.operator}${format(node.right)}`
+    case 'MemberExpression':
+      return node.computed
+        ? `${format(node.object)}[${format(node.property)}]`
+        : `${format(node.object)}.${format(node.property)}`
+    case 'ConditionalExpression':
+      return `${format(node.test)}?${format(node.consequent)}:${format(node.alternate)}`
+    case 'CallExpression':
+      return `${format(node.callee)}(${node.arguments.map(format).join(',')})`
+    case 'Program':
+      return `${node.body.map(format).join('')}`
+    default:
+      return node satisfies never
   }
-
-  return line
 }
 
 export interface GenerateOptions {
-  target: 'GLSL' | 'WGSL'
+  target: 'GLSL' // | 'WGSL'
 }
 
 /**
- * Generates a string of GLSL or WGSL code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
-export function generate(ast: AST[], options: GenerateOptions): string {
-  let code = options.target === 'GLSL' ? '#version 300 es\n' : ''
-
-  for (let i = 0; i < ast.length; i++) {
-    code += punctuate(format(ast[i]))
-  }
-
-  return code.trim()
+export function generate(program: Program, options: GenerateOptions): string {
+  return format(program).replaceAll('\n\n', '\n').replaceAll('] ', ']').trim()
 }

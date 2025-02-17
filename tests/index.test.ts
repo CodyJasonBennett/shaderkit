@@ -11,7 +11,7 @@ const glsl = /* glsl */ `#version 300 es
   */
 
   #define PLUS (n) \
-    n += 1;
+    n += 1
 
   #define TEST // inline comment
   #if defined( TEST )
@@ -40,12 +40,22 @@ const glsl = /* glsl */ `#version 300 es
     float one, two;
   } globals;
 
+  struct X {
+    #if !defined(BLA)
+      int y;
+    #else
+      float z;
+    #endif
+  };
+
   struct LightData {
     float intensity;
     vec3 position;
     float one, two;
   };
   uniform LightData Light[4];
+
+  invariant pc_FragColor;
 
   void main() {
     vec4 lightNormal = vec4(Light[0].position.xyz * Light[0].intensity, 0.0);
@@ -170,6 +180,13 @@ describe('minify', () => {
   it('can wrap large mangle indices', () => {
     const mangleMap = new Map()
     const shader = /* glsl */ `uniform float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
+    expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
+    expect(mangleMap).toMatchSnapshot()
+  })
+
+  it('avoids reserved words like as during mangle', () => {
+    const mangleMap = new Map()
+    const shader = /* glsl */ `${Array.from({ length: 53 }, (_, i) => `var u${i} = 0;`).join('')}`
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })

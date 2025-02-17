@@ -1,16 +1,26 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`minify > avoids reserved words like as during mangle 1`] = `"var a=0;var b=0;var c=0;var d=0;var e=0;var f=0;var g=0;var h=0;var u8=0;var i=0;var j=0;var k=0;var l=0;var m=0;var n=0;var o=0;var u16=0;var p=0;var q=0;var r=0;var s=0;var t=0;var u=0;var v=0;var w=0;var x=0;var y=0;var az=0;var aa=0;var ab=0;var ac=0;var ad=0;var u32=0;var ae=0;var af=0;var ag=0;var ah=0;var ai=0;var aj=0;var ak=0;var al=0;var am=0;var an=0;var ao=0;var ap=0;var aq=0;var ar=0;var at=0;var au=0;var av=0;var aw=0;var ax=0;var ay=0;"`;
+
+exports[`minify > avoids reserved words like as during mangle 2`] = `Map {}`;
 
 exports[`minify > can mangle GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define a (n)n+=1;
+#define a(n) n+=1
 #define b
 #if defined(b)
 const bool c=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{float intensity;vec3 position;float one,two;};uniform e Light[4];void main(){vec4 f=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 g=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 h=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float i=0.0;pc_FragColor.a+=1.0+i;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{
+#if !defined(BLA)
+int y;
+#else
+float z;
+#endif
+};struct f{float intensity;vec3 position;float one,two;};uniform f Light[4];invariant g;void main(){vec4 h=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 i=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 j=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}g=vec4(texture(map,vUv).rgb,0.0);float k=0.0;g.a+=1.0+k;}"
 `;
 
 exports[`minify > can mangle GLSL 2`] = `
@@ -33,14 +43,20 @@ Map {
 exports[`minify > can mangle externals in GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define a (n)n+=1;
+#define a(n) n+=1
 #define b
 #if defined(b)
 const bool c=true;
 #endif
 uniform float d,e;uniform sampler2D f;in vec2 g;out vec4 h;
 #include <three_test>
-layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{float intensity;vec3 position;float one,two;};uniform l m[4];void main(){vec4 n=vec4(m[0].position.xyz*m[0].intensity,0.0);vec4 o=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 p=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
+layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{
+#if !defined(BLA)
+int y;
+#else
+float z;
+#endif
+};struct m{float intensity;vec3 position;float one,two;};uniform m n[4];invariant h;void main(){vec4 o=vec4(n[0].position.xyz*n[0].intensity,0.0);vec4 p=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 q=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 2`] = `
@@ -55,7 +71,7 @@ Map {
   "Uniforms1" => "i",
   "Uniforms2" => "j",
   "globals" => "k",
-  "Light" => "m",
+  "Light" => "n",
 }
 `;
 
@@ -91,14 +107,20 @@ Map {
 exports[`minify > can minify GLSL 1`] = `
 "#version 300 es
 precision mediump float;
-#define PLUS (n)n+=1;
+#define PLUS(n) n+=1
 #define TEST
 #if defined(TEST)
 const bool isTest=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}"
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct X{
+#if !defined(BLA)
+int y;
+#else
+float z;
+#endif
+};struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];invariant pc_FragColor;void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}"
 `;
 
 exports[`minify > can minify WGSL 1`] = `"struct LightData{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct Uniforms{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<LightData,4>,};@binding(0)@group(0)var<uniform>uniforms:Uniforms;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct VertexIn{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct VertexOut{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn vert_main(input:VertexIn)->VertexOut{var output:VertexOut;output.position=input.position;output.uv=input.uv;return output;}@fragment fn frag_main(uv:vec2<f32>)->vec4<f32>{var lightNormal=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var clipPosition=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var color=textureSample(map,sample,uv);color.a+=1.0;return color;}"`;
@@ -226,8 +248,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// single line
-",
+    "value": "// single line",
   },
   {
     "type": "whitespace",
@@ -303,10 +324,6 @@ exports[`tokenize > can tokenize GLSL 1`] = `
     "value": "1",
   },
   {
-    "type": "symbol",
-    "value": ";",
-  },
-  {
     "type": "whitespace",
     "value": "
 
@@ -334,8 +351,7 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// inline comment
-",
+    "value": "// inline comment",
   },
   {
     "type": "whitespace",
@@ -929,6 +945,150 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   },
   {
     "type": "identifier",
+    "value": "X",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "symbol",
+    "value": "{",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "keyword",
+    "value": "if",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "symbol",
+    "value": "!",
+  },
+  {
+    "type": "keyword",
+    "value": "defined",
+  },
+  {
+    "type": "symbol",
+    "value": "(",
+  },
+  {
+    "type": "identifier",
+    "value": "BLA",
+  },
+  {
+    "type": "symbol",
+    "value": ")",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+      ",
+  },
+  {
+    "type": "keyword",
+    "value": "int",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "y",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "keyword",
+    "value": "else",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+      ",
+  },
+  {
+    "type": "keyword",
+    "value": "float",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "z",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+    ",
+  },
+  {
+    "type": "symbol",
+    "value": "#",
+  },
+  {
+    "type": "keyword",
+    "value": "endif",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+  ",
+  },
+  {
+    "type": "symbol",
+    "value": "}",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "struct",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
     "value": "LightData",
   },
   {
@@ -1063,6 +1223,28 @@ exports[`tokenize > can tokenize GLSL 1`] = `
   {
     "type": "symbol",
     "value": "]",
+  },
+  {
+    "type": "symbol",
+    "value": ";",
+  },
+  {
+    "type": "whitespace",
+    "value": "
+
+  ",
+  },
+  {
+    "type": "keyword",
+    "value": "invariant",
+  },
+  {
+    "type": "whitespace",
+    "value": " ",
+  },
+  {
+    "type": "identifier",
+    "value": "pc_FragColor",
   },
   {
     "type": "symbol",
@@ -1707,8 +1889,7 @@ exports[`tokenize > can tokenize WGSL 1`] = `
   },
   {
     "type": "comment",
-    "value": "// single line
-",
+    "value": "// single line",
   },
   {
     "type": "whitespace",

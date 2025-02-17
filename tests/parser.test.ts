@@ -1,460 +1,918 @@
 import { describe, it, expect } from 'vitest'
 import {
   parse,
-  Identifier,
-  Literal,
-  Type,
-  UnaryExpression,
-  BinaryExpression,
-  TernaryExpression,
-  CallExpression,
-  MemberExpression,
-  VariableDeclaration,
-  StructDeclaration,
-  FunctionDeclaration,
-  BlockStatement,
-  ContinueStatement,
+  BinaryOperator,
   BreakStatement,
+  ContinueStatement,
   DiscardStatement,
-  ReturnStatement,
-  IfStatement,
-  WhileStatement,
-  ForStatement,
   DoWhileStatement,
-  SwitchStatement,
-  SwitchCase,
-  PrecisionStatement,
-  ArrayExpression,
+  ExpressionStatement,
+  ForStatement,
+  FunctionDeclaration,
+  IfStatement,
+  LogicalOperator,
+  PrecisionQualifierStatement,
   PreprocessorStatement,
+  ReturnStatement,
+  StructDeclaration,
+  SwitchStatement,
+  UnaryOperator,
+  UpdateOperator,
+  VariableDeclaration,
+  WhileStatement,
+  Identifier,
+  ArraySpecifier,
+  InvariantQualifierStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
   it('parses identifiers', () => {
-    const identifier = parse('identifier')[0] as Identifier
-    expect(identifier).toBeInstanceOf(Identifier)
-    expect(identifier.value).toBe('identifier')
+    expect(parse('identifier;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: { type: 'Identifier', name: 'identifier' },
+      },
+    ])
+    expect(parse('ident\\\nifier;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: { type: 'Identifier', name: 'identifier' },
+      },
+    ])
   })
 
   it('parses literals', () => {
     for (const value of ['true', 'false', '0', '0.0']) {
-      const literal = parse(value)[0] as Literal
-      expect(literal).toBeInstanceOf(Literal)
-      expect(literal.value).toBe(value)
+      expect(parse(`${value};`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: { type: 'Literal', value },
+        },
+      ])
     }
   })
 
   it('parses unary expressions', () => {
-    for (const operator of ['+', '-', '~', '!', '++', '--']) {
-      const left = parse(`0${operator}`)[0] as UnaryExpression
-      expect(left).toBeInstanceOf(UnaryExpression)
-      expect(left.operator).toBe(operator)
-      expect(left.left).toBeInstanceOf(Literal)
-      expect((left.left as Literal).value).toBe('0')
+    for (const operator of ['+', '-', '~', '!'] satisfies UnaryOperator[]) {
+      expect(parse(`${operator}identifier;`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'UnaryExpression',
+            operator,
+            prefix: true,
+            argument: { type: 'Identifier', name: 'identifier' },
+          },
+        },
+      ])
+    }
+  })
 
-      const right = parse(`${operator}1`)[0] as UnaryExpression
-      expect(right).toBeInstanceOf(UnaryExpression)
-      expect(right.operator).toBe(operator)
-      expect(right.right).toBeInstanceOf(Literal)
-      expect((right.right as Literal).value).toBe('1')
+  it('parses update expressions', () => {
+    for (const operator of ['++', '--'] satisfies UpdateOperator[]) {
+      expect(parse(`identifier${operator};`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'UpdateExpression',
+            operator,
+            prefix: false,
+            argument: { type: 'Identifier', name: 'identifier' },
+          },
+        },
+      ])
+    }
+
+    for (const operator of ['++', '--'] satisfies UpdateOperator[]) {
+      expect(parse(`${operator}identifier;`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'UpdateExpression',
+            operator,
+            prefix: true,
+            argument: { type: 'Identifier', name: 'identifier' },
+          },
+        },
+      ])
     }
   })
 
   it('parses binary expressions', () => {
-    const expression = parse('0 == 1')[0] as BinaryExpression
-    expect(expression).toBeInstanceOf(BinaryExpression)
-    expect(expression.operator).toBe('==')
-    expect(expression.left).toBeInstanceOf(Literal)
-    expect((expression.left as Literal).value).toBe('0')
-    expect(expression.right).toBeInstanceOf(Literal)
-    expect((expression.right as Literal).value).toBe('1')
+    for (const operator of [
+      '&',
+      '|',
+      '^',
+      '/',
+      '==',
+      '>',
+      '>=',
+      '<',
+      '<=',
+      '-',
+      '*',
+      '!=',
+      '+',
+      '%',
+      '<<',
+      '>>',
+    ] satisfies BinaryOperator[]) {
+      expect(parse(`a ${operator} b;`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'BinaryExpression',
+            operator,
+            left: { type: 'Identifier', name: 'a' },
+            right: { type: 'Identifier', name: 'b' },
+          },
+        },
+      ])
+    }
   })
 
-  it('parses ternary expressions', () => {
-    const expression = parse('true ? 0 : 1')[0] as TernaryExpression
-    expect(expression).toBeInstanceOf(TernaryExpression)
-    expect(expression.test).toBeInstanceOf(Literal)
-    expect((expression.test as Literal).value).toBe('true')
-    expect(expression.consequent).toBeInstanceOf(Literal)
-    expect((expression.consequent as Literal).value).toBe('0')
-    expect(expression.alternate).toBeInstanceOf(Literal)
-    expect((expression.alternate as Literal).value).toBe('1')
+  it('parses logical expressions', () => {
+    for (const operator of ['&&', '||', '^^'] satisfies LogicalOperator[]) {
+      expect(parse(`a ${operator} b;`).body).toStrictEqual<[ExpressionStatement]>([
+        {
+          type: 'ExpressionStatement',
+          expression: {
+            type: 'LogicalExpression',
+            operator,
+            left: { type: 'Identifier', name: 'a' },
+            right: { type: 'Identifier', name: 'b' },
+          },
+        },
+      ])
+    }
+  })
+
+  it('parses with grouping', () => {
+    expect(parse('(1 + 2) * 3;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'BinaryExpression',
+          operator: '*',
+          left: {
+            type: 'BinaryExpression',
+            operator: '+',
+            left: { type: 'Literal', value: '1' },
+            right: { type: 'Literal', value: '2' },
+          },
+          right: { type: 'Literal', value: '3' },
+        },
+      },
+    ])
+  })
+
+  it('parses conditional expressions', () => {
+    expect(parse('test ? alternate : consequent;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'ConditionalExpression',
+          test: { type: 'Identifier', name: 'test' },
+          alternate: { type: 'Identifier', name: 'alternate' },
+          consequent: { type: 'Identifier', name: 'consequent' },
+        },
+      },
+    ])
   })
 
   it('parses call expressions', () => {
-    {
-      const expression = parse('main()')[0] as CallExpression
-      expect(expression).toBeInstanceOf(CallExpression)
-      expect(expression.callee).toBeInstanceOf(Identifier)
-      expect((expression.callee as Identifier).value).toBe('main')
-      expect(expression.args.length).toBe(0)
-    }
+    expect(parse('main();').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: { type: 'Identifier', name: 'main' },
+          arguments: [],
+        },
+      },
+    ])
 
-    {
-      const expression = parse('all(true, false)')[0] as CallExpression
-      expect(expression).toBeInstanceOf(CallExpression)
-      expect(expression.callee).toBeInstanceOf(Identifier)
-      expect((expression.callee as Identifier).value).toBe('all')
-      expect(expression.args.length).toBe(2)
-      expect(expression.args[0]).toBeInstanceOf(Literal)
-      expect((expression.args[0] as Literal).value).toBe('true')
-      expect(expression.args[1]).toBeInstanceOf(Literal)
-      expect((expression.args[1] as Literal).value).toBe('false')
-    }
+    expect(parse('all(true, false);').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: { type: 'Identifier', name: 'all' },
+          arguments: [
+            { type: 'Literal', value: 'true' },
+            { type: 'Literal', value: 'false' },
+          ],
+        },
+      },
+    ])
   })
 
   it('parses member expressions', () => {
-    {
-      const expression = parse('foo.bar')[0] as MemberExpression
-      expect(expression).toBeInstanceOf(MemberExpression)
-      expect(expression.object).toBeInstanceOf(Identifier)
-      expect((expression.object as Identifier).value).toBe('foo')
-      expect(expression.property).toBeInstanceOf(Identifier)
-      expect((expression.property as Identifier).value).toBe('bar')
-    }
+    expect(parse('foo.bar;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'MemberExpression',
+          object: { type: 'Identifier', name: 'foo' },
+          property: { type: 'Identifier', name: 'bar' },
+          computed: false,
+        },
+      },
+    ])
 
-    {
-      const expression = parse('array.length()')[0] as CallExpression
-      expect(expression).toBeInstanceOf(CallExpression)
-      expect(expression.callee).toBeInstanceOf(MemberExpression)
-      expect((expression.callee as MemberExpression).object).toBeInstanceOf(Identifier)
-      expect(((expression.callee as MemberExpression).object as Identifier).value).toBe('array')
-      expect((expression.callee as MemberExpression).property).toBeInstanceOf(Identifier)
-      expect(((expression.callee as MemberExpression).property as Identifier).value).toBe('length')
-      expect(expression.args.length).toBe(0)
-    }
+    expect(parse('array[0];').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'MemberExpression',
+          object: { type: 'Identifier', name: 'array' },
+          property: { type: 'Literal', value: '0' },
+          computed: true,
+        },
+      },
+    ])
 
-    {
-      const expression = parse('texture().rgb')[0] as MemberExpression
-      expect(expression).toBeInstanceOf(MemberExpression)
-      expect(expression.object).toBeInstanceOf(CallExpression)
-      expect((expression.object as CallExpression).callee).toBeInstanceOf(Identifier)
-      expect(((expression.object as CallExpression).callee as Identifier).value).toBe('texture')
-      expect((expression.object as CallExpression).args.length).toBe(0)
-      expect(expression.property).toBeInstanceOf(Identifier)
-      expect((expression.property as Identifier).value).toBe('rgb')
-    }
-  })
+    expect(parse('array.length();').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'MemberExpression',
+          object: { type: 'Identifier', name: 'array' },
+          property: { type: 'CallExpression', callee: { type: 'Identifier', name: 'length' }, arguments: [] },
+          computed: false,
+        },
+      },
+    ])
 
-  it('parses variable declarations', () => {
-    {
-      const statement = parse('uniform Type foo;')[0] as VariableDeclaration
-      expect(statement).toBeInstanceOf(VariableDeclaration)
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('Type')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(1)
-      expect(statement.qualifiers[0]).toBe('uniform')
-      expect(statement.declarations.length).toBe(1)
-      expect(statement.declarations[0].name).toBe('foo')
-      expect(statement.declarations[0].value).toBe(null)
-    }
-
-    {
-      const statement = parse('const vec4 foo = vec4(0, 0, 0, 0);')[0] as VariableDeclaration
-      expect(statement).toBeInstanceOf(VariableDeclaration)
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('vec4')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(1)
-      expect(statement.qualifiers[0]).toBe('const')
-      expect(statement.declarations.length).toBe(1)
-      expect(statement.declarations[0].name).toBe('foo')
-      expect(statement.declarations[0].value).toBeInstanceOf(CallExpression)
-    }
-
-    {
-      const statement = parse(
-        'layout(location = 0, component = 1, column_major) flat in mat4 test;',
-      )[0] as VariableDeclaration
-      expect(statement).toBeInstanceOf(VariableDeclaration)
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('mat4')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(2)
-      expect(statement.qualifiers[0]).toBe('flat')
-      expect(statement.qualifiers[1]).toBe('in')
-      expect(statement.declarations.length).toBe(1)
-      expect(statement.declarations[0].name).toBe('test')
-      expect(statement.declarations[0].value).toBe(null)
-      expect(statement.layout).not.toBe(null)
-      expect(Object.keys(statement.layout as object).length).toBe(3)
-      expect((statement.layout as any).location).toBe('0')
-      expect((statement.layout as any).component).toBe('1')
-      expect((statement.layout as any).column_major).toBe(true)
-    }
-
-    {
-      const statement = parse('float foo = 0.0, bar = foo + 1.0, baz[3];')[0] as VariableDeclaration
-      expect(statement).toBeInstanceOf(VariableDeclaration)
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('float')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(0)
-      expect(statement.declarations.length).toBe(3)
-      expect(statement.declarations[0].name).toBe('foo')
-      expect(statement.declarations[0].value).toBeInstanceOf(Literal)
-      expect((statement.declarations[0].value as Literal).value).toBe('0.0')
-      expect(statement.declarations[1].name).toBe('bar')
-      expect(statement.declarations[1].value).toBeInstanceOf(BinaryExpression)
-      expect((statement.declarations[1].value as BinaryExpression).operator).toBe('+')
-      expect((statement.declarations[1].value as BinaryExpression).left).toBeInstanceOf(Identifier)
-      expect(((statement.declarations[1].value as BinaryExpression).left as Identifier).value).toBe('foo')
-      expect((statement.declarations[1].value as BinaryExpression).right).toBeInstanceOf(Literal)
-      expect(((statement.declarations[1].value as BinaryExpression).right as Literal).value).toBe('1.0')
-      expect(statement.declarations[2].name).toBe('baz')
-      expect(statement.declarations[2].value).toBeInstanceOf(ArrayExpression)
-      expect((statement.declarations[2].value as ArrayExpression).members.length).toBe(0)
-      expect((statement.declarations[2].value as ArrayExpression).type).toBeInstanceOf(Type)
-      expect((statement.declarations[2].value as ArrayExpression).type.name).toBe('float')
-      expect((statement.declarations[2].value as ArrayExpression).type.parameters!.length).toBe(1)
-      expect((statement.declarations[2].value as ArrayExpression).type.parameters![0]).toBeInstanceOf(Literal)
-      expect(((statement.declarations[2].value as ArrayExpression).type.parameters![0] as Literal).value).toBe('3')
-    }
-  })
-
-  it('parses struct declarations', () => {
-    const statement = parse('struct foo { const bool bar = true; };')[0] as StructDeclaration
-    expect(statement).toBeInstanceOf(StructDeclaration)
-    expect(statement.name).toBe('foo')
-    expect(statement.members.length).toBe(1)
-    expect(statement.members[0].type).toBeInstanceOf(Type)
-    expect((statement.members[0].type as Type).name).toBe('bool')
-    expect((statement.members[0].type as Type).parameters).toBe(null)
-    expect(statement.members[0].qualifiers.length).toBe(1)
-    expect(statement.members[0].qualifiers[0]).toBe('const')
-    expect(statement.members[0].declarations.length).toBe(1)
-    expect(statement.members[0].declarations[0].name).toBe('bar')
-    expect(statement.members[0].declarations[0].value).toBeInstanceOf(Literal)
-    expect((statement.members[0].declarations[0].value as Literal).value).toBe('true')
-  })
-
-  it('parses function declarations', () => {
-    {
-      const statement = parse('void main();')[0] as FunctionDeclaration
-      expect(statement).toBeInstanceOf(FunctionDeclaration)
-      expect(statement.name).toBe('main')
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('void')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(0)
-      expect(statement.args.length).toBe(0)
-      expect(statement.body).toBe(null)
-    }
-
-    {
-      const statement = parse('highp vec4 main(const bool enabled, bool disabled) {}')[0] as FunctionDeclaration
-      expect(statement).toBeInstanceOf(FunctionDeclaration)
-      expect(statement.name).toBe('main')
-      expect(statement.type).toBeInstanceOf(Type)
-      expect((statement.type as Type).name).toBe('vec4')
-      expect((statement.type as Type).parameters).toBe(null)
-      expect(statement.qualifiers.length).toBe(1)
-      expect(statement.qualifiers[0]).toBe('highp')
-      expect(statement.args[0]).toBeInstanceOf(VariableDeclaration)
-      expect(statement.args[0].qualifiers.length).toBe(1)
-      expect(statement.args[0].qualifiers[0]).toBe('const')
-      expect(statement.args[0].type).toBeInstanceOf(Type)
-      expect((statement.args[0].type as Type).name).toBe('bool')
-      expect((statement.args[0].type as Type).parameters).toBe(null)
-      expect(statement.args[0].declarations.length).toBe(1)
-      expect(statement.args[0].declarations[0].name).toBe('enabled')
-      expect(statement.args[0].declarations[0].value).toBe(null)
-      expect(statement.args[1].declarations.length).toBe(1)
-      expect(statement.args[1].declarations[0].name).toBe('disabled')
-      expect(statement.args[1].declarations[0].value).toBe(null)
-      expect(statement.body).toBeInstanceOf(BlockStatement)
-      expect((statement.body as BlockStatement).body.length).toBe(0)
-    }
-  })
-
-  it('parses continue statements', () => {
-    const statement = parse('continue;')[0] as ContinueStatement
-    expect(statement).toBeInstanceOf(ContinueStatement)
-  })
-
-  it('parses break statements', () => {
-    const statement = parse('break;')[0] as BreakStatement
-    expect(statement).toBeInstanceOf(BreakStatement)
-  })
-
-  it('parses discard statements', () => {
-    const statement = parse('discard;')[0] as DiscardStatement
-    expect(statement).toBeInstanceOf(DiscardStatement)
-  })
-
-  it('parses return statements', () => {
-    {
-      const statement = parse('return;')[0] as ReturnStatement
-      expect(statement).toBeInstanceOf(ReturnStatement)
-      expect(statement.argument).toBe(null)
-    }
-
-    {
-      const statement = parse('return 0;')[0] as ReturnStatement
-      expect(statement).toBeInstanceOf(ReturnStatement)
-      expect(statement.argument).toBeInstanceOf(Literal)
-      expect((statement.argument as Literal).value).toBe('0')
-    }
-  })
-
-  it('parses if statements', () => {
-    const statement = parse('if (true) {} else if (false) {} else {}')[0] as IfStatement
-    expect(statement).toBeInstanceOf(IfStatement)
-    expect(statement.test).toBeInstanceOf(Literal)
-    expect((statement.test as Literal).value).toBe('true')
-    expect(statement.consequent).toBeInstanceOf(BlockStatement)
-    expect((statement.consequent as BlockStatement).body.length).toBe(0)
-    expect(statement.alternate).toBeInstanceOf(IfStatement)
-    expect((statement.alternate as IfStatement).test).toBeInstanceOf(Literal)
-    expect(((statement.alternate as IfStatement).test as Literal).value).toBe('false')
-    expect((statement.alternate as IfStatement).consequent).toBeInstanceOf(BlockStatement)
-    expect(((statement.alternate as IfStatement).consequent as BlockStatement).body.length).toBe(0)
-    expect((statement.alternate as IfStatement).alternate).toBeInstanceOf(BlockStatement)
-    expect(((statement.alternate as IfStatement).alternate as BlockStatement).body.length).toBe(0)
-  })
-
-  it('parses while statements', () => {
-    const statement = parse('while(true) {}')[0] as WhileStatement
-    expect(statement).toBeInstanceOf(WhileStatement)
-    expect(statement.test).toBeInstanceOf(Literal)
-    expect((statement.test as Literal).value).toBe('true')
-    expect(statement.body).toBeInstanceOf(BlockStatement)
-    expect((statement.body as BlockStatement).body.length).toBe(0)
-  })
-
-  it('parses for statements', () => {
-    const statement = parse('for (int i = 0; i < 1; i++) {}')[0] as ForStatement
-    expect(statement).toBeInstanceOf(ForStatement)
-    expect(statement.init).toBeInstanceOf(VariableDeclaration)
-    expect((statement.init as VariableDeclaration).type).toBeInstanceOf(Type)
-    expect(((statement.init as VariableDeclaration).type as Type).name).toBe('int')
-    expect(((statement.init as VariableDeclaration).type as Type).parameters).toBe(null)
-    expect((statement.init as VariableDeclaration).declarations.length).toBe(1)
-    expect((statement.init as VariableDeclaration).declarations[0].name).toBe('i')
-    expect((statement.init as VariableDeclaration).declarations[0].value).toBeInstanceOf(Literal)
-    expect(((statement.init as VariableDeclaration).declarations[0].value as Literal).value).toBe('0')
-    expect((statement.init as VariableDeclaration).qualifiers.length).toBe(0)
-    expect(statement.test).toBeInstanceOf(BinaryExpression)
-    expect((statement.test as BinaryExpression).operator).toBe('<')
-    expect((statement.test as BinaryExpression).left).toBeInstanceOf(Identifier)
-    expect(((statement.test as BinaryExpression).left as Identifier).value).toBe('i')
-    expect((statement.test as BinaryExpression).right).toBeInstanceOf(Literal)
-    expect(((statement.test as BinaryExpression).right as Literal).value).toBe('1')
-    expect(statement.update).toBeInstanceOf(UnaryExpression)
-    expect((statement.update as UnaryExpression).operator).toBe('++')
-    expect((statement.update as UnaryExpression).left).toBeInstanceOf(Identifier)
-    expect(((statement.update as UnaryExpression).left as Identifier).value).toBe('i')
-    expect(statement.body).toBeInstanceOf(BlockStatement)
-    expect((statement.body as BlockStatement).body.length).toBe(0)
-  })
-
-  it('parses do-while statements', () => {
-    const statement = parse('do {} while(true);')[0] as DoWhileStatement
-    expect(statement).toBeInstanceOf(DoWhileStatement)
-    expect(statement.body).toBeInstanceOf(BlockStatement)
-    expect((statement.body as BlockStatement).body.length).toBe(0)
-    expect(statement.test).toBeInstanceOf(Literal)
-    expect((statement.test as Literal).value).toBe('true')
-  })
-
-  it('parses switch statements', () => {
-    const statement = parse('switch(true) { case 0: break; default: discard; }')[0] as SwitchStatement
-    expect(statement).toBeInstanceOf(SwitchStatement)
-    expect(statement.discriminant).toBeInstanceOf(Literal)
-    expect((statement.discriminant as Literal).value).toBe('true')
-    expect(statement.cases.length).toBe(2)
-    expect(statement.cases[0]).toBeInstanceOf(SwitchCase)
-    expect((statement.cases[0] as SwitchCase).test).toBeInstanceOf(Literal)
-    expect(((statement.cases[0] as SwitchCase).test as Literal).value).toBe('0')
-    expect((statement.cases[0] as SwitchCase).consequent.length).toBe(1)
-    expect((statement.cases[0] as SwitchCase).consequent[0]).toBeInstanceOf(BreakStatement)
-    expect(statement.cases[1]).toBeInstanceOf(SwitchCase)
-    expect((statement.cases[1] as SwitchCase).test).toBe(null)
-    expect((statement.cases[1] as SwitchCase).consequent.length).toBe(1)
-    expect((statement.cases[1] as SwitchCase).consequent[0]).toBeInstanceOf(DiscardStatement)
-  })
-
-  it('parses precision statements', () => {
-    const statement = parse('precision highp float;')[0] as PrecisionStatement
-    expect(statement).toBeInstanceOf(PrecisionStatement)
-    expect(statement.precision).toBe('highp')
-    expect(statement.type).toBeInstanceOf(Type)
-    expect(statement.type.name).toBe('float')
-    expect(statement.type.parameters).toBe(null)
+    expect(parse('texture().rgb;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'MemberExpression',
+          object: { type: 'CallExpression', callee: { type: 'Identifier', name: 'texture' }, arguments: [] },
+          property: { type: 'Identifier', name: 'rgb' },
+          computed: false,
+        },
+      },
+    ])
   })
 
   it('parses array expressions', () => {
-    const statement = parse('float[3](2.5, 7.0, 1.5);')[0] as ArrayExpression
-    expect(statement).toBeInstanceOf(ArrayExpression)
-    expect(statement.type).toBeInstanceOf(Type)
-    expect(statement.type.name).toBe('float')
-    expect(statement.type.parameters!.length).toBe(1)
-    expect(statement.type.parameters![0]).toBeInstanceOf(Literal)
-    expect((statement.type.parameters![0] as Literal).value).toBe('3')
-    expect(statement.members.length).toBe(3)
-    expect(statement.members[0]).toBeInstanceOf(Literal)
-    expect((statement.members[0] as Literal).value).toBe('2.5')
-    expect(statement.members[1]).toBeInstanceOf(Literal)
-    expect((statement.members[1] as Literal).value).toBe('7.0')
-    expect(statement.members[2]).toBeInstanceOf(Literal)
-    expect((statement.members[2] as Literal).value).toBe('1.5')
+    expect(parse('float[3](2.5, 7.0, 1.5);').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          elements: [
+            {
+              type: 'Literal',
+              value: '2.5',
+            },
+            {
+              type: 'Literal',
+              value: '7.0',
+            },
+            {
+              type: 'Literal',
+              value: '1.5',
+            },
+          ],
+          type: 'ArrayExpression',
+          typeSpecifier: {
+            dimensions: [
+              {
+                type: 'Literal',
+                value: '3',
+              },
+            ],
+            type: 'ArraySpecifier',
+            typeSpecifier: {
+              name: 'float',
+              type: 'Identifier',
+            },
+          },
+        },
+      },
+    ])
+  })
+
+  it('parses variable declarations', () => {
+    expect(parse('uniform Type foo;').body).toStrictEqual<[VariableDeclaration]>([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'foo',
+              type: 'Identifier',
+            },
+            init: null,
+            layout: null,
+            qualifiers: ['uniform'],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'Type',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+
+    expect(parse('const vec4 foo = vec4(0, 0, 0, 0);').body).toStrictEqual<[VariableDeclaration]>([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'foo',
+              type: 'Identifier',
+            },
+            init: {
+              arguments: [
+                {
+                  type: 'Literal',
+                  value: '0',
+                },
+                {
+                  type: 'Literal',
+                  value: '0',
+                },
+                {
+                  type: 'Literal',
+                  value: '0',
+                },
+                {
+                  type: 'Literal',
+                  value: '0',
+                },
+              ],
+              callee: {
+                name: 'vec4',
+                type: 'Identifier',
+              },
+              type: 'CallExpression',
+            },
+            layout: null,
+            qualifiers: ['const'],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'vec4',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+
+    expect(parse('layout(location = 0, component = 1, column_major) flat in mat4 test;').body).toStrictEqual<
+      [VariableDeclaration]
+    >([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'test',
+              type: 'Identifier',
+            },
+            init: null,
+            layout: {
+              column_major: true,
+              component: '1',
+              location: '0',
+            },
+            qualifiers: ['flat', 'in'],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'mat4',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+
+    expect(parse('float foo = 0.0, bar = foo + 1.0, baz[3];').body).toStrictEqual<[VariableDeclaration]>([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'foo',
+              type: 'Identifier',
+            },
+            init: {
+              type: 'Literal',
+              value: '0.0',
+            },
+            layout: null,
+            qualifiers: [],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'float',
+              type: 'Identifier',
+            },
+          },
+          {
+            id: {
+              name: 'bar',
+              type: 'Identifier',
+            },
+            init: {
+              left: {
+                name: 'foo',
+                type: 'Identifier',
+              },
+              operator: '+',
+              right: {
+                type: 'Literal',
+                value: '1.0',
+              },
+              type: 'BinaryExpression',
+            },
+            layout: null,
+            qualifiers: [],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'float',
+              type: 'Identifier',
+            },
+          },
+          {
+            id: {
+              type: 'ArraySpecifier',
+              typeSpecifier: {
+                type: 'Identifier',
+                name: 'baz',
+              },
+              dimensions: [
+                {
+                  type: 'Literal',
+                  value: '3',
+                },
+              ],
+            } satisfies ArraySpecifier as unknown as Identifier, // TODO: revisit VariableDeclarator AST
+            init: null,
+            layout: null,
+            qualifiers: [],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'float',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+  })
+
+  it('parses struct declarations', () => {
+    expect(parse('struct foo { const bool bar = true; };').body).toStrictEqual<[StructDeclaration]>([
+      {
+        id: {
+          name: 'foo',
+          type: 'Identifier',
+        },
+        members: [
+          {
+            declarations: [
+              {
+                id: {
+                  name: 'bar',
+                  type: 'Identifier',
+                },
+                init: {
+                  type: 'Literal',
+                  value: 'true',
+                },
+                layout: null,
+                qualifiers: ['const'],
+                type: 'VariableDeclarator',
+                typeSpecifier: {
+                  name: 'bool',
+                  type: 'Identifier',
+                },
+              },
+            ],
+            type: 'VariableDeclaration',
+          },
+        ],
+        type: 'StructDeclaration',
+      },
+    ])
+
+    expect(parse('struct a {} b;').body).toStrictEqual<[StructDeclaration, VariableDeclaration]>([
+      {
+        type: 'StructDeclaration',
+        id: {
+          type: 'Identifier',
+          name: 'a',
+        },
+        members: [],
+      },
+      {
+        type: 'VariableDeclaration',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            layout: null,
+            qualifiers: [],
+            id: {
+              type: 'Identifier',
+              name: 'b',
+            },
+            typeSpecifier: {
+              type: 'Identifier',
+              name: 'a',
+            },
+            init: null,
+          },
+        ],
+      },
+    ])
+  })
+
+  it('parses function declarations', () => {
+    expect(parse('void main();').body).toStrictEqual<[FunctionDeclaration]>([
+      {
+        body: null,
+        id: {
+          name: 'main',
+          type: 'Identifier',
+        },
+        params: [],
+        qualifiers: [],
+        type: 'FunctionDeclaration',
+        typeSpecifier: {
+          name: 'void',
+          type: 'Identifier',
+        },
+      },
+    ])
+
+    expect(parse('highp vec4 main(const bool enabled, bool disabled) {}').body).toStrictEqual<[FunctionDeclaration]>([
+      {
+        body: {
+          body: [],
+          type: 'BlockStatement',
+        },
+        id: {
+          name: 'main',
+          type: 'Identifier',
+        },
+        params: [
+          {
+            id: {
+              name: 'enabled',
+              type: 'Identifier',
+            },
+            qualifiers: ['const'],
+            type: 'FunctionParameter',
+            typeSpecifier: {
+              name: 'bool',
+              type: 'Identifier',
+            },
+          },
+          {
+            id: {
+              name: 'disabled',
+              type: 'Identifier',
+            },
+            qualifiers: [],
+            type: 'FunctionParameter',
+            typeSpecifier: {
+              name: 'bool',
+              type: 'Identifier',
+            },
+          },
+        ],
+        qualifiers: ['highp'],
+        type: 'FunctionDeclaration',
+        typeSpecifier: {
+          name: 'vec4',
+          type: 'Identifier',
+        },
+      },
+    ])
+  })
+
+  it('parses continue statements', () => {
+    expect(parse('continue;').body).toStrictEqual<[ContinueStatement]>([
+      {
+        type: 'ContinueStatement',
+      },
+    ])
+  })
+
+  it('parses break statements', () => {
+    expect(parse('break;').body).toStrictEqual<[BreakStatement]>([
+      {
+        type: 'BreakStatement',
+      },
+    ])
+  })
+
+  it('parses discard statements', () => {
+    expect(parse('discard;').body).toStrictEqual<[DiscardStatement]>([
+      {
+        type: 'DiscardStatement',
+      },
+    ])
+  })
+
+  it('parses return statements', () => {
+    expect(parse('return;').body).toStrictEqual<[ReturnStatement]>([
+      {
+        argument: null,
+        type: 'ReturnStatement',
+      },
+    ])
+    expect(parse('return 0;').body).toStrictEqual<[ReturnStatement]>([
+      {
+        argument: {
+          type: 'Literal',
+          value: '0',
+        },
+        type: 'ReturnStatement',
+      },
+    ])
+  })
+
+  it('parses if statements', () => {
+    expect(parse('if (true) {} else if (false) {} else {}').body).toStrictEqual<[IfStatement]>([
+      {
+        alternate: {
+          alternate: {
+            body: [],
+            type: 'BlockStatement',
+          },
+          consequent: {
+            body: [],
+            type: 'BlockStatement',
+          },
+          test: {
+            type: 'Literal',
+            value: 'false',
+          },
+          type: 'IfStatement',
+        },
+        consequent: {
+          body: [],
+          type: 'BlockStatement',
+        },
+        test: {
+          type: 'Literal',
+          value: 'true',
+        },
+        type: 'IfStatement',
+      },
+    ])
+  })
+
+  it('parses while statements', () => {
+    expect(parse('while(true) {}').body).toStrictEqual<[WhileStatement]>([
+      {
+        body: {
+          body: [],
+          type: 'BlockStatement',
+        },
+        test: {
+          type: 'Literal',
+          value: 'true',
+        },
+        type: 'WhileStatement',
+      },
+    ])
+  })
+
+  it('parses for statements', () => {
+    expect(parse('for (int i = 0; i < 1; i++) {}').body).toStrictEqual<[ForStatement]>([
+      {
+        body: {
+          body: [],
+          type: 'BlockStatement',
+        },
+        init: {
+          declarations: [
+            {
+              id: {
+                name: 'i',
+                type: 'Identifier',
+              },
+              init: {
+                type: 'Literal',
+                value: '0',
+              },
+              layout: null,
+              qualifiers: [],
+              type: 'VariableDeclarator',
+              typeSpecifier: {
+                name: 'int',
+                type: 'Identifier',
+              },
+            },
+          ],
+          type: 'VariableDeclaration',
+        },
+        test: {
+          left: {
+            name: 'i',
+            type: 'Identifier',
+          },
+          operator: '<',
+          right: {
+            type: 'Literal',
+            value: '1',
+          },
+          type: 'BinaryExpression',
+        },
+        type: 'ForStatement',
+        update: {
+          argument: {
+            name: 'i',
+            type: 'Identifier',
+          },
+          operator: '++',
+          prefix: false,
+          type: 'UpdateExpression',
+        },
+      },
+    ])
+  })
+
+  it('parses do-while statements', () => {
+    expect(parse('do {} while(true);').body).toStrictEqual<[DoWhileStatement]>([
+      {
+        body: {
+          body: [],
+          type: 'BlockStatement',
+        },
+        test: {
+          type: 'Literal',
+          value: 'true',
+        },
+        type: 'DoWhileStatement',
+      },
+    ])
+  })
+
+  it('parses switch statements', () => {
+    expect(parse('switch(true) { case 0: break; default: discard; }').body).toStrictEqual<[SwitchStatement]>([
+      {
+        cases: [
+          {
+            consequent: [
+              {
+                type: 'BreakStatement',
+              },
+            ],
+            test: {
+              type: 'Literal',
+              value: '0',
+            },
+            type: 'SwitchCase',
+          },
+          {
+            consequent: [
+              {
+                type: 'DiscardStatement',
+              },
+            ],
+            test: null,
+            type: 'SwitchCase',
+          },
+        ],
+        discriminant: {
+          type: 'Literal',
+          value: 'true',
+        },
+        type: 'SwitchStatement',
+      },
+    ])
+  })
+
+  it('parses precision statements', () => {
+    expect(parse('precision highp float;').body).toStrictEqual<[PrecisionQualifierStatement]>([
+      {
+        precision: 'highp',
+        type: 'PrecisionQualifierStatement',
+        typeSpecifier: {
+          name: 'float',
+          type: 'Identifier',
+        },
+      },
+    ])
+  })
+
+  it('parses invariant statements', () => {
+    expect(parse('invariant position;').body).toStrictEqual<[InvariantQualifierStatement]>([
+      {
+        type: 'InvariantQualifierStatement',
+        typeSpecifier: {
+          name: 'position',
+          type: 'Identifier',
+        },
+      },
+    ])
   })
 
   it('parses preprocessor statements', () => {
-    {
-      const statement = parse('#define TEST 1\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('define')
-      expect(statement.value!.length).toBe(2)
-      expect(statement.value![0]).toBeInstanceOf(Identifier)
-      expect((statement.value![0] as Identifier).value).toBe('TEST')
-      expect(statement.value![1]).toBeInstanceOf(Literal)
-      expect((statement.value![1] as Literal).value).toBe('1')
-    }
+    expect(parse('#\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: '',
+        type: 'PreprocessorStatement',
+        value: null,
+      },
+    ])
 
-    {
-      const statement = parse('#extension all: disable\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('extension')
-      expect(statement.value!.length).toBe(2)
-    }
+    expect(parse('#define TEST 1\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'define',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            name: 'TEST',
+            type: 'Identifier',
+          },
+          {
+            type: 'Literal',
+            value: '1',
+          },
+        ],
+      },
+    ])
 
-    {
-      const statement = parse('#pragma optimize(on)\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('pragma')
-      expect(statement.value!.length).toBe(1)
-      expect(statement.value![0]).toBeInstanceOf(CallExpression)
-      expect((statement.value![0] as CallExpression).callee).toBeInstanceOf(Identifier)
-      expect(((statement.value![0] as CallExpression).callee as Identifier).value).toBe('optimize')
-      expect((statement.value![0] as CallExpression).args.length).toBe(1)
-      expect((statement.value![0] as CallExpression).args[0]).toBeInstanceOf(Identifier)
-      expect(((statement.value![0] as CallExpression).args[0] as Identifier).value).toBe('on')
-    }
+    expect(parse('#extension all: disable\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'extension',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            name: 'all',
+            type: 'Identifier',
+          },
+          {
+            name: 'disable',
+            type: 'Identifier',
+          },
+        ],
+      },
+    ])
 
-    {
-      const statement = parse('#include <chunk>\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('include')
-      expect(statement.value!.length).toBe(1)
-      expect(statement.value![0]).toBeInstanceOf(Identifier)
-      expect((statement.value![0] as Identifier).value).toBe('chunk')
-    }
+    expect(parse('#pragma optimize(on)\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'pragma',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            arguments: [
+              {
+                name: 'on',
+                type: 'Identifier',
+              },
+            ],
+            callee: {
+              name: 'optimize',
+              type: 'Identifier',
+            },
+            type: 'CallExpression',
+          },
+        ],
+      },
+    ])
 
-    {
-      const statement = parse('#ifdef TEST\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('ifdef')
-      expect(statement.value!.length).toBe(1)
-      expect(statement.value![0]).toBeInstanceOf(Identifier)
-      expect((statement.value![0] as Identifier).value).toBe('TEST')
-    }
+    expect(parse('#include <chunk>\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'include',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            name: 'chunk',
+            type: 'Identifier',
+          },
+        ],
+      },
+    ])
 
-    {
-      const statement = parse('#endif\n')[0] as PreprocessorStatement
-      expect(statement).toBeInstanceOf(PreprocessorStatement)
-      expect(statement.name).toBe('endif')
-      expect(statement.value).toBe(null)
-    }
+    expect(parse('#ifdef TEST\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'ifdef',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            name: 'TEST',
+            type: 'Identifier',
+          },
+        ],
+      },
+    ])
+
+    expect(parse('#endif\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'endif',
+        type: 'PreprocessorStatement',
+        value: null,
+      },
+    ])
   })
 })

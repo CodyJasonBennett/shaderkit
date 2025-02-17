@@ -1,4 +1,5 @@
-import { type Token, tokenize } from './tokenizer'
+import { type Token, tokenize } from './tokenizer.js'
+import { GLSL_KEYWORDS, WGSL_KEYWORDS } from './constants.js'
 
 export type MangleMatcher = (token: Token, index: number, tokens: Token[]) => boolean
 
@@ -11,11 +12,19 @@ export interface MinifyOptions {
   mangleExternals: boolean
 }
 
-const isWord = RegExp.prototype.test.bind(/^\w/)
-const isSymbol = RegExp.prototype.test.bind(/[^\w\\]/)
-const isName = RegExp.prototype.test.bind(/^[_A-Za-z]/)
-const isScoped = RegExp.prototype.test.bind(/[;{}\\@]/)
-const isStorage = RegExp.prototype.test.bind(/^(binding|group|layout|uniform|in|out|attribute|varying)$/)
+const isWord = /* @__PURE__ */ RegExp.prototype.test.bind(/^\w/)
+const isSymbol = /* @__PURE__ */ RegExp.prototype.test.bind(/[^\w\\]/)
+const isName = /* @__PURE__ */ RegExp.prototype.test.bind(/^[_A-Za-z]/)
+const isScoped = /* @__PURE__ */ RegExp.prototype.test.bind(/[;{}\\@]/)
+const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
+  /^(binding|group|layout|uniform|in|out|attribute|varying)$/,
+)
+
+// Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
+const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/
+
+const NEWLINE_REGEX = /\\\s+/gm
+const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
  * Minifies a string of GLSL or WGSL code.
@@ -24,8 +33,13 @@ export function minify(
   code: string,
   { mangle = false, mangleMap = new Map(), mangleExternals = false }: Partial<MinifyOptions> = {},
 ): string {
+  // Fold newlines
+  code = code.replace(NEWLINE_REGEX, '')
+
   // Escape newlines after directives, skip comments
-  code = code.replace(/(^\s*#[^\\]*?)(\n|\/[\/\*])/gm, '$1\\$2')
+  code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
+
+  const KEYWORDS = WGSL_REGEX.test(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
 
   const mangleCache = new Map()
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
@@ -51,9 +65,26 @@ export function minify(
     if (
       isSymbol(token.value) &&
       ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
+        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'if') ||
+        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'elif') ||
         (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
-    )
-      minified += ' '
+    ) {
+      // Move padding after #define arguments
+      if (token.value === '(') {
+        while (i < tokens.length) {
+          const next = tokens[i++]
+          minified += next.value
+
+          if (next.value === ')') break
+        }
+
+        minified += ' ' + tokens[i].value
+
+        continue
+      } else {
+        minified += ' '
+      }
+    }
 
     let prefix = token.value
     if (tokens[i - 1]?.value === '.') {
@@ -102,7 +133,7 @@ export function minify(
           (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
         const cache = isExternal ? mangleMap : mangleCache
 
-        while (!renamed || cache.has(renamed)) {
+        while (!renamed || cache.has(renamed) || KEYWORDS.includes(renamed)) {
           renamed = ''
           mangleIndex++
 

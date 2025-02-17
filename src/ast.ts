@@ -1,137 +1,424 @@
-export class Literal {
-  constructor(public value: string /*| number | boolean*/) {}
+/**
+ * A position in the source code.
+ */
+// export interface Position {
+//   line: number // >= 1
+//   column: number // >= 0
+// }
+
+/**
+ * Represents the source location of a node.
+ */
+// export interface SourceLocation {
+//   source: string | null
+//   start: Position
+//   end: Position
+// }
+
+/**
+ * Base interface for all AST nodes.
+ */
+export interface Node {
+  type: string
+  // loc: SourceLocation | null
 }
 
-export class Identifier {
-  constructor(public value: string) {}
+/**
+ * Represents the root of an AST.
+ */
+export interface Program extends Node {
+  type: 'Program'
+  body: Statement[]
 }
 
-export class Type {
-  constructor(public name: string, public parameters: (Type | Literal | Identifier)[] | null) {}
+/**
+ * A variable identifier.
+ */
+export interface Identifier extends Node {
+  type: 'Identifier'
+  name: string
 }
 
-export class VariableDeclarator {
-  constructor(public name: string, public value: AST | null) {}
+/**
+ * A shader literal representing a `bool`, `float`, `int`, or `uint` type.
+ */
+export interface Literal extends Node {
+  type: 'Literal'
+  value: string /*| number | boolean*/
 }
 
-export class VariableDeclaration {
-  constructor(
-    public layout: Record<string, string | boolean> | null,
-    public qualifiers: string[],
-    public kind: 'var' | 'let' | 'const' | null,
-    public type: Type | Identifier,
-    public declarations: VariableDeclarator[],
-  ) {}
+/**
+ * An array and its dimensions.
+ */
+export interface ArraySpecifier extends Node {
+  type: 'ArraySpecifier'
+  typeSpecifier: Identifier
+  dimensions: (Literal | Identifier | null)[]
 }
 
-export class StructDeclaration {
-  constructor(public name: string, public members: VariableDeclaration[]) {}
+/**
+ * An array initialization expression.
+ */
+export interface ArrayExpression extends Node {
+  type: 'ArrayExpression'
+  typeSpecifier: ArraySpecifier
+  elements: Expression[]
 }
 
-export class FunctionDeclaration {
-  constructor(
-    public name: string,
-    public type: Type | Identifier,
-    public qualifiers: string[],
-    public args: VariableDeclaration[],
-    public body: BlockStatement | null,
-  ) {}
+export type UnaryOperator = '-' | '+' | '!' | '~'
+
+/**
+ * A unary expression with a left or right handed operator.
+ */
+export interface UnaryExpression extends Node {
+  type: 'UnaryExpression'
+  operator: UnaryOperator
+  prefix: boolean
+  argument: Expression
 }
 
-export class UnaryExpression {
-  constructor(public operator: string, public left: AST | null, public right: AST | null) {}
+/**
+ * An update expression with an optionally prefixed operator.
+ */
+export interface UpdateExpression extends Node {
+  type: 'UpdateExpression'
+  operator: UpdateOperator
+  argument: Expression
+  prefix: boolean
 }
 
-export class BinaryExpression {
-  constructor(public operator: string, public left: AST, public right: AST) {}
+export type UpdateOperator = '++' | '--'
+
+/**
+ * A binary expression with a left and right operand.
+ */
+export interface BinaryExpression extends Node {
+  type: 'BinaryExpression'
+  operator: BinaryOperator
+  left: Expression
+  right: Expression
 }
 
-export class TernaryExpression {
-  constructor(public test: AST, public consequent: AST, public alternate: AST) {}
+export type BinaryOperator =
+  | '=='
+  | '!='
+  | '<'
+  | '<='
+  | '>'
+  | '>='
+  | '<<'
+  | '>>'
+  | '+'
+  | '-'
+  | '*'
+  | '/'
+  | '%'
+  | '|'
+  | '^'
+  | '&'
+
+/**
+ * An assignment expression.
+ */
+export interface AssignmentExpression extends Node {
+  type: 'AssignmentExpression'
+  operator: AssignmentOperator
+  left: Expression
+  right: Expression
 }
 
-export class CallExpression {
-  constructor(public callee: AST, public args: AST[]) {}
+export type AssignmentOperator = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '<<=' | '>>=' | '>>>=' | '|=' | '^=' | '&='
+
+/**
+ * A logical operation between two expressions.
+ */
+export interface LogicalExpression extends Node {
+  type: 'LogicalExpression'
+  operator: LogicalOperator
+  left: Expression
+  right: Expression
 }
 
-export class MemberExpression {
-  constructor(public object: AST, public property: AST) {}
+export type LogicalOperator = '||' | '&&' | '^^'
+
+/**
+ * A member expression.
+ */
+export interface MemberExpression extends Node {
+  type: 'MemberExpression'
+  object: Expression
+  property: Expression
+  computed: boolean
 }
 
-export class ArrayExpression {
-  constructor(public type: Type, public members: AST[]) {}
+/**
+ * A conditional expression or ternary.
+ */
+export interface ConditionalExpression extends Node {
+  type: 'ConditionalExpression'
+  test: Expression
+  alternate: Expression
+  consequent: Expression
 }
 
-export class BlockStatement {
-  constructor(public body: AST[]) {}
+/**
+ * A function call expression or struct initialization.
+ */
+export interface CallExpression extends Node {
+  type: 'CallExpression'
+  callee: Expression
+  arguments: Expression[]
 }
 
-export class IfStatement {
-  constructor(public test: AST, public consequent: AST, public alternate: AST | null) {}
+/**
+ * An expression as a standalone statement.
+ */
+export interface ExpressionStatement extends Node {
+  type: 'ExpressionStatement'
+  expression: Expression
 }
 
-export class ForStatement {
-  constructor(public init: AST | null, public test: AST | null, public update: AST | null, public body: AST) {}
+/**
+ * A block statement.
+ */
+export interface BlockStatement extends Node {
+  type: 'BlockStatement'
+  body: Statement[]
 }
 
-export class WhileStatement {
-  constructor(public test: AST, public body: AST) {}
+/**
+ * A return statement with an optional argument.
+ */
+export interface ReturnStatement extends Node {
+  type: 'ReturnStatement'
+  argument: Expression | null
 }
 
-export class DoWhileStatement {
-  constructor(public test: AST, public body: AST) {}
+/**
+ * A break statement.
+ */
+export interface BreakStatement extends Node {
+  type: 'BreakStatement'
 }
 
-export class SwitchCase {
-  constructor(public test: AST | null, public consequent: AST[]) {}
+/**
+ * A continue statement.
+ */
+export interface ContinueStatement extends Node {
+  type: 'ContinueStatement'
 }
 
-export class SwitchStatement {
-  constructor(public discriminant: AST, public cases: SwitchCase[]) {}
+/**
+ * A discard statement in fragment shaders.
+ */
+export interface DiscardStatement extends Node {
+  type: 'DiscardStatement'
 }
 
-export class ReturnStatement {
-  constructor(public argument: Literal | Identifier | UnaryExpression | null) {}
+/**
+ * An if-else statement.
+ */
+export interface IfStatement extends Node {
+  type: 'IfStatement'
+  test: Expression
+  consequent: Statement
+  alternate: Statement | null
 }
 
-export class PreprocessorStatement {
-  constructor(public name: string, public value: AST[] | null) {}
+/**
+ * A switch statement.
+ */
+export interface SwitchStatement extends Node {
+  type: 'SwitchStatement'
+  discriminant: Expression
+  cases: SwitchCase[]
 }
 
-export class PrecisionStatement {
-  constructor(public precision: 'lowp' | 'mediump' | 'highp', public type: Type) {}
+/**
+ * A switch-case statement. `test` is null for a `default` case.
+ */
+export interface SwitchCase extends Node {
+  type: 'SwitchCase'
+  test: Expression | null
+  consequent: Statement[]
 }
 
-export class ContinueStatement {}
+/**
+ * A while statement.
+ */
+export interface WhileStatement extends Node {
+  type: 'WhileStatement'
+  test: Expression
+  body: Statement
+}
 
-export class BreakStatement {}
+/**
+ * A do-while statement.
+ */
+export interface DoWhileStatement extends Node {
+  type: 'DoWhileStatement'
+  body: Statement
+  test: Expression
+}
 
-export class DiscardStatement {}
+/**
+ * A for statement.
+ */
+export interface ForStatement extends Node {
+  type: 'ForStatement'
+  init: VariableDeclaration | Expression | null
+  test: Expression | null
+  update: Expression | null
+  body: Statement
+}
 
-export type AST =
+export type ConstantQualifier = 'const'
+export type ParameterQualifier = 'in' | 'out' | 'inout'
+export type StorageQualifier = 'uniform' | 'in' | 'out'
+export type InterfaceStorageQualifier = 'uniform' | 'buffer'
+export type MemoryQualifier = 'coherent' | 'volatile' | 'restrict' | 'readonly' | 'writeonly'
+
+export type InterpolationQualifier = 'centroid' | 'smooth' | 'flat' | 'invariant'
+export type LayoutQualifier = 'location' | 'std140' | 'packed' | 'shared'
+export type PrecisionQualifier = 'highp' | 'mediump' | 'lowp'
+
+/**
+ * A function declaration. `body` is null for overloads.
+ */
+export interface FunctionDeclaration extends Node {
+  type: 'FunctionDeclaration'
+  id: Identifier
+  qualifiers: PrecisionQualifier[]
+  typeSpecifier: Identifier | ArraySpecifier
+  params: FunctionParameter[]
+  body: BlockStatement | null
+}
+
+/**
+ * A function parameter within a function declaration.
+ */
+export interface FunctionParameter extends Node {
+  type: 'FunctionParameter'
+  id: Identifier | null
+  qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+}
+
+/**
+ * A variable declaration.
+ */
+export interface VariableDeclaration extends Node {
+  type: 'VariableDeclaration'
+  declarations: VariableDeclarator[]
+}
+
+/**
+ * A variable declarator within a variable declaration.
+ */
+export interface VariableDeclarator extends Node {
+  type: 'VariableDeclarator'
+  id: Identifier
+  qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  init: Expression | null
+}
+
+/**
+ * A uniform declaration block with optional layout and qualifiers.
+ */
+export interface StructuredBufferDeclaration extends Node {
+  type: 'StructuredBufferDeclaration'
+  id: Identifier | null
+  qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  members: VariableDeclaration[]
+}
+
+/**
+ * A struct declaration. Can be used as a type or constructor.
+ */
+export interface StructDeclaration extends Node {
+  type: 'StructDeclaration'
+  id: Identifier
+  members: VariableDeclaration[]
+}
+
+/**
+ * A GLSL preprocessor statement with an optional value.
+ */
+export interface PreprocessorStatement extends Node {
+  type: 'PreprocessorStatement'
+  name: string
+  value: Expression[] | null
+}
+
+/**
+ * A GLSL precision qualifier statement.
+ */
+export interface PrecisionQualifierStatement extends Node {
+  type: 'PrecisionQualifierStatement'
+  precision: PrecisionQualifier
+  typeSpecifier: Identifier
+}
+
+/**
+ * A GLSL invariant qualifier statement.
+ */
+export interface InvariantQualifierStatement extends Node {
+  type: 'InvariantQualifierStatement'
+  typeSpecifier: Identifier
+}
+
+/**
+ * A layout qualifier statement.
+ */
+export interface LayoutQualifierStatement extends Node {
+  type: 'LayoutQualifierStatement'
+  layout: Record<string, string | boolean>
+  qualifier: StorageQualifier
+}
+
+export type Expression =
   | Literal
   | Identifier
-  | Type
-  | VariableDeclarator
-  | VariableDeclaration
-  | StructDeclaration
-  | FunctionDeclaration
-  | UnaryExpression
-  | BinaryExpression
-  | TernaryExpression
-  | CallExpression
-  | MemberExpression
   | ArrayExpression
+  | UnaryExpression
+  | UpdateExpression
+  | BinaryExpression
+  | AssignmentExpression
+  | LogicalExpression
+  | MemberExpression
+  | ConditionalExpression
+  | CallExpression
+
+export type Statement =
+  | ExpressionStatement
   | BlockStatement
+  | ReturnStatement
+  | BreakStatement
+  | ContinueStatement
+  | DiscardStatement
   | IfStatement
-  | ForStatement
+  | SwitchStatement
   | WhileStatement
   | DoWhileStatement
-  | SwitchCase
-  | SwitchStatement
-  | ReturnStatement
+  | ForStatement
+  | FunctionDeclaration
+  | VariableDeclaration
+  | StructuredBufferDeclaration
+  | StructDeclaration
   | PreprocessorStatement
-  | PrecisionStatement
-  | ContinueStatement
-  | BreakStatement
-  | DiscardStatement
+  | PrecisionQualifierStatement
+  | InvariantQualifierStatement
+  | LayoutQualifierStatement
+
+export type AST =
+  | Program
+  | ArraySpecifier
+  | SwitchCase
+  | FunctionParameter
+  | VariableDeclarator
+  | Expression
+  | Statement

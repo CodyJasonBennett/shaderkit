@@ -99,7 +99,7 @@ export const WGSL_KEYWORDS = [
   'discard',
   'else',
   'enable',
-  'false',
+  // 'false',
   'fn',
   'for',
   'if',
@@ -109,7 +109,7 @@ export const WGSL_KEYWORDS = [
   'return',
   'struct',
   'switch',
-  'true',
+  // 'true',
   'var',
   'while',
 
@@ -501,8 +501,8 @@ export const GLSL_KEYWORDS = [
   'int',
   'void',
   'bool',
-  'true',
-  'false',
+  // 'true',
+  // 'false',
   'invariant',
   'discard',
   'return',
@@ -813,6 +813,21 @@ export const GLSL_KEYWORDS = [
   // Additional directives
   '#include',
 
+  // WebGL1 (three.js)
+  // 'attribute',
+  // 'varying',
+  'gl_FragColor',
+  'gl_FragDepthEXT',
+  'texture2D',
+  'textureCube',
+  'texture2DProj',
+  'texture2DLodEXT',
+  'texture2DProjLodEXT',
+  'textureCubeLodEXT',
+  'texture2DGradEXT',
+  'texture2DProjGradEXT',
+  'textureCubeGradEXT',
+
   // WEBGL_multi_draw https://registry.khronos.org/webgl/extensions/WEBGL_multi_draw
   'gl_DrawID', // vertex only
 
@@ -820,6 +835,95 @@ export const GLSL_KEYWORDS = [
   // OCULUS_multiview https://github.com/KhronosGroup/WebGL/issues/2912
   'gl_ViewID_OVR',
   'GL_OVR_multiview2',
+
+  // GLSL ES 3.1
+  // https://registry.khronos.org/OpenGL/specs/es/3.1/GLSL_ES_Specification_3.10.pdf
+
+  // 4.3 Storage Qualifiers
+  'buffer',
+  'shared',
+
+  // 7.1.2 Fragment Shader Special Variables
+  'gl_HelperInvocation',
+
+  // 7.1.3 Compute Shader Special Variables
+  'gl_NumWorkGroups',
+  'gl_WorkGroupSize',
+  'gl_WorkGroupID',
+  'gl_LocalInvocationID',
+  'gl_GlobalInvocationID',
+  'gl_LocalInvocationIndex',
+
+  // 7.2 Built-In Constants
+  'gl_MaxImageUnits',
+  'gl_MaxVertexImageUniforms',
+  'gl_MaxFragmentImageUniforms',
+  'gl_MaxComputeImageUniforms',
+  'gl_MaxCombinedImageUniforms',
+  'gl_MaxCombinedShaderOutputResources',
+  'gl_MaxComputeWorkGroupCount',
+  'gl_MaxComputeWorkGroupSize',
+  'gl_MaxComputeUniformComponents',
+  'gl_MaxComputeTextureImageUnits',
+  'gl_MaxComputeAtomicCounters',
+  'gl_MaxComputeAtomicCounterBuffers',
+  'gl_MaxVertexAtomicCounters',
+  'gl_MaxFragmentAtomicCounters',
+  'gl_MaxCombinedAtomicCounters',
+  'gl_MaxAtomicCounterBindings',
+  'gl_MaxFragmentAtomicCounterBuffers',
+  'gl_MaxVertexAtomicCounterBuffers',
+  'gl_MaxCombinedAtomicCounterBuffers',
+  'gl_MaxAtomicCounterBufferSize',
+
+  // 8 Built-in Functions
+  'imageSize',
+  'packUnorm4x8',
+  'packSnorm4x8',
+  'unpackUnorm4x8',
+  'unpackSnorm4x8',
+
+  // 8.8 Integer Functions
+  'bitfieldExtract',
+  'bitfieldInsert',
+  'bitfieldReverse',
+  'bitCount',
+  'findLSB',
+  'findMSB',
+  'uaddCarry',
+  'usubBorrow',
+  'umulExtended',
+  'imulExtended',
+
+  // 8.10 Atomic-Counter Functions
+  'atomicCounterIncrement',
+  'atomicCounterDecrement',
+  'atomicCounter',
+
+  // 8.11 Atomic Memory Functions
+  'atomicAdd',
+  'atomicMin',
+  'atomicMax',
+  'atomicAnd',
+  'atomicOr',
+  'atomicXor',
+  'atomicExchange',
+  'atomicCompSwap',
+
+  // 8.12 Image Functions
+  'imageLoad',
+  'imageStore',
+
+  // 8.14 Shader Invocation Control Functions
+  'barrier',
+
+  // 8.15 Shader Memory Control Functions
+  'memoryBarrier',
+  'memoryBarrierAtomicCounter',
+  'memoryBarrierBuffer',
+  'memoryBarrierImage',
+  'memoryBarrierShared',
+  'groupMemoryBarrier',
 ]
 
 const SYMBOLS = [

@@ -13,33 +13,57 @@ Tools and IntelliSense for GLSL and WGSL.
 - [Minify](#minify)
 - [Parse](#parse)
 - [Generate](#generate)
+- [Visit](#visit)
 - [AST](#ast)
-  - [Literal](#literal)
+  - [Node Objects](#node-objects)
   - [Identifier](#identifier)
-  - [Type](#type)
-  - [VariableDeclaration](#variabledeclaration)
-    - [VariableDeclarator](#variabledeclarator)
-  - [StructDeclaration](#structdeclaration)
-  - [FunctionDeclaration](#functiondeclaration)
-  - [UnaryExpression](#unaryexpression)
-  - [BinaryExpression](#binaryexpression)
-  - [TernaryExpression](#ternaryexpression)
-  - [CallExpression](#callexpression)
-  - [MemberExpression](#memberexpression)
-  - [ArrayExpression](#arrayexpression)
-  - [BlockStatement](#blockstatement)
-  - [IfStatement](#ifstatement)
-  - [ForStatement](#forstatement)
-  - [WhileStatement](#whilestatement)
-  - [DoWhileStatement](#dowhilestatement)
-  - [SwitchStatement](#switchstatement)
-    - [SwitchCase](#switchcase)
-  - [ReturnStatement](#returnstatement)
-  - [PreprocessorStatement](#preprocessorstatement)
-  - [PrecisionStatement](#precisionstatement)
-  - [ContinueStatement](#continuestatement)
-  - [BreakStatement](#breakstatement)
-  - [DiscardStatement](#discardstatement)
+  - [Literal](#literal)
+  - [ArraySpecifier](#arrayspecifier)
+  - [Program](#program)
+  - Statements
+    - [ExpressionStatement](#expressionstatement)
+    - [BlockStatement](#blockstatement)
+    - [DiscardStatement](#discardstatement)
+    - [PreprocessorStatement](#preprocessorstatement)
+    - [PrecisionQualifierStatement](#precisionqualifierstatement)
+    - [InvariantQualifierStatement](#invariantqualifierstatement)
+    - [LayoutQualifierStatement](#layoutqualifierstatement)
+    - Control Flow
+      - [ReturnStatement](#returnstatement)
+      - [BreakStatement](#breakstatement)
+      - [ContinueStatement](#continuestatement)
+    - Choice
+      - [IfStatement](#ifstatement)
+      - [SwitchStatement](#switchstatement)
+        - [SwitchCase](#switchcase)
+    - Loops
+      - [WhileStatement](#whilestatement)
+      - [DoWhileStatement](#dowhilestatement)
+      - [ForStatement](#forstatement)
+  - Declarations
+    - [FunctionDeclaration](#functiondeclaration)
+      - [FunctionParameter](#functionparameter)
+    - [VariableDeclaration](#variabledeclaration)
+      - [VariableDeclarator](#variabledeclarator)
+    - [StructuredBufferDeclaration](#structuredbufferdeclaration)
+    - [StructDeclaration](#structdeclaration)
+  - Expressions
+    - [ArrayExpression](#arrayexpression)
+    - Unary Operations
+      - [UnaryExpression](#unaryexpression)
+        - [UnaryOperator](#unaryoperator)
+      - [UpdateExpression](#updateexpression)
+        - [UpdateOperator](#updateoperator)
+    - Binary Operations
+      - [BinaryExpression](#binaryexpression)
+        - [BinaryOperator](#binaryoperator)
+      - [AssignmentExpression](#assignmentexpression)
+        - [AssignmentOperator](#assignmentoperator)
+      - [LogicalExpression](#logicalexpression)
+        - [LogicalOperator](#logicaloperator)
+      - [MemberExpression](#memberexpression)
+    - [ConditionalExpression](#conditionalexpression)
+    - [CallExpression](#callexpression)
 
 ## Installation
 
@@ -228,173 +252,114 @@ minify(`#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){
 
 ## Parse
 
-Parses a string of GLSL or WGSL code into an [AST](#ast).
+Parses a string of GLSL (WGSL is WIP) code into an [AST](#ast).
 
 ```ts
-const ast: AST[] = parse(code: string)
+const ast: Program = parse(code: string)
 ```
 
 ## Generate
 
-Generates a string of GLSL or WGSL code from an [AST](#ast).
+Generates a string of GLSL (WGSL is WIP) code from an [AST](#ast).
 
 ```ts
-const code: string = generate(ast: AST[], {
-  target: 'GLSL' | 'WGSL'
+const code: string = generate(program: Program, {
+  target: 'GLSL' // | 'WGSL'
 })
+```
+
+## Visit
+
+Recurses through an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree), calling a visitor object on matching nodes.
+
+```ts
+visit(
+  program: Program,
+  visitors: {
+    Program: {
+      enter(node, ancestors) {
+        // Called before any descendant nodes are processed
+      },
+      exit(node, ancestors) {
+        // Called after all nodes are processed
+      }
+    },
+    Identifier(node, ancestors) {
+      // Called before any descendant nodes are processed (alias to enter)
+    }
+  } satisfies Visitors
+)
 ```
 
 ## AST
 
 An [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) loosely based on [ESTree](https://github.com/estree/estree) for GLSL and WGSL grammars.
 
-### Literal
+### Node Objects
 
-A shader literal representing a `bool`, `float`, `int`, or `uint` type.
+AST nodes extend `Node` objects which implement the following abstract interface:
 
 ```ts
-class Literal {
-  value: string
+interface Node {
+  type: string
 }
 ```
+
+The `type` field is a string representing the AST variant type which can determine the interface a node implements.
 
 ### Identifier
 
 A variable identifier.
 
 ```ts
-class Identifier {
+interface Identifier extends Node {
+  type: 'Identifier'
+  name: string
+}
+```
+
+### Literal
+
+A shader literal representing a `bool`, `float`, `int`, or `uint` type.
+
+```ts
+interface Literal extends Node {
+  type: 'Literal'
   value: string
 }
 ```
 
-### Type
+### ArraySpecifier
 
-Represents a type specifier and its parameters (WGSL specific).
+An array and its dimensions.
 
 ```ts
-class Type {
-  name: string
-  parameters: (Type | Literal | Identifier)[] | null
+interface ArraySpecifier extends Node {
+  type: 'ArraySpecifier'
+  typeSpecifier: Identifier
+  dimensions: (Literal | Identifier | null)[]
 }
 ```
 
-### VariableDeclaration
+### Program
 
-A variable declaration with an optional binding layout, type qualifiers, kind (WGSL only), and declarators (e.g. a comma-separated list).
+Represents the root of an AST.
 
 ```ts
-class VariableDeclaration {
-  layout: Record<string, string | boolean> | null
-  qualifiers: string[]
-  kind: 'var' | 'let' | 'const' | null
-  type: Type | Identifier
-  declarations: VariableDeclarator[]
+interface Program extends Node {
+  type: 'Program'
+  body: Statement[]
 }
 ```
 
-#### VariableDeclarator
+### ExpressionStatement
 
-A single named declarator as part of a `VariableDeclaration`.
-
-```ts
-class VariableDeclarator {
-  name: string
-  value: AST | null
-}
-```
-
-### StructDeclaration
-
-A struct declaration. Can be used as a type or constructor.
+An expression as a standalone statement.
 
 ```ts
-class StructDeclaration {
-  name: string
-  members: VariableDeclaration[]
-}
-```
-
-### FunctionDeclaration
-
-A function declaration with an optional type qualifier and arguments.
-
-```ts
-class FunctionDeclaration {
-  name: string
-  type: Type | Identifier
-  qualifiers: string[]
-  args: VariableDeclaration[]
-  body: BlockStatement | null
-}
-```
-
-### UnaryExpression
-
-A unary expression with a left or right handed operator.
-
-```ts
-class UnaryExpression {
-  operator: string
-  left: AST | null
-  right: AST | null
-}
-```
-
-### BinaryExpression
-
-A binary expression with a left and right operand.
-
-```ts
-class BinaryExpression {
-  operator: string
-  left: AST
-  right: AST
-}
-```
-
-### TernaryExpression
-
-A ternary or conditional expression.
-
-```ts
-class TernaryExpression {
-  test: AST
-  consequent: AST
-  alternate: AST
-}
-```
-
-### CallExpression
-
-A call expression.
-
-```ts
-class CallExpression {
-  callee: AST
-  args: AST[]
-}
-```
-
-### MemberExpression
-
-A member expression.
-
-```ts
-class MemberExpression {
-  object: AST
-  property: AST
-}
-```
-
-### ArrayExpression
-
-An array expression. `members` can be empty if uninitialized.
-
-```ts
-class ArrayExpression {
-  type: Type
-  members: AST[]
+interface ExpressionStatement extends Node {
+  type: 'ExpressionStatement'
+  expression: Expression
 }
 ```
 
@@ -403,55 +368,110 @@ class ArrayExpression {
 A block statement.
 
 ```ts
-class BlockStatement {
-  body: AST[]
+interface BlockStatement extends Node {
+  type: 'BlockStatement'
+  body: Statement[]
+}
+```
+
+### DiscardStatement
+
+A discard statement in fragment shaders.
+
+```ts
+interface DiscardStatement extends Node {
+  type: 'DiscardStatement'
+}
+```
+
+### PreprocessorStatement
+
+A GLSL preprocessor statement with an optional value.
+
+```ts
+interface PreprocessorStatement extends Node {
+  type: 'PreprocessorStatement'
+  name: string
+  value: Expression[] | null
+}
+```
+
+### PrecisionQualifierStatement
+
+A GLSL precision qualifier statement.
+
+```ts
+interface PrecisionQualifierStatement extends Node {
+  type: 'PrecisionQualifierStatement'
+  precision: PrecisionQualifier
+  typeSpecifier: Identifier
+}
+```
+
+### InvariantQualifierStatement
+
+A GLSL invariant qualifier statement.
+
+```ts
+interface InvariantQualifierStatement extends Node {
+  type: 'InvariantQualifierStatement'
+  typeSpecifier: Identifier
+}
+```
+
+### LayoutQualifierStatement
+
+A layout qualifier statement.
+
+```ts
+interface LayoutQualifierStatement extends Node {
+  type: 'LayoutQualifierStatement'
+  layout: Record<string, string | boolean>
+  qualifier: StorageQualifier
+}
+```
+
+### ReturnStatement
+
+A return statement with an optional argument.
+
+```ts
+interface ReturnStatement extends Node {
+  type: 'ReturnStatement'
+  argument: Expression | null
+}
+```
+
+### BreakStatement
+
+A break statement.
+
+```ts
+interface BreakStatement extends Node {
+  type: 'BreakStatement'
+}
+```
+
+### ContinueStatement
+
+A continue statement.
+
+```ts
+interface ContinueStatement extends Node {
+  type: 'ContinueStatement'
 }
 ```
 
 ### IfStatement
 
-An if statement.
+An if-else statement.
 
 ```ts
-class IfStatement {
-  test: AST
-  consequent: AST
-  alternate: AST | null
-}
-```
-
-### ForStatement
-
-A for statement.
-
-```ts
-class ForStatement {
-  init: AST | null
-  test: AST | null
-  update: AST | null
-  body: AST
-}
-```
-
-### WhileStatement
-
-A while statement.
-
-```ts
-class WhileStatement {
-  test: AST
-  body: AST
-}
-```
-
-### DoWhileStatement
-
-A do-while statement.
-
-```ts
-class DoWhileStatement {
-  test: AST
-  body: AST
+interface IfStatement extends Node {
+  type: 'IfStatement'
+  test: Expression
+  consequent: Statement
+  alternate: Statement | null
 }
 ```
 
@@ -460,8 +480,9 @@ class DoWhileStatement {
 A switch statement.
 
 ```ts
-class SwitchStatement {
-  discriminant: AST
+interface SwitchStatement extends Node {
+  type: 'SwitchStatement'
+  discriminant: Expression
   cases: SwitchCase[]
 }
 ```
@@ -471,64 +492,289 @@ class SwitchStatement {
 A switch-case statement. `test` is null for a `default` case.
 
 ```ts
-class SwitchCase {
-  test: AST | null
-  consequent: AST[]
+interface SwitchCase extends Node {
+  type: 'SwitchCase'
+  test: Expression | null
+  consequent: Statement[]
 }
 ```
 
-### ReturnStatement
+### WhileStatement
 
-A return statement with an optional argument.
+A while statement.
 
 ```ts
-class ReturnStatement {
-  argument: Literal | Identifier | UnaryExpression | null
+interface WhileStatement extends Node {
+  type: 'WhileStatement'
+  test: Expression
+  body: Statement
 }
 ```
 
-### PreprocessorStatement
+### DoWhileStatement
 
-A GLSL preprocessor statement with an optional value.
+A do-while statement.
 
 ```ts
-class PreprocessorStatement {
-  name: string
-  value: AST[] | null
+interface DoWhileStatement extends Node {
+  type: 'DoWhileStatement'
+  body: Statement
+  test: Expression
 }
 ```
 
-### PrecisionStatement
+### ForStatement
 
-A GLSL precision statement.
+A for statement.
 
 ```ts
-class PrecisionStatement {
-  precision: 'lowp' | 'mediump' | 'highp'
-  type: Type
+interface ForStatement extends Node {
+  type: 'ForStatement'
+  init: VariableDeclaration | Expression | null
+  test: Expression | null
+  update: Expression | null
+  body: Statement
 }
 ```
 
-### ContinueStatement
+### FunctionDeclaration
 
-A continue statement.
+A function declaration. `body` is null for overloads.
 
 ```ts
-class ContinueStatement {}
+interface FunctionDeclaration extends Node {
+  type: 'FunctionDeclaration'
+  id: Identifier
+  qualifiers: PrecisionQualifier[]
+  typeSpecifier: Identifier | ArraySpecifier
+  params: FunctionParameter[]
+  body: BlockStatement | null
+}
 ```
 
-### BreakStatement
+#### FunctionParameter
 
-A break statement.
+A function parameter within a function declaration.
 
 ```ts
-class BreakStatement {}
+interface FunctionParameter extends Node {
+  type: 'FunctionParameter'
+  id: Identifier | null
+  qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+}
 ```
 
-### DiscardStatement
+### VariableDeclaration
 
-A discard statement.
+A variable declaration.
 
 ```ts
-class DiscardStatement {}
+interface VariableDeclaration extends Node {
+  type: 'VariableDeclaration'
+  declarations: VariableDeclarator[]
+}
+```
+
+#### VariableDeclarator
+
+A variable declarator within a variable declaration.
+
+```ts
+interface VariableDeclarator extends Node {
+  type: 'VariableDeclarator'
+  id: Identifier
+  qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  init: Expression | null
+}
+```
+
+### StructuredBufferDeclaration
+
+A buffer interface declaration with optional layout and qualifiers.
+
+```ts
+interface StructuredBufferDeclaration extends Node {
+  type: 'StructuredBufferDeclaration'
+  id: Identifier | null
+  qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+  members: VariableDeclaration[]
+}
+```
+
+### StructDeclaration
+
+A struct declaration. Can be used as a type or constructor.
+
+```ts
+interface StructDeclaration extends Node {
+  type: 'StructDeclaration'
+  id: Identifier
+  members: VariableDeclaration[]
+}
+```
+
+### ArrayExpression
+
+An array initialization expression.
+
+```ts
+interface ArrayExpression extends Node {
+  type: 'ArrayExpression'
+  typeSpecifier: ArraySpecifier
+  elements: Expression[]
+}
+```
+
+### UnaryExpression
+
+A unary expression with a left or right handed operator.
+
+```ts
+interface UnaryExpression extends Node {
+  type: 'UnaryExpression'
+  operator: UnaryOperator
+  prefix: boolean
+  argument: Expression
+}
+```
+
+#### UnaryOperator
+
+```ts
+type UnaryOperator = '-' | '+' | '!' | '~'
+```
+
+### UpdateExpression
+
+An update expression with an optionally prefixed operator.
+
+```ts
+interface UpdateExpression extends Node {
+  type: 'UpdateExpression'
+  operator: UpdateOperator
+  argument: Expression
+  prefix: boolean
+}
+```
+
+#### UpdateOperator
+
+```ts
+type UpdateOperator = '++' | '--'
+```
+
+### BinaryExpression
+
+A binary expression with a left and right operand.
+
+```ts
+interface BinaryExpression extends Node {
+  type: 'BinaryExpression'
+  operator: BinaryOperator
+  left: Expression
+  right: Expression
+}
+```
+
+#### BinaryOperator
+
+```ts
+type BinaryOperator =
+  | '=='
+  | '!='
+  | '<'
+  | '<='
+  | '>'
+  | '>='
+  | '<<'
+  | '>>'
+  | '+'
+  | '-'
+  | '*'
+  | '/'
+  | '%'
+  | '|'
+  | '^'
+  | '&'
+```
+
+### AssignmentExpression
+
+An assignment expression.
+
+```ts
+interface AssignmentExpression extends Node {
+  type: 'AssignmentExpression'
+  operator: AssignmentOperator
+  left: Expression
+  right: Expression
+}
+```
+
+#### AssignmentOperator
+
+```ts
+type AssignmentOperator = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '<<=' | '>>=' | '>>>=' | '|=' | '^=' | '&='
+```
+
+### LogicalExpression
+
+A logical operation between two expressions.
+
+```ts
+interface LogicalExpression extends Node {
+  type: 'LogicalExpression'
+  operator: LogicalOperator
+  left: Expression
+  right: Expression
+}
+```
+
+#### LogicalOperator
+
+```ts
+type LogicalOperator = '||' | '&&' | '^^'
+```
+
+### MemberExpression
+
+A member expression.
+
+```ts
+interface MemberExpression extends Node {
+  type: 'MemberExpression'
+  object: Expression
+  property: Expression
+  computed: boolean
+}
+```
+
+### ConditionalExpression
+
+A conditional expression or ternary.
+
+```ts
+interface ConditionalExpression extends Node {
+  type: 'ConditionalExpression'
+  test: Expression
+  alternate: Expression
+  consequent: Expression
+}
+```
+
+### CallExpression
+
+A function call expression or struct initialization.
+
+```ts
+interface CallExpression extends Node {
+  type: 'CallExpression'
+  callee: Expression
+  arguments: Expression[]
+}
 ```

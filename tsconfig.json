@@ -4,12 +4,11 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["esnext", "dom"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "pretty": true,
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
     "paths": {
       "shaderkit": ["./src"]
     }
