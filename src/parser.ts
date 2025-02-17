@@ -162,7 +162,7 @@ function parseGenerics(tokens: Token[]): (Identifier | Literal)[] | null {
 
       if (token.type === 'symbol') {
         if (token.value === '>') generics = []
-        break
+        if (token.value !== ',') break
       }
     }
   }
@@ -827,7 +827,7 @@ function parseWGSLIndeterminate(tokens: Token[]): FunctionDeclaration | Variable
   } else if (tokens[0]?.value === 'var' || tokens[0]?.value === 'const') {
     const kind = consume(tokens).value // var | const
 
-    if (kind === 'var') parseGenerics(tokens) // TODO: store scope qualifier?
+    const storageQualifiers = parseGenerics(tokens)
 
     const id = parseTypeSpecifier(tokens, layout)
 
@@ -839,7 +839,18 @@ function parseWGSLIndeterminate(tokens: Token[]): FunctionDeclaration | Variable
     }
 
     // TODO: infer from return type or ptr usage
-    const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
+    const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [
+      kind as any,
+    ]
+    if (storageQualifiers !== null) {
+      for (const expression of storageQualifiers) {
+        if (expression.type === 'Identifier') {
+          qualifiers.push(expression.name as StorageQualifier)
+        } else if (expression.type === 'Literal') {
+          qualifiers.push(expression.value as StorageQualifier)
+        }
+      }
+    }
 
     let init: Expression | null = null
     if ((tokens[0]?.value as string) === '=' || kind === 'const') {
