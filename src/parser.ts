@@ -876,7 +876,7 @@ function isWGSLVariable(tokens: Token[]) {
   // Function declaration
   if (token.value === 'fn') return true
   // Variable declaration
-  if (token.value === 'var' || token.value === 'const') return true
+  if ((token.value === 'var' || token.value === 'const') && tokens[1]?.type === 'identifier') return true
 
   return false
 }
