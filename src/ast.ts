@@ -390,6 +390,7 @@ export interface LayoutQualifierStatement extends Node {
 export type Expression =
   | Literal
   | Identifier
+  | ArraySpecifier
   | ArrayExpression
   | TypeSpecifier
   | UnaryExpression

@@ -150,12 +150,80 @@ function consume(tokens: Token[], expected?: string): Token {
   return token
 }
 
+// WGSL-only
+function parseGenerics(tokens: Token[]): (Identifier | Literal)[] | null {
+  let generics: (Identifier | Literal)[] | null = null
+
+  // Check whether token stream is formatted for generics
+  if (tokens[0]?.value === '<') {
+    let i = 1
+    while (i < tokens.length) {
+      const token = tokens[i++]
+
+      if (token.type === 'symbol') {
+        if (token.value === '>') generics = []
+        break
+      }
+    }
+  }
+
+  // Parse generic arguments if found
+  if (generics) {
+    consume(tokens, '<')
+    while (tokens[0]?.value !== '>') {
+      if (tokens[0]?.type === 'identifier') {
+        generics.push({ type: 'Identifier', name: consume(tokens).value })
+      } else {
+        generics.push({ type: 'Literal', value: consume(tokens).value })
+      }
+      if (tokens[0]?.value === ',') consume(tokens, ',')
+    }
+    consume(tokens, '>')
+  }
+
+  return generics
+}
+
+// WGSL-only
+function parseAttributes(tokens: Token[]): Record<string, string | boolean> | null {
+  let attributes: Record<string, string | boolean> | null = null
+
+  while (tokens[0]?.value === '@') {
+    attributes ??= {}
+
+    consume(tokens, '@')
+    const key = consume(tokens).value
+
+    // TODO: workgroup size (x, y, z)
+    let value: string | boolean = true
+    if ((tokens[0]?.value as string) === '(') {
+      consume(tokens, '(')
+      value = consume(tokens).value
+      consume(tokens, ')')
+    }
+
+    attributes[key] = value
+  }
+
+  return attributes
+}
+
 function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression {
   let token = consume(tokens)
 
   let lhs: Expression
   if (token.type === 'identifier' || token.type === 'keyword') {
     lhs = { type: 'Identifier', name: token.value }
+
+    // WGSL-only
+    const generics = parseGenerics(tokens)
+    if (generics) {
+      lhs = {
+        type: 'ArraySpecifier',
+        typeSpecifier: lhs,
+        dimensions: generics,
+      }
+    }
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
     lhs = { type: 'Literal', value: token.value }
   } else if (token.type === 'symbol' && token.value === '(') {
@@ -300,7 +368,16 @@ function parseLayout(tokens: Token[]): Record<string, string | boolean> | null {
 
 function parseTypeSpecifier(tokens: Token[], layout: Record<string, string | boolean> | null): TypeSpecifier {
   let typeSpecifier: Identifier | ArraySpecifier = { type: 'Identifier', name: consume(tokens).value }
-  if (tokens[0]?.value === '[') {
+
+  // WGSL-only
+  const generics = parseGenerics(tokens)
+  if (generics) {
+    typeSpecifier = {
+      type: 'ArraySpecifier',
+      typeSpecifier,
+      dimensions: generics,
+    }
+  } else if (tokens[0]?.value === '[') {
     const dimensions: (Literal | Identifier | null)[] = []
 
     while (tokens[0]?.value === '[') {
@@ -480,8 +557,39 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
+  const isWGSL = tokens[0].value === '@' || tokens[1]?.value === '<' || tokens[1]?.value === ':'
   while (tokens[0] && tokens[0].value !== '}') {
-    members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
+    if (isWGSL) {
+      const layout = parseAttributes(tokens)
+      const id = parseTypeSpecifier(tokens, layout)
+
+      // TODO: should this be nullable even if invalid in GLSL?
+      let typeSpecifier: TypeSpecifier = null!
+      if ((tokens[0]?.value as string) === ':') {
+        consume(tokens, ':')
+        typeSpecifier = parseTypeSpecifier(tokens, null)
+      }
+
+      // TODO: infer from return type or ptr usage
+      const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
+
+      members.push({
+        type: 'VariableDeclaration',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            id,
+            qualifiers,
+            typeSpecifier,
+            init: null,
+          },
+        ],
+      })
+
+      if (tokens[0]?.value === ',') consume(tokens, ',')
+    } else {
+      members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
+    }
   }
   consume(tokens, '}')
 
@@ -683,6 +791,96 @@ function isVariable(tokens: Token[]): boolean {
   return tokens[i]?.type !== 'symbol'
 }
 
+function parseWGSLIndeterminate(tokens: Token[]): FunctionDeclaration | VariableDeclaration {
+  const layout = parseAttributes(tokens)
+
+  if (tokens[0]?.value === 'fn') {
+    consume(tokens, 'fn')
+    const id = parseTypeSpecifier(tokens, layout)
+
+    consume(tokens, '(')
+    const params: FunctionParameter[] = []
+
+    while (tokens.length && (tokens[0]?.value as string) !== ')') {
+      const layout = parseAttributes(tokens)
+      const id = parseTypeSpecifier(tokens, layout)
+
+      consume(tokens, ':')
+
+      // TODO: infer qualifiers from return type or ptr usage
+      const qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[] = []
+      const typeSpecifier = parseTypeSpecifier(tokens, null)
+
+      params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
+
+      if ((tokens[0]?.value as string) === ',') consume(tokens, ',')
+    }
+
+    consume(tokens, ')')
+
+    // TODO: infer precision qualifier from type
+    consume(tokens, '->')
+    const typeSpecifier = parseTypeSpecifier(tokens, parseLayout(tokens))
+    const body = parseBlock(tokens)
+
+    return { type: 'FunctionDeclaration', id, qualifiers: [], params, typeSpecifier, body }
+  } else if (tokens[0]?.value === 'var' || tokens[0]?.value === 'const') {
+    const kind = consume(tokens).value // var | const
+
+    if (kind === 'var') parseGenerics(tokens) // TODO: store scope qualifier?
+
+    const id = parseTypeSpecifier(tokens, layout)
+
+    // TODO: should this be nullable even if invalid in GLSL?
+    let typeSpecifier: TypeSpecifier = null!
+    if ((tokens[0]?.value as string) === ':') {
+      consume(tokens, ':')
+      typeSpecifier = parseTypeSpecifier(tokens, null)
+    }
+
+    // TODO: infer from return type or ptr usage
+    const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
+
+    let init: Expression | null = null
+    if ((tokens[0]?.value as string) === '=' || kind === 'const') {
+      consume(tokens, '=')
+      init = parseExpression(tokens)
+    }
+
+    consume(tokens, ';')
+
+    return {
+      type: 'VariableDeclaration',
+      declarations: [
+        // TODO: are declaration lists allowed?
+        {
+          type: 'VariableDeclarator',
+          id,
+          qualifiers,
+          typeSpecifier,
+          init,
+        },
+      ],
+    }
+  }
+
+  // unreachable
+  return null!
+}
+
+function isWGSLVariable(tokens: Token[]) {
+  const token = tokens[0]
+
+  // Attribute; indeterminate
+  if (token.value === '@') return true
+  // Function declaration
+  if (token.value === 'fn') return true
+  // Variable declaration
+  if (token.value === 'var' || token.value === 'const') return true
+
+  return false
+}
+
 function parseStatements(tokens: Token[]): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
@@ -708,6 +906,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
+    else if (isWGSLVariable(tokens)) statement = parseWGSLIndeterminate(tokens)
     else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)
@@ -733,7 +932,7 @@ const NEWLINE_REGEX = /\\\s+/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
- * Parses a string of GLSL (WGSL WIP) code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ * Parses a string of GLSL or WGSL code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function parse(code: string): Program {
   // Fold newlines

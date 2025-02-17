@@ -8,7 +8,7 @@ function formatLayout(layout: Record<string, string | boolean> | null): string {
     .join(',')})`
 }
 
-// TODO: restore comments/whitespace with sourcemaps, WGSL support
+// TODO: restore comments/whitespace with sourcemaps
 function format(node: AST | null): string {
   if (!node) return ''
 
@@ -119,11 +119,11 @@ function format(node: AST | null): string {
 }
 
 export interface GenerateOptions {
-  target: 'GLSL' // | 'WGSL'
+  target: 'GLSL' | 'WGSL'
 }
 
 /**
- * Generates a string of GLSL (WGSL WIP) code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ * Generates a string of GLSL or WGSL code from an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function generate(program: Program, options: GenerateOptions): string {
   return format(program).replaceAll('\n\n', '\n').replaceAll('] ', ']').trim()
