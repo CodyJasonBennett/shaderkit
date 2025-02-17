@@ -26,6 +26,9 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       visit(node.typeSpecifier, visitors, ancestors)
       for (const dimension of node.dimensions) if (dimension) visit(dimension, visitors, ancestors)
       break
+    case 'TypeSpecifier':
+      visit(node.typeSpecifier, visitors, ancestors)
+      break
     case 'ExpressionStatement':
       visit(node.expression, visitors, ancestors)
       break

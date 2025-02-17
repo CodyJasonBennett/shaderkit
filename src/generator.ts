@@ -17,6 +17,8 @@ function format(node: AST | null): string {
       return node.name
     case 'Literal':
       return node.value
+    case 'TypeSpecifier':
+      return format(node.typeSpecifier)
     case 'ArraySpecifier':
       return `${node.typeSpecifier.name}${node.dimensions.map((d) => `[${format(d)}]`).join('')}`
     case 'ExpressionStatement':
@@ -75,7 +77,7 @@ function format(node: AST | null): string {
     }
     case 'VariableDeclaration': {
       const head = node.declarations[0]
-      const layout = formatLayout(head.layout)
+      const layout = formatLayout(head.id.layout)
       const qualifiers = head.qualifiers.length ? `${head.qualifiers.join(' ')} ` : ''
       return `${layout}${qualifiers}${format(head.typeSpecifier)} ${node.declarations.map(format).join(',')};`
     }
@@ -84,8 +86,8 @@ function format(node: AST | null): string {
       return `${format(node.id)}${init}`
     }
     case 'StructuredBufferDeclaration': {
-      const layout = formatLayout(node.layout)
-      const scope = node.id ? `${format(node.id)}` : ''
+      const layout = formatLayout(node.typeSpecifier.layout)
+      const scope = node.id ? format(node.id) : ''
       return `${layout}${node.qualifiers.join(' ')} ${format(node.typeSpecifier)}{${node.members
         .map(format)
         .join('')}}${scope};`
