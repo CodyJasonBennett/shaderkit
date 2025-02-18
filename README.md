@@ -19,6 +19,7 @@ Tools and IntelliSense for GLSL and WGSL.
   - [Identifier](#identifier)
   - [Literal](#literal)
   - [ArraySpecifier](#arrayspecifier)
+  - [TypeSpecifier](#typespecifier)
   - [Program](#program)
   - Statements
     - [ExpressionStatement](#expressionstatement)
@@ -252,7 +253,7 @@ minify(`#version 300 es\nin vec2 c;out vec4 data[gl_MaxDrawBuffers];void main(){
 
 ## Parse
 
-Parses a string of GLSL (WGSL is WIP) code into an [AST](#ast).
+Parses a string of GLSL or WGSL code into an [AST](#ast).
 
 ```ts
 const ast: Program = parse(code: string)
@@ -260,11 +261,11 @@ const ast: Program = parse(code: string)
 
 ## Generate
 
-Generates a string of GLSL (WGSL is WIP) code from an [AST](#ast).
+Generates a string of GLSL or WGSL code from an [AST](#ast).
 
 ```ts
 const code: string = generate(program: Program, {
-  target: 'GLSL' // | 'WGSL'
+  target: 'GLSL' | 'WGSL'
 })
 ```
 
@@ -338,6 +339,18 @@ interface ArraySpecifier extends Node {
   type: 'ArraySpecifier'
   typeSpecifier: Identifier
   dimensions: (Literal | Identifier | null)[]
+}
+```
+
+### TypeSpecifier
+
+A type specifier and optional shader layout.
+
+```ts
+interface TypeSpecifier extends Node {
+  type: 'TypeSpecifier'
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
 }
 ```
 
@@ -544,9 +557,9 @@ A function declaration. `body` is null for overloads.
 ```ts
 interface FunctionDeclaration extends Node {
   type: 'FunctionDeclaration'
-  id: Identifier
+  id: TypeSpecifier
   qualifiers: PrecisionQualifier[]
-  typeSpecifier: Identifier | ArraySpecifier
+  typeSpecifier: TypeSpecifier
   params: FunctionParameter[]
   body: BlockStatement | null
 }
@@ -559,9 +572,9 @@ A function parameter within a function declaration.
 ```ts
 interface FunctionParameter extends Node {
   type: 'FunctionParameter'
-  id: Identifier | null
+  id: TypeSpecifier | null
   qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
+  typeSpecifier: TypeSpecifier
 }
 ```
 
@@ -583,10 +596,9 @@ A variable declarator within a variable declaration.
 ```ts
 interface VariableDeclarator extends Node {
   type: 'VariableDeclarator'
-  id: Identifier
+  id: TypeSpecifier
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
-  layout: Record<string, string | boolean> | null
+  typeSpecifier: TypeSpecifier
   init: Expression | null
 }
 ```
@@ -600,8 +612,7 @@ interface StructuredBufferDeclaration extends Node {
   type: 'StructuredBufferDeclaration'
   id: Identifier | null
   qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
-  layout: Record<string, string | boolean> | null
+  typeSpecifier: TypeSpecifier
   members: VariableDeclaration[]
 }
 ```

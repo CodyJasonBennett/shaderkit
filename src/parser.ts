@@ -37,6 +37,7 @@ import {
   VariableDeclarator,
   WhileStatement,
   LayoutQualifierStatement,
+  TypeSpecifier,
 } from './ast.js'
 import { type Token, tokenize } from './tokenizer.js'
 
@@ -149,12 +150,80 @@ function consume(tokens: Token[], expected?: string): Token {
   return token
 }
 
+// WGSL-only
+function parseGenerics(tokens: Token[]): (Identifier | Literal)[] | null {
+  let generics: (Identifier | Literal)[] | null = null
+
+  // Check whether token stream is formatted for generics
+  if (tokens[0]?.value === '<') {
+    let i = 1
+    while (i < tokens.length) {
+      const token = tokens[i++]
+
+      if (token.type === 'symbol') {
+        if (token.value === '>') generics = []
+        if (token.value !== ',') break
+      }
+    }
+  }
+
+  // Parse generic arguments if found
+  if (generics) {
+    consume(tokens, '<')
+    while (tokens[0]?.value !== '>') {
+      if (tokens[0]?.type === 'identifier') {
+        generics.push({ type: 'Identifier', name: consume(tokens).value })
+      } else {
+        generics.push({ type: 'Literal', value: consume(tokens).value })
+      }
+      if (tokens[0]?.value === ',') consume(tokens, ',')
+    }
+    consume(tokens, '>')
+  }
+
+  return generics
+}
+
+// WGSL-only
+function parseAttributes(tokens: Token[]): Record<string, string | boolean> | null {
+  let attributes: Record<string, string | boolean> | null = null
+
+  while (tokens[0]?.value === '@') {
+    attributes ??= {}
+
+    consume(tokens, '@')
+    const key = consume(tokens).value
+
+    // TODO: workgroup size (x, y, z)
+    let value: string | boolean = true
+    if ((tokens[0]?.value as string) === '(') {
+      consume(tokens, '(')
+      value = consume(tokens).value
+      consume(tokens, ')')
+    }
+
+    attributes[key] = value
+  }
+
+  return attributes
+}
+
 function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression {
   let token = consume(tokens)
 
   let lhs: Expression
   if (token.type === 'identifier' || token.type === 'keyword') {
     lhs = { type: 'Identifier', name: token.value }
+
+    // WGSL-only
+    const generics = parseGenerics(tokens)
+    if (generics) {
+      lhs = {
+        type: 'ArraySpecifier',
+        typeSpecifier: lhs,
+        dimensions: generics,
+      }
+    }
   } else if (token.type === 'bool' || token.type === 'float' || token.type === 'int') {
     lhs = { type: 'Literal', value: token.value }
   } else if (token.type === 'symbol' && token.value === '(') {
@@ -264,10 +333,51 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   return lhs
 }
 
-function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
+function parseLayout(tokens: Token[]): Record<string, string | boolean> | null {
+  let layout: Record<string, string | boolean> | null = null
+
+  if (tokens[0].value === 'layout') {
+    consume(tokens, 'layout')
+    consume(tokens, '(')
+
+    layout = {}
+
+    while (tokens[0] && (tokens[0] as Token).value !== ')') {
+      const expression = parseExpression(tokens)
+
+      if (
+        expression.type === 'AssignmentExpression' &&
+        expression.left.type === 'Identifier' &&
+        expression.right.type === 'Literal'
+      ) {
+        layout[expression.left.name] = expression.right.value
+      } else if (expression.type === 'Identifier') {
+        layout[expression.name] = true
+      } else {
+        throw new TypeError('Unexpected expression')
+      }
+
+      if (tokens[0] && (tokens[0] as Token).value !== ')') consume(tokens, ',')
+    }
+
+    consume(tokens, ')')
+  }
+
+  return layout
+}
+
+function parseTypeSpecifier(tokens: Token[], layout: Record<string, string | boolean> | null): TypeSpecifier {
   let typeSpecifier: Identifier | ArraySpecifier = { type: 'Identifier', name: consume(tokens).value }
 
-  if (tokens[0]?.value === '[') {
+  // WGSL-only
+  const generics = parseGenerics(tokens)
+  if (generics) {
+    typeSpecifier = {
+      type: 'ArraySpecifier',
+      typeSpecifier,
+      dimensions: generics,
+    }
+  } else if (tokens[0]?.value === '[') {
     const dimensions: (Literal | Identifier | null)[] = []
 
     while (tokens[0]?.value === '[') {
@@ -289,16 +399,16 @@ function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
     }
   }
 
-  return typeSpecifier
+  return { type: 'TypeSpecifier', typeSpecifier, layout }
 }
 
 function parseVariableDeclarator(
   tokens: Token[],
-  typeSpecifier: Identifier | ArraySpecifier,
+  typeSpecifier: TypeSpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
   layout: Record<string, string | boolean> | null,
 ): VariableDeclarator {
-  const id = parseTypeSpecifier(tokens) as Identifier
+  const id = parseTypeSpecifier(tokens, layout)
 
   let init: Expression | null = null
 
@@ -307,14 +417,14 @@ function parseVariableDeclarator(
     init = parseExpression(tokens)
   }
 
-  return { type: 'VariableDeclarator', id, qualifiers, typeSpecifier, layout, init }
+  return { type: 'VariableDeclarator', id, qualifiers, typeSpecifier, init }
 }
 
 function parseVariable(
   tokens: Token[],
-  typeSpecifier: Identifier | ArraySpecifier,
+  typeSpecifier: TypeSpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [],
-  layout: Record<string, string | boolean> | null = null,
+  layout: Record<string, string | boolean> | null,
 ): VariableDeclaration {
   const declarations: VariableDeclarator[] = []
 
@@ -337,25 +447,28 @@ function parseVariable(
 
 function parseBufferInterface(
   tokens: Token[],
-  typeSpecifier: Identifier | ArraySpecifier,
+  typeSpecifier: TypeSpecifier,
+  layout: Record<string, string | boolean> | null,
   qualifiers: LayoutQualifier[] = [],
-  layout: Record<string, string | boolean> | null = null,
 ): StructuredBufferDeclaration {
+  typeSpecifier.layout = layout // Identifiers are optional, so store on type name
+
   const members = parseBlock(tokens).body as VariableDeclaration[]
 
   let id: Identifier | null = null
   if (tokens[0]?.value !== ';') id = parseExpression(tokens) as Identifier
   consume(tokens, ';')
 
-  return { type: 'StructuredBufferDeclaration', id, qualifiers, typeSpecifier, layout, members }
+  return { type: 'StructuredBufferDeclaration', id, qualifiers, typeSpecifier, members }
 }
 
 function parseFunction(
   tokens: Token[],
-  typeSpecifier: ArraySpecifier | Identifier,
+  typeSpecifier: TypeSpecifier,
+  layout: Record<string, string | boolean> | null,
   qualifiers: PrecisionQualifier[] = [],
 ): FunctionDeclaration {
-  const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
+  const id = parseTypeSpecifier(tokens, layout)
 
   consume(tokens, '(')
 
@@ -365,10 +478,10 @@ function parseFunction(
     while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
       qualifiers.push(consume(tokens).value as ConstantQualifier | ParameterQualifier | PrecisionQualifier)
     }
-    const typeSpecifier = parseTypeSpecifier(tokens)
+    const typeSpecifier = parseTypeSpecifier(tokens, null)
 
-    let id: Identifier | null = null
-    if (tokens[0]?.type !== 'symbol') id = parseTypeSpecifier(tokens) as Identifier
+    let id: TypeSpecifier | null = null
+    if (tokens[0]?.type !== 'symbol') id = parseTypeSpecifier(tokens, null)
 
     params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
 
@@ -405,33 +518,7 @@ function parseIndeterminate(
   | StructuredBufferDeclaration
   | LayoutQualifierStatement
   | InvariantQualifierStatement {
-  let layout: Record<string, string | boolean> | null = null
-  if (tokens[0].value === 'layout') {
-    consume(tokens, 'layout')
-    consume(tokens, '(')
-
-    layout = {}
-
-    while (tokens[0] && (tokens[0] as Token).value !== ')') {
-      const expression = parseExpression(tokens)
-
-      if (
-        expression.type === 'AssignmentExpression' &&
-        expression.left.type === 'Identifier' &&
-        expression.right.type === 'Literal'
-      ) {
-        layout[expression.left.name] = expression.right.value
-      } else if (expression.type === 'Identifier') {
-        layout[expression.name] = true
-      } else {
-        throw new TypeError('Unexpected expression')
-      }
-
-      if (tokens[0] && (tokens[0] as Token).value !== ')') consume(tokens, ',')
-    }
-
-    consume(tokens, ')')
-  }
+  const layout = parseLayout(tokens)
 
   // Input qualifiers will suddenly terminate
   if (layout !== null && tokens[1]?.value === ';') {
@@ -449,12 +536,12 @@ function parseIndeterminate(
     qualifiers.push(consume(tokens).value)
   }
 
-  const typeSpecifier = parseTypeSpecifier(tokens)
+  const typeSpecifier = parseTypeSpecifier(tokens, null)
 
   if (tokens[0]?.value === '{') {
-    return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
+    return parseBufferInterface(tokens, typeSpecifier, layout, qualifiers as LayoutQualifier[])
   } else if (tokens[1]?.value === '(') {
-    return parseFunction(tokens, typeSpecifier, qualifiers as PrecisionQualifier[])
+    return parseFunction(tokens, typeSpecifier, layout, qualifiers as PrecisionQualifier[])
   } else {
     return parseVariable(
       tokens,
@@ -470,8 +557,39 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
+  const isWGSL = tokens[0].value === '@' || tokens[1]?.value === '<' || tokens[1]?.value === ':'
   while (tokens[0] && tokens[0].value !== '}') {
-    members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
+    if (isWGSL) {
+      const layout = parseAttributes(tokens)
+      const id = parseTypeSpecifier(tokens, layout)
+
+      let typeSpecifier: TypeSpecifier | null = null
+      if ((tokens[0]?.value as string) === ':') {
+        consume(tokens, ':')
+        typeSpecifier = parseTypeSpecifier(tokens, null)
+      }
+
+      // TODO: infer from return type or ptr usage
+      const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
+
+      members.push({
+        type: 'VariableDeclaration',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            id,
+            qualifiers,
+            typeSpecifier,
+            init: null,
+          },
+        ],
+      })
+
+      if (tokens[0]?.value === ',') consume(tokens, ',')
+      else if (tokens[0]?.value === ';') consume(tokens, ';')
+    } else {
+      members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
+    }
   }
   consume(tokens, '}')
 
@@ -487,7 +605,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
     )
   }
 
-  consume(tokens, ';')
+  if (!isWGSL || tokens[0]?.value === ';') consume(tokens, ';')
 
   return { type: 'StructDeclaration', id, members }
 }
@@ -558,9 +676,12 @@ function parseWhile(tokens: Token[]): WhileStatement {
 function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, 'for')
   consume(tokens, '(')
-  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
-  const init = parseVariable(tokens, typeSpecifier)
-  // consume(tokens, ';')
+  let init: VariableDeclaration
+  if (isWGSLVariable(tokens)) {
+    init = parseWGSLIndeterminate(tokens) as VariableDeclaration
+  } else {
+    init = parseIndeterminate(tokens) as VariableDeclaration
+  }
   const test = parseExpression(tokens)
   consume(tokens, ';')
   const update = parseExpression(tokens)
@@ -582,8 +703,10 @@ function parseDoWhile(tokens: Token[]): DoWhileStatement {
   return { type: 'DoWhileStatement', test, body }
 }
 
+// TODO: https://w3.org/TR/WGSL/#switch-statement
 function parseSwitch(tokens: Token[]): SwitchStatement {
   consume(tokens, 'switch')
+  const isWGSL = tokens[0]?.value !== '('
   const discriminant = parseExpression(tokens)
 
   const cases: SwitchCase[] = []
@@ -671,6 +794,111 @@ function isVariable(tokens: Token[]): boolean {
   return tokens[i]?.type !== 'symbol'
 }
 
+function parseWGSLIndeterminate(tokens: Token[]): FunctionDeclaration | VariableDeclaration {
+  const layout = parseAttributes(tokens)
+
+  if (tokens[0]?.value === 'fn') {
+    consume(tokens, 'fn')
+    const id = parseTypeSpecifier(tokens, layout)
+
+    consume(tokens, '(')
+    const params: FunctionParameter[] = []
+
+    while (tokens.length && (tokens[0]?.value as string) !== ')') {
+      const layout = parseAttributes(tokens)
+      const id = parseTypeSpecifier(tokens, layout)
+
+      consume(tokens, ':')
+
+      // TODO: infer qualifiers from return type or ptr usage
+      const qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[] = []
+      const typeSpecifier = parseTypeSpecifier(tokens, null)
+
+      params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
+
+      if ((tokens[0]?.value as string) === ',') consume(tokens, ',')
+    }
+
+    consume(tokens, ')')
+
+    // TODO: infer precision qualifier from type
+    let typeSpecifier: TypeSpecifier | null = null
+    if ((tokens[0]?.value as string) === '->') {
+      consume(tokens, '->')
+      typeSpecifier = parseTypeSpecifier(tokens, parseLayout(tokens))
+    }
+
+    const body = parseBlock(tokens)
+
+    return { type: 'FunctionDeclaration', id, qualifiers: [], params, typeSpecifier, body }
+  } else if (tokens[0]?.value === 'var' || tokens[0]?.value === 'let' || tokens[0]?.value === 'const') {
+    const kind = consume(tokens).value // var | let | const
+
+    const storageQualifiers = parseGenerics(tokens)
+
+    const id = parseTypeSpecifier(tokens, layout)
+
+    let typeSpecifier: TypeSpecifier | null = null
+    if ((tokens[0]?.value as string) === ':') {
+      consume(tokens, ':')
+      typeSpecifier = parseTypeSpecifier(tokens, null)
+    }
+
+    // TODO: infer from return type or ptr usage
+    const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [
+      kind as any,
+    ]
+    if (storageQualifiers !== null) {
+      for (const expression of storageQualifiers) {
+        if (expression.type === 'Identifier') {
+          qualifiers.push(expression.name as StorageQualifier)
+        } else if (expression.type === 'Literal') {
+          qualifiers.push(expression.value as StorageQualifier)
+        }
+      }
+    }
+
+    let init: Expression | null = null
+    if ((tokens[0]?.value as string) === '=' || kind === 'const') {
+      consume(tokens, '=')
+      init = parseExpression(tokens)
+    }
+
+    consume(tokens, ';')
+
+    return {
+      type: 'VariableDeclaration',
+      declarations: [
+        // TODO: are declaration lists allowed?
+        {
+          type: 'VariableDeclarator',
+          id,
+          qualifiers,
+          typeSpecifier,
+          init,
+        },
+      ],
+    }
+  }
+
+  // unreachable
+  return null!
+}
+
+function isWGSLVariable(tokens: Token[]) {
+  const token = tokens[0]
+
+  // Attribute; indeterminate
+  if (token.value === '@') return true
+  // Function declaration
+  if (token.value === 'fn') return true
+  // Variable declaration
+  if (token.value === 'var' || token.value === 'let' || (token.value === 'const' && tokens[1]?.type === 'identifier'))
+    return true
+
+  return false
+}
+
 function parseStatements(tokens: Token[]): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
@@ -696,6 +924,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     else if (token.value === 'do') statement = parseDoWhile(tokens)
     else if (token.value === 'switch') statement = parseSwitch(tokens)
     else if (token.value === 'precision') statement = parsePrecision(tokens)
+    else if (isWGSLVariable(tokens)) statement = parseWGSLIndeterminate(tokens)
     else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
     else {
       const expression = parseExpression(tokens)
@@ -721,7 +950,7 @@ const NEWLINE_REGEX = /\\\s+/gm
 const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
 
 /**
- * Parses a string of GLSL (WGSL WIP) code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+ * Parses a string of GLSL or WGSL code into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
  */
 export function parse(code: string): Program {
   // Fold newlines

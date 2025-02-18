@@ -57,6 +57,15 @@ export interface ArraySpecifier extends Node {
 }
 
 /**
+ * A type specifier and optional shader layout.
+ */
+export interface TypeSpecifier extends Node {
+  type: 'TypeSpecifier'
+  typeSpecifier: Identifier | ArraySpecifier
+  layout: Record<string, string | boolean> | null
+}
+
+/**
  * An array initialization expression.
  */
 export interface ArrayExpression extends Node {
@@ -287,9 +296,9 @@ export type PrecisionQualifier = 'highp' | 'mediump' | 'lowp'
  */
 export interface FunctionDeclaration extends Node {
   type: 'FunctionDeclaration'
-  id: Identifier
+  id: TypeSpecifier
   qualifiers: PrecisionQualifier[]
-  typeSpecifier: Identifier | ArraySpecifier
+  typeSpecifier: TypeSpecifier | null
   params: FunctionParameter[]
   body: BlockStatement | null
 }
@@ -299,9 +308,9 @@ export interface FunctionDeclaration extends Node {
  */
 export interface FunctionParameter extends Node {
   type: 'FunctionParameter'
-  id: Identifier | null
+  id: TypeSpecifier | null
   qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
+  typeSpecifier: TypeSpecifier
 }
 
 /**
@@ -317,10 +326,9 @@ export interface VariableDeclaration extends Node {
  */
 export interface VariableDeclarator extends Node {
   type: 'VariableDeclarator'
-  id: Identifier
+  id: TypeSpecifier
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
-  layout: Record<string, string | boolean> | null
+  typeSpecifier: TypeSpecifier | null
   init: Expression | null
 }
 
@@ -331,8 +339,7 @@ export interface StructuredBufferDeclaration extends Node {
   type: 'StructuredBufferDeclaration'
   id: Identifier | null
   qualifiers: (InterfaceStorageQualifier | MemoryQualifier | LayoutQualifier)[]
-  typeSpecifier: Identifier | ArraySpecifier
-  layout: Record<string, string | boolean> | null
+  typeSpecifier: TypeSpecifier
   members: VariableDeclaration[]
 }
 
@@ -383,7 +390,9 @@ export interface LayoutQualifierStatement extends Node {
 export type Expression =
   | Literal
   | Identifier
+  | ArraySpecifier
   | ArrayExpression
+  | TypeSpecifier
   | UnaryExpression
   | UpdateExpression
   | BinaryExpression

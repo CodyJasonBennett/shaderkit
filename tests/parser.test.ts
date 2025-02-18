@@ -301,16 +301,23 @@ describe('parser', () => {
         declarations: [
           {
             id: {
-              name: 'foo',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'foo',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             init: null,
-            layout: null,
             qualifiers: ['uniform'],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'Type',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'Type',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
         ],
@@ -323,8 +330,12 @@ describe('parser', () => {
         declarations: [
           {
             id: {
-              name: 'foo',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'foo',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             init: {
               arguments: [
@@ -351,12 +362,15 @@ describe('parser', () => {
               },
               type: 'CallExpression',
             },
-            layout: null,
             qualifiers: ['const'],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'vec4',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'vec4',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
         ],
@@ -371,20 +385,27 @@ describe('parser', () => {
         declarations: [
           {
             id: {
-              name: 'test',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'test',
+                type: 'Identifier',
+              },
+              layout: {
+                column_major: true,
+                component: '1',
+                location: '0',
+              },
             },
             init: null,
-            layout: {
-              column_major: true,
-              component: '1',
-              location: '0',
-            },
             qualifiers: ['flat', 'in'],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'mat4',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'mat4',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
         ],
@@ -397,25 +418,36 @@ describe('parser', () => {
         declarations: [
           {
             id: {
-              name: 'foo',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'foo',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             init: {
               type: 'Literal',
               value: '0.0',
             },
-            layout: null,
             qualifiers: [],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'float',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'float',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
           {
             id: {
-              name: 'bar',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'bar',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             init: {
               left: {
@@ -429,35 +461,45 @@ describe('parser', () => {
               },
               type: 'BinaryExpression',
             },
-            layout: null,
             qualifiers: [],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'float',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'float',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
           {
             id: {
-              type: 'ArraySpecifier',
+              type: 'TypeSpecifier',
               typeSpecifier: {
-                type: 'Identifier',
-                name: 'baz',
-              },
-              dimensions: [
-                {
-                  type: 'Literal',
-                  value: '3',
+                type: 'ArraySpecifier',
+                typeSpecifier: {
+                  type: 'Identifier',
+                  name: 'baz',
                 },
-              ],
-            } satisfies ArraySpecifier as unknown as Identifier, // TODO: revisit VariableDeclarator AST
+                dimensions: [
+                  {
+                    type: 'Literal',
+                    value: '3',
+                  },
+                ],
+              },
+              layout: null,
+            },
             init: null,
-            layout: null,
             qualifiers: [],
             type: 'VariableDeclarator',
             typeSpecifier: {
-              name: 'float',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'float',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
         ],
@@ -478,19 +520,26 @@ describe('parser', () => {
             declarations: [
               {
                 id: {
-                  name: 'bar',
-                  type: 'Identifier',
+                  type: 'TypeSpecifier',
+                  typeSpecifier: {
+                    name: 'bar',
+                    type: 'Identifier',
+                  },
+                  layout: null,
                 },
                 init: {
                   type: 'Literal',
                   value: 'true',
                 },
-                layout: null,
                 qualifiers: ['const'],
                 type: 'VariableDeclarator',
                 typeSpecifier: {
-                  name: 'bool',
-                  type: 'Identifier',
+                  type: 'TypeSpecifier',
+                  typeSpecifier: {
+                    name: 'bool',
+                    type: 'Identifier',
+                  },
+                  layout: null,
                 },
               },
             ],
@@ -515,15 +564,22 @@ describe('parser', () => {
         declarations: [
           {
             type: 'VariableDeclarator',
-            layout: null,
             qualifiers: [],
             id: {
-              type: 'Identifier',
-              name: 'b',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                type: 'Identifier',
+                name: 'b',
+              },
+              layout: null,
             },
             typeSpecifier: {
-              type: 'Identifier',
-              name: 'a',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                type: 'Identifier',
+                name: 'a',
+              },
+              layout: null,
             },
             init: null,
           },
@@ -537,15 +593,23 @@ describe('parser', () => {
       {
         body: null,
         id: {
-          name: 'main',
-          type: 'Identifier',
+          type: 'TypeSpecifier',
+          typeSpecifier: {
+            name: 'main',
+            type: 'Identifier',
+          },
+          layout: null,
         },
         params: [],
         qualifiers: [],
         type: 'FunctionDeclaration',
         typeSpecifier: {
-          name: 'void',
-          type: 'Identifier',
+          type: 'TypeSpecifier',
+          typeSpecifier: {
+            name: 'void',
+            type: 'Identifier',
+          },
+          layout: null,
         },
       },
     ])
@@ -557,40 +621,64 @@ describe('parser', () => {
           type: 'BlockStatement',
         },
         id: {
-          name: 'main',
-          type: 'Identifier',
+          type: 'TypeSpecifier',
+          typeSpecifier: {
+            name: 'main',
+            type: 'Identifier',
+          },
+          layout: null,
         },
         params: [
           {
             id: {
-              name: 'enabled',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'enabled',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             qualifiers: ['const'],
             type: 'FunctionParameter',
             typeSpecifier: {
-              name: 'bool',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'bool',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
           {
             id: {
-              name: 'disabled',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'disabled',
+                type: 'Identifier',
+              },
+              layout: null,
             },
             qualifiers: [],
             type: 'FunctionParameter',
             typeSpecifier: {
-              name: 'bool',
-              type: 'Identifier',
+              type: 'TypeSpecifier',
+              typeSpecifier: {
+                name: 'bool',
+                type: 'Identifier',
+              },
+              layout: null,
             },
           },
         ],
         qualifiers: ['highp'],
         type: 'FunctionDeclaration',
         typeSpecifier: {
-          name: 'vec4',
-          type: 'Identifier',
+          type: 'TypeSpecifier',
+          typeSpecifier: {
+            name: 'vec4',
+            type: 'Identifier',
+          },
+          layout: null,
         },
       },
     ])
@@ -696,19 +784,26 @@ describe('parser', () => {
           declarations: [
             {
               id: {
-                name: 'i',
-                type: 'Identifier',
+                type: 'TypeSpecifier',
+                typeSpecifier: {
+                  name: 'i',
+                  type: 'Identifier',
+                },
+                layout: null,
               },
               init: {
                 type: 'Literal',
                 value: '0',
               },
-              layout: null,
               qualifiers: [],
               type: 'VariableDeclarator',
               typeSpecifier: {
-                name: 'int',
-                type: 'Identifier',
+                type: 'TypeSpecifier',
+                typeSpecifier: {
+                  name: 'int',
+                  type: 'Identifier',
+                },
+                layout: null,
               },
             },
           ],

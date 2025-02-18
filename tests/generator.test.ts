@@ -248,6 +248,68 @@ const compute = /* glsl */ `#version 310 es
   }
 `
 
+// TODO: switch statement, pointers, loop/continuing, if statement optional parenthesis
+// fn foo () -> @location(0) vec4<f32>
+// @compute @workgroup_size(16, 1, 1)
+// var bigger_stride: array<vec3<f32>, 8>;
+// block statements
+// override expressions
+const wgsl = /* wgsl */ `
+  // single line
+
+  /*
+    multiline
+  */
+
+  struct LightData {
+    intensity: f32,
+    position: vec3<f32>,
+    one: f32,
+    two: f32,
+  };
+
+  struct Uniforms {
+    projectionMatrix: mat4x4<f32>,
+    modelViewMatrix: mat4x4<f32>,
+    normalMatrix: mat3x3<f32>,
+    one: f32,
+    two: f32,
+    lights: array<LightData, 4>,
+  };
+  @binding(0) @group(0) var<uniform> uniforms: Uniforms;
+
+  @binding(1) @group(0) var sample: sampler;
+  @binding(2) @group(0) var map: texture_2d<f32>;
+
+  struct VertexIn {
+    @location(0) position: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+  };
+
+  struct VertexOut {
+    @builtin(position) position: vec4<f32>,
+    @location(0) uv: vec2<f32>,
+  };
+
+  @vertex
+  fn vert_main(input: VertexIn) -> VertexOut {
+    var output: VertexOut;
+    output.position = input.position;
+    output.uv = input.uv;
+    return output;
+  }
+
+  @fragment
+  fn frag_main(uv: vec2<f32>) -> vec4<f32> {
+    var lightNormal = vec4<f32>(uniforms.lights[0].position * uniforms.lights[0].intensity, 0.0);
+    var clipPosition = uniforms.projectionMatrix * uniforms.modelViewMatrix * vec4<f32>(0.0, 0.0, 0.0, 1.0);
+
+    var color = textureSample(map, sample, uv);
+    color.a += 1.0;
+    return color;
+  }
+`
+
 describe('generator', () => {
   it('can handle GLSL', () => {
     const program = parse(glsl)
@@ -259,5 +321,11 @@ describe('generator', () => {
     const program = parse(compute)
     const output = generate(program, { target: 'GLSL' })
     expect(output).toBe(minify(compute))
+  })
+
+  it('can handle WGSL', () => {
+    const program = parse(wgsl)
+    const output = generate(program, { target: 'WGSL' })
+    expect(output).toBe(minify(wgsl))
   })
 })
