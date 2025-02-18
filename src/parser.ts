@@ -563,8 +563,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
       const layout = parseAttributes(tokens)
       const id = parseTypeSpecifier(tokens, layout)
 
-      // TODO: should this be nullable even if invalid in GLSL?
-      let typeSpecifier: TypeSpecifier = null!
+      let typeSpecifier: TypeSpecifier | null = null
       if ((tokens[0]?.value as string) === ':') {
         consume(tokens, ':')
         typeSpecifier = parseTypeSpecifier(tokens, null)
@@ -587,6 +586,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
       })
 
       if (tokens[0]?.value === ',') consume(tokens, ',')
+      else if (tokens[0]?.value === ';') consume(tokens, ';')
     } else {
       members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
     }
@@ -605,7 +605,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
     )
   }
 
-  consume(tokens, ';')
+  if (!isWGSL || tokens[0]?.value === ';') consume(tokens, ';')
 
   return { type: 'StructDeclaration', id, members }
 }
@@ -676,11 +676,12 @@ function parseWhile(tokens: Token[]): WhileStatement {
 function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, 'for')
   consume(tokens, '(')
-  const init: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    declarations: [parseVariableDeclarator(tokens, parseTypeSpecifier(tokens, null), [], null)],
+  let init: VariableDeclaration
+  if (isWGSLVariable(tokens)) {
+    init = parseWGSLIndeterminate(tokens) as VariableDeclaration
+  } else {
+    init = parseIndeterminate(tokens) as VariableDeclaration
   }
-  consume(tokens, ';')
   const test = parseExpression(tokens)
   consume(tokens, ';')
   const update = parseExpression(tokens)
@@ -702,8 +703,10 @@ function parseDoWhile(tokens: Token[]): DoWhileStatement {
   return { type: 'DoWhileStatement', test, body }
 }
 
+// TODO: https://w3.org/TR/WGSL/#switch-statement
 function parseSwitch(tokens: Token[]): SwitchStatement {
   consume(tokens, 'switch')
+  const isWGSL = tokens[0]?.value !== '('
   const discriminant = parseExpression(tokens)
 
   const cases: SwitchCase[] = []
@@ -819,20 +822,23 @@ function parseWGSLIndeterminate(tokens: Token[]): FunctionDeclaration | Variable
     consume(tokens, ')')
 
     // TODO: infer precision qualifier from type
-    consume(tokens, '->')
-    const typeSpecifier = parseTypeSpecifier(tokens, parseLayout(tokens))
+    let typeSpecifier: TypeSpecifier | null = null
+    if ((tokens[0]?.value as string) === '->') {
+      consume(tokens, '->')
+      typeSpecifier = parseTypeSpecifier(tokens, parseLayout(tokens))
+    }
+
     const body = parseBlock(tokens)
 
     return { type: 'FunctionDeclaration', id, qualifiers: [], params, typeSpecifier, body }
-  } else if (tokens[0]?.value === 'var' || tokens[0]?.value === 'const') {
-    const kind = consume(tokens).value // var | const
+  } else if (tokens[0]?.value === 'var' || tokens[0]?.value === 'let' || tokens[0]?.value === 'const') {
+    const kind = consume(tokens).value // var | let | const
 
     const storageQualifiers = parseGenerics(tokens)
 
     const id = parseTypeSpecifier(tokens, layout)
 
-    // TODO: should this be nullable even if invalid in GLSL?
-    let typeSpecifier: TypeSpecifier = null!
+    let typeSpecifier: TypeSpecifier | null = null
     if ((tokens[0]?.value as string) === ':') {
       consume(tokens, ':')
       typeSpecifier = parseTypeSpecifier(tokens, null)
@@ -887,7 +893,8 @@ function isWGSLVariable(tokens: Token[]) {
   // Function declaration
   if (token.value === 'fn') return true
   // Variable declaration
-  if ((token.value === 'var' || token.value === 'const') && tokens[1]?.type === 'identifier') return true
+  if (token.value === 'var' || token.value === 'let' || (token.value === 'const' && tokens[1]?.type === 'identifier'))
+    return true
 
   return false
 }

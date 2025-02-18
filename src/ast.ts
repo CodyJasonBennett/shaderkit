@@ -298,7 +298,7 @@ export interface FunctionDeclaration extends Node {
   type: 'FunctionDeclaration'
   id: TypeSpecifier
   qualifiers: PrecisionQualifier[]
-  typeSpecifier: TypeSpecifier
+  typeSpecifier: TypeSpecifier | null
   params: FunctionParameter[]
   body: BlockStatement | null
 }
@@ -328,7 +328,7 @@ export interface VariableDeclarator extends Node {
   type: 'VariableDeclarator'
   id: TypeSpecifier
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[]
-  typeSpecifier: TypeSpecifier
+  typeSpecifier: TypeSpecifier | null
   init: Expression | null
 }
 

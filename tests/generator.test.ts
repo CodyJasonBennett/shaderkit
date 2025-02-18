@@ -248,6 +248,12 @@ const compute = /* glsl */ `#version 310 es
   }
 `
 
+// TODO: switch statement, pointers, loop/continuing, if statement optional parenthesis
+// fn foo () -> @location(0) vec4<f32>
+// @compute @workgroup_size(16, 1, 1)
+// var bigger_stride: array<vec3<f32>, 8>;
+// block statements
+// override expressions
 const wgsl = /* wgsl */ `
   // single line
 

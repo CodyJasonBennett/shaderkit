@@ -72,7 +72,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       visit(node.body, visitors, ancestors)
       break
     case 'FunctionDeclaration':
-      visit(node.typeSpecifier, visitors, ancestors)
+      if (node.typeSpecifier) visit(node.typeSpecifier, visitors, ancestors)
       visit(node.id, visitors, ancestors)
       if (node.body) visit(node.body, visitors, ancestors)
       break
@@ -84,7 +84,7 @@ export function visit(node: AST, visitors: Visitors, ancestors: AST[] = []): voi
       for (const declaration of node.declarations) visit(declaration, visitors, ancestors)
       break
     case 'VariableDeclarator':
-      visit(node.typeSpecifier, visitors, ancestors)
+      if (node.typeSpecifier) visit(node.typeSpecifier, visitors, ancestors)
       visit(node.id, visitors, ancestors)
       if (node.init) visit(node.init, visitors, ancestors)
       break

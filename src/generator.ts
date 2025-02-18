@@ -1,4 +1,4 @@
-import { type AST, type Program } from './ast.js'
+import { Identifier, type AST, type Program } from './ast.js'
 
 export interface GenerateOptions {
   target: 'GLSL' | 'WGSL'
@@ -19,6 +19,7 @@ export function generate(program: Program, options: GenerateOptions): string {
       return Object.entries(layout)
         .map(([k, v]) => (v === true ? `@${k} ` : `@${k}(${v})`))
         .join('')
+        .replaceAll(' @', '@')
     }
   }
 
@@ -80,7 +81,7 @@ export function generate(program: Program, options: GenerateOptions): string {
       case 'DoWhileStatement':
         return `do ${format(node.body)}while(${format(node.test)})`
       case 'ForStatement':
-        return `for(${format(node.init)};${format(node.test)};${format(node.update)})${format(node.body)}`
+        return `for(${format(node.init)}${format(node.test)};${format(node.update)})${format(node.body)}`
       case 'FunctionDeclaration': {
         if (options.target === 'GLSL') {
           const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : '' // precision
@@ -91,7 +92,8 @@ export function generate(program: Program, options: GenerateOptions): string {
         } else {
           const attributes = node.id.layout ? formatLayout(node.id.layout) : ''
           const params = node.params.map(format).join(',')
-          return `${attributes}fn ${format(node.id)}(${params})->${format(node.typeSpecifier)}${format(node.body)}`
+          const typeSpecifier = node.typeSpecifier ? `->${format(node.typeSpecifier)}` : ''
+          return `${attributes}fn ${format(node.id)}(${params})${typeSpecifier}${format(node.body)}`
         }
       }
       case 'FunctionParameter': {
@@ -117,19 +119,21 @@ export function generate(program: Program, options: GenerateOptions): string {
 
           let kind = ''
           if (head.qualifiers.length) {
-            kind = head.qualifiers[1] ? `${head.qualifiers[0]}<${head.qualifiers[1]}>` : `${head.qualifiers[0]} `
+            kind = head.qualifiers[0]
+            const params = head.qualifiers.slice(1)
+            kind = params.length ? `${kind}<${params.join(',')}>` : `${kind} `
           }
 
           return `${attributes}${kind}${node.declarations.map(format).join(',')};` // TODO
         }
       }
       case 'VariableDeclarator': {
+        const init = node.init ? `=${format(node.init)}` : ''
         if (options.target === 'GLSL') {
-          const init = node.init ? `=${format(node.init)}` : ''
           return `${format(node.id)}${init}`
         } else {
-          const init = node.init ? `=${format(node.init)}` : `:${format(node.typeSpecifier)}`
-          return `${format(node.id)}${init}`
+          const typeSpecifier = node.typeSpecifier ? `:${format(node.typeSpecifier)}` : ''
+          return `${format(node.id)}${typeSpecifier}${init}`
         }
       }
       case 'StructuredBufferDeclaration': {
@@ -143,7 +147,9 @@ export function generate(program: Program, options: GenerateOptions): string {
         if (options.target === 'GLSL') {
           return `struct ${format(node.id)}{${node.members.map(format).join('')}};`
         } else {
-          return `struct ${format(node.id)}{${node.members.map(format).join('').replaceAll(';', ',')}};`
+          return `struct ${format(node.id)}{${node.members.map(format).join('')}}`
+            .replaceAll(';', ',')
+            .replace(',}', '}')
         }
       case 'ArrayExpression':
         if (options.target === 'GLSL') {
