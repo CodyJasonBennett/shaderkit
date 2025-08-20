@@ -260,4 +260,18 @@ describe('generator', () => {
     const output = generate(program, { target: 'GLSL' })
     expect(output).toBe(minify(compute))
   })
+
+  it('can generate attribute variable declarations', () => {
+    const shader = 'attribute vec4 position;'
+    const program = parse(shader)
+    const output = generate(program, { target: 'GLSL' })
+    expect(output).toBe('attribute vec4 position;')
+  })
+
+  it('can generate varying variable declarations', () => {
+    const shader = 'varying vec3 normal;'
+    const program = parse(shader)
+    const output = generate(program, { target: 'GLSL' })
+    expect(output).toBe('varying vec3 normal;')
+  })
 })
