@@ -274,7 +274,7 @@ export interface ForStatement extends Node {
 
 export type ConstantQualifier = 'const'
 export type ParameterQualifier = 'in' | 'out' | 'inout'
-export type StorageQualifier = 'uniform' | 'in' | 'out'
+export type StorageQualifier = 'uniform' | 'in' | 'out' | 'attribute' | 'varying'
 export type InterfaceStorageQualifier = 'uniform' | 'buffer'
 export type MemoryQualifier = 'coherent' | 'volatile' | 'restrict' | 'readonly' | 'writeonly'
 
