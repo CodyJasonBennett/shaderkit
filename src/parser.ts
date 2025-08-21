@@ -61,6 +61,7 @@ enum Precedence {
   MULTIPLY,
   UNARY_PREFIX,
   UNARY_POSTFIX,
+  CALL,
   MEMBER,
 }
 
@@ -76,7 +77,7 @@ const PREFIX_OPERATOR_PRECEDENCE: Record<string, Precedence> = {
 const POSTFIX_OPERATOR_PRECEDENCE: Record<string, Precedence> = {
   '--': Precedence.UNARY_POSTFIX,
   '++': Precedence.UNARY_POSTFIX,
-  '(': Precedence.LOWEST,
+  '(': Precedence.CALL,
   '[': Precedence.MEMBER,
   '.': Precedence.MEMBER,
 }
