@@ -120,7 +120,7 @@ const INFIX_OPERATOR_PRECEDENCE_RIGHT: Record<string, Precedence> = {
 }
 
 const QUALIFIER_REGEX =
-  /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp|coherent|volatile|restrict|readonly|writeonly)$/
+  /^(const|buffer|uniform|in|out|inout|centroid|flat|smooth|invariant|lowp|mediump|highp|coherent|volatile|restrict|readonly|writeonly|attribute|varying)$/
 
 const SCOPE_DELTAS: Record<string, number> = {
   // Open

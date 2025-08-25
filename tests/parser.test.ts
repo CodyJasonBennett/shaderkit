@@ -318,6 +318,50 @@ describe('parser', () => {
       },
     ])
 
+    expect(parse('attribute vec4 position;').body).toStrictEqual<[VariableDeclaration]>([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'position',
+              type: 'Identifier',
+            },
+            init: null,
+            layout: null,
+            qualifiers: ['attribute'],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'vec4',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+
+    expect(parse('varying vec3 normal;').body).toStrictEqual<[VariableDeclaration]>([
+      {
+        declarations: [
+          {
+            id: {
+              name: 'normal',
+              type: 'Identifier',
+            },
+            init: null,
+            layout: null,
+            qualifiers: ['varying'],
+            type: 'VariableDeclarator',
+            typeSpecifier: {
+              name: 'vec3',
+              type: 'Identifier',
+            },
+          },
+        ],
+        type: 'VariableDeclaration',
+      },
+    ])
+
     expect(parse('const vec4 foo = vec4(0, 0, 0, 0);').body).toStrictEqual<[VariableDeclaration]>([
       {
         declarations: [
