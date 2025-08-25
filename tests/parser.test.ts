@@ -466,6 +466,49 @@ describe('parser', () => {
     ])
   })
 
+  it('parses variable assignments', () => {
+    expect(parse('foo = vec4(0, 0, 0, 0);').body).toMatchInlineSnapshot(`
+      [
+        {
+          "expression": {
+            "left": {
+              "name": "foo",
+              "type": "Identifier",
+            },
+            "operator": "=",
+            "right": {
+              "arguments": [
+                {
+                  "type": "Literal",
+                  "value": "0",
+                },
+                {
+                  "type": "Literal",
+                  "value": "0",
+                },
+                {
+                  "type": "Literal",
+                  "value": "0",
+                },
+                {
+                  "type": "Literal",
+                  "value": "0",
+                },
+              ],
+              "callee": {
+                "name": "vec4",
+                "type": "Identifier",
+              },
+              "type": "CallExpression",
+            },
+            "type": "AssignmentExpression",
+          },
+          "type": "ExpressionStatement",
+        },
+      ]
+    `)
+  })
+
   it('parses struct declarations', () => {
     expect(parse('struct foo { const bool bar = true; };').body).toStrictEqual<[StructDeclaration]>([
       {
