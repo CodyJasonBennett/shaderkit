@@ -106,7 +106,7 @@ function format(node: AST | null): string {
         ? `${format(node.object)}[${format(node.property)}]`
         : `${format(node.object)}.${format(node.property)}`
     case 'ConditionalExpression':
-      return `${format(node.test)}?${format(node.consequent)}:${format(node.alternate)}`
+      return `${format(node.test)}?${format(node.alternate)}:${format(node.consequent)}`
     case 'CallExpression':
       return `${format(node.callee)}(${node.arguments.map(format).join(',')})`
     case 'Program':
