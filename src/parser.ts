@@ -216,7 +216,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
           lhs = { type: 'MemberExpression', object: lhs, property: rhs!, computed: true }
         }
       } else if (token.value === '.') {
-        const rhs = parseExpression(tokens, 0)
+        const rhs = parseExpression(tokens, leftBindingPower)
         lhs = { type: 'MemberExpression', object: lhs, property: rhs, computed: false }
       } else if (token.value === '--' || token.value === '++') {
         lhs = { type: 'UpdateExpression', operator: token.value as UpdateOperator, prefix: false, argument: lhs }

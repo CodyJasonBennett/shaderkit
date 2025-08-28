@@ -236,10 +236,14 @@ describe('parser', () => {
       {
         type: 'ExpressionStatement',
         expression: {
-          type: 'MemberExpression',
-          object: { type: 'Identifier', name: 'array' },
-          property: { type: 'CallExpression', callee: { type: 'Identifier', name: 'length' }, arguments: [] },
-          computed: false,
+          type: 'CallExpression',
+          callee: {
+            type: 'MemberExpression',
+            object: { type: 'Identifier', name: 'array' },
+            property: { type: 'Identifier', name: 'length' },
+            computed: false,
+          },
+          arguments: [],
         },
       },
     ])
