@@ -70,6 +70,7 @@ colRel = vec3(float(rel1), float(rel2), float(rel3));
 colLog = vec3(float(log1), float(log2), float(log3));
 colTern = vec3((tern1 + tern2) / 20.0, 0.5, 0.0);
 colBits = vec3(float(bit1 & 1), float(bit2 & 1), float(bit3 & 1));
+member1 = vec.x + 1 + 2;
 `.trim()
 
 const grouped = /* glsl */ `
@@ -95,6 +96,7 @@ colRel = vec3(float(rel1), float(rel2), float(rel3));
 colLog = vec3(float(log1), float(log2), float(log3));
 colTern = vec3((tern1 + tern2) / 20.0, 0.5, 0.0);
 colBits = vec3(float(bit1 & 1), float(bit2 & 1), float(bit3 & 1));
+member1 = ((vec.x + 1) + 2);
 `.trim()
 
 describe('parser', () => {
