@@ -1001,5 +1001,149 @@ describe('parser', () => {
         value: null,
       },
     ])
+
+    expect(parse('#define union3(a, b, c) min(a, min(b, c))\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'define',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            arguments: [
+              {
+                name: 'a',
+                type: 'Identifier',
+              },
+              {
+                name: 'b',
+                type: 'Identifier',
+              },
+              {
+                name: 'c',
+                type: 'Identifier',
+              },
+            ],
+            callee: {
+              name: 'union3',
+              type: 'Identifier',
+            },
+            type: 'CallExpression',
+          },
+          {
+            arguments: [
+              {
+                name: 'a',
+                type: 'Identifier',
+              },
+              {
+                arguments: [
+                  {
+                    name: 'b',
+                    type: 'Identifier',
+                  },
+                  {
+                    name: 'c',
+                    type: 'Identifier',
+                  },
+                ],
+                callee: {
+                  name: 'min',
+                  type: 'Identifier',
+                },
+                type: 'CallExpression',
+              },
+            ],
+            callee: {
+              name: 'min',
+              type: 'Identifier',
+            },
+            type: 'CallExpression',
+          },
+        ],
+      },
+    ])
+
+    expect(parse('#define whiteComplement( a ) ( 1.0 - saturate( a ) )\n').body).toStrictEqual<[PreprocessorStatement]>(
+      [
+        {
+          name: 'define',
+          type: 'PreprocessorStatement',
+          value: [
+            {
+              arguments: [
+                {
+                  name: 'a',
+                  type: 'Identifier',
+                },
+              ],
+              callee: {
+                name: 'whiteComplement',
+                type: 'Identifier',
+              },
+              type: 'CallExpression',
+            },
+            {
+              left: {
+                type: 'Literal',
+                value: '1.0',
+              },
+              operator: '-',
+              right: {
+                arguments: [
+                  {
+                    name: 'a',
+                    type: 'Identifier',
+                  },
+                ],
+                callee: {
+                  name: 'saturate',
+                  type: 'Identifier',
+                },
+                type: 'CallExpression',
+              },
+              type: 'BinaryExpression',
+            },
+          ],
+        },
+      ],
+    )
+
+    expect(parse('#if defined( USE_UV ) || defined( USE_ANISOTROPY )\n').body).toStrictEqual<[PreprocessorStatement]>([
+      {
+        name: 'if',
+        type: 'PreprocessorStatement',
+        value: [
+          {
+            left: {
+              arguments: [
+                {
+                  name: 'USE_UV',
+                  type: 'Identifier',
+                },
+              ],
+              callee: {
+                name: 'defined',
+                type: 'Identifier',
+              },
+              type: 'CallExpression',
+            },
+            operator: '||',
+            right: {
+              arguments: [
+                {
+                  name: 'USE_ANISOTROPY',
+                  type: 'Identifier',
+                },
+              ],
+              callee: {
+                name: 'defined',
+                type: 'Identifier',
+              },
+              type: 'CallExpression',
+            },
+            type: 'LogicalExpression',
+          },
+        ],
+      },
+    ])
   })
 })

@@ -626,7 +626,24 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
     name = consume(tokens).value
 
     if (name === 'define') {
-      const left = parseExpression(tokens)
+      const lhs = consume(tokens)
+      let left: Expression = { type: 'Identifier', name: lhs.value }
+      const next = tokens[0]
+
+      // Macro definition: #define foo(a, b, c) ...
+      if (next && next.value === '(') {
+        consume(tokens)
+
+        const args: Expression[] = []
+        while (tokens[0]?.value !== ')') {
+          args.push(parseExpression(tokens, 0))
+          if (tokens[0]?.value !== ')') consume(tokens, ',')
+        }
+        consume(tokens, ')')
+
+        left = { type: 'CallExpression', callee: left, arguments: args }
+      }
+
       if (tokens[0]?.value === '\\') value = [left]
       else value = [left, parseExpression(tokens)]
     } else if (name === 'extension') {
