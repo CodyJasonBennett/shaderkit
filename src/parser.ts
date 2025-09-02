@@ -530,16 +530,24 @@ function parseIf(tokens: Token[]): IfStatement {
   const test = parseExpression(tokens)
   consume(tokens, ')')
 
-  const consequent = parseBlock(tokens)
+  let consequent: Statement
+  if (tokens[0].value === '{') {
+    consequent = parseBlock(tokens)
+  } else {
+    consequent = parseStatement(tokens)
+  }
 
   let alternate = null
-  if (tokens[0] && tokens[0].value === 'else') {
+  const elseToken = tokens[0]
+  if (elseToken && elseToken.value === 'else') {
     consume(tokens, 'else')
 
     if (tokens[0] && (tokens[0] as Token).value === 'if') {
       alternate = parseIf(tokens)
-    } else {
+    } else if (tokens[0].value === '{') {
       alternate = parseBlock(tokens)
+    } else {
+      alternate = parseStatement(tokens)
     }
   }
 
@@ -672,6 +680,32 @@ function isVariable(tokens: Token[]): boolean {
   return tokens[i]?.type !== 'symbol'
 }
 
+function parseStatement(tokens: Token[]): Statement {
+  const token = tokens[0]
+  let statement: Statement | null = null
+
+  if (token.value === '#') statement = parsePreprocessor(tokens)
+  else if (token.value === 'struct') statement = parseStruct(tokens)
+  else if (token.value === 'continue') statement = parseContinue(tokens)
+  else if (token.value === 'break') statement = parseBreak(tokens)
+  else if (token.value === 'discard') statement = parseDiscard(tokens)
+  else if (token.value === 'return') statement = parseReturn(tokens)
+  else if (token.value === 'if') statement = parseIf(tokens)
+  else if (token.value === 'while') statement = parseWhile(tokens)
+  else if (token.value === 'for') statement = parseFor(tokens)
+  else if (token.value === 'do') statement = parseDoWhile(tokens)
+  else if (token.value === 'switch') statement = parseSwitch(tokens)
+  else if (token.value === 'precision') statement = parsePrecision(tokens)
+  else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
+  else {
+    const expression = parseExpression(tokens)
+    consume(tokens, ';')
+    statement = { type: 'ExpressionStatement', expression }
+  }
+
+  return statement
+}
+
 function parseStatements(tokens: Token[]): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
@@ -682,29 +716,8 @@ function parseStatements(tokens: Token[]): Statement[] {
     scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0) break
 
-    let statement: Statement | null = null
-
     if (token.value === 'case' || token.value === 'default') break
-    else if (token.value === '#') statement = parsePreprocessor(tokens)
-    else if (token.value === 'struct') statement = parseStruct(tokens)
-    else if (token.value === 'continue') statement = parseContinue(tokens)
-    else if (token.value === 'break') statement = parseBreak(tokens)
-    else if (token.value === 'discard') statement = parseDiscard(tokens)
-    else if (token.value === 'return') statement = parseReturn(tokens)
-    else if (token.value === 'if') statement = parseIf(tokens)
-    else if (token.value === 'while') statement = parseWhile(tokens)
-    else if (token.value === 'for') statement = parseFor(tokens)
-    else if (token.value === 'do') statement = parseDoWhile(tokens)
-    else if (token.value === 'switch') statement = parseSwitch(tokens)
-    else if (token.value === 'precision') statement = parsePrecision(tokens)
-    else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
-    else {
-      const expression = parseExpression(tokens)
-      consume(tokens, ';')
-      statement = { type: 'ExpressionStatement', expression }
-    }
-
-    body.push(statement)
+    body.push(parseStatement(tokens))
   }
 
   return body

@@ -754,6 +754,32 @@ describe('parser', () => {
         type: 'IfStatement',
       },
     ])
+
+    expect(parse('if (true) a = 1;').body).toStrictEqual<[IfStatement]>([
+      {
+        alternate: null,
+        consequent: {
+          expression: {
+            left: {
+              name: 'a',
+              type: 'Identifier',
+            },
+            operator: '=',
+            right: {
+              type: 'Literal',
+              value: '1',
+            },
+            type: 'AssignmentExpression',
+          },
+          type: 'ExpressionStatement',
+        },
+        test: {
+          type: 'Literal',
+          value: 'true',
+        },
+        type: 'IfStatement',
+      },
+    ])
   })
 
   it('parses while statements', () => {
