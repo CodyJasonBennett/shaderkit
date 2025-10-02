@@ -530,12 +530,7 @@ function parseIf(tokens: Token[]): IfStatement {
   const test = parseExpression(tokens)
   consume(tokens, ')')
 
-  let consequent: Statement
-  if (tokens[0].value === '{') {
-    consequent = parseBlock(tokens)
-  } else {
-    consequent = parseStatement(tokens)
-  }
+  const consequent = parseBlockOrStatement(tokens)
 
   let alternate = null
   const elseToken = tokens[0]
@@ -544,10 +539,8 @@ function parseIf(tokens: Token[]): IfStatement {
 
     if (tokens[0] && (tokens[0] as Token).value === 'if') {
       alternate = parseIf(tokens)
-    } else if (tokens[0].value === '{') {
-      alternate = parseBlock(tokens)
     } else {
-      alternate = parseStatement(tokens)
+      alternate = parseBlockOrStatement(tokens)
     }
   }
 
@@ -559,7 +552,7 @@ function parseWhile(tokens: Token[]): WhileStatement {
   consume(tokens, '(')
   const test = parseExpression(tokens)
   consume(tokens, ')')
-  const body = parseBlock(tokens)
+  const body = parseBlockOrStatement(tokens)
 
   return { type: 'WhileStatement', test, body }
 }
@@ -574,14 +567,14 @@ function parseFor(tokens: Token[]): ForStatement {
   consume(tokens, ';')
   const update = parseExpression(tokens)
   consume(tokens, ')')
-  const body = parseBlock(tokens)
+  const body = parseBlockOrStatement(tokens)
 
   return { type: 'ForStatement', init, test, update, body }
 }
 
 function parseDoWhile(tokens: Token[]): DoWhileStatement {
   consume(tokens, 'do')
-  const body = parseBlock(tokens)
+  const body = parseBlockOrStatement(tokens)
   consume(tokens, 'while')
   consume(tokens, '(')
   const test = parseExpression(tokens)
@@ -741,12 +734,20 @@ function parseStatements(tokens: Token[]): Statement[] {
   return body
 }
 
-// TODO: allow block versus sub-statements for GLSL/WGSL
 function parseBlock(tokens: Token[]): BlockStatement {
   consume(tokens, '{')
   const body = parseStatements(tokens)
   consume(tokens, '}')
   return { type: 'BlockStatement', body }
+}
+
+// TODO: validate block versus sub-statements for GLSL/WGSL
+function parseBlockOrStatement(tokens: Token[]): BlockStatement | Statement {
+  if (tokens[0]?.value === '{') {
+    return parseBlock(tokens)
+  } else {
+    return parseStatement(tokens)
+  }
 }
 
 const NEWLINE_REGEX = /\\\s+/gm
