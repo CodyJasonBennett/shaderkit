@@ -714,6 +714,7 @@ function parseStatement(tokens: Token[]): Statement {
   else if (token.value === 'switch') statement = parseSwitch(tokens)
   else if (token.value === 'precision') statement = parsePrecision(tokens)
   else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
+  else if (token.value === '{') statement = parseBlock(tokens)
   else {
     const expression = parseExpression(tokens)
     consume(tokens, ';')
@@ -731,7 +732,7 @@ function parseStatements(tokens: Token[]): Statement[] {
     const token = tokens[0]
 
     scopeIndex += getScopeDelta(token)
-    if (scopeIndex < 0) break
+    if (scopeIndex < 0 || token.value === '}') break
 
     if (token.value === 'case' || token.value === 'default') break
     body.push(parseStatement(tokens))

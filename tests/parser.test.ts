@@ -23,6 +23,7 @@ import {
   Identifier,
   ArraySpecifier,
   InvariantQualifierStatement,
+  BlockStatement,
 } from 'shaderkit'
 
 describe('parser', () => {
@@ -1176,4 +1177,59 @@ describe('parser', () => {
       },
     ])
   })
+
+  it('parses nested block statements', () => {
+    expect(parse('{ { float a = float(a) + 1.0; } }\n').body).toStrictEqual<[BlockStatement]>([
+      {
+        body: [
+          {
+            body: [
+              {
+                declarations: [
+                  {
+                    id: {
+                      name: 'a',
+                      type: 'Identifier',
+                    },
+                    init: {
+                      left: {
+                        arguments: [
+                          {
+                            name: 'a',
+                            type: 'Identifier',
+                          },
+                        ],
+                        callee: {
+                          name: 'float',
+                          type: 'Identifier',
+                        },
+                        type: 'CallExpression',
+                      },
+                      operator: '+',
+                      right: {
+                        type: 'Literal',
+                        value: '1.0',
+                      },
+                      type: 'BinaryExpression',
+                    },
+                    layout: null,
+                    qualifiers: [],
+                    type: 'VariableDeclarator',
+                    typeSpecifier: {
+                      name: 'float',
+                      type: 'Identifier',
+                    },
+                  },
+                ],
+                type: 'VariableDeclaration',
+              },
+            ],
+            type: 'BlockStatement',
+          },
+        ],
+        type: 'BlockStatement',
+      },
+    ])
+  })
+})
 })
