@@ -1231,5 +1231,8 @@ describe('parser', () => {
       },
     ])
   })
-})
+
+  it.skip('can parse comma operator syntax', () => {
+    expect(() => parse('!b, uv3;')).not.toThrow()
+  })
 })
