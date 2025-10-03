@@ -136,8 +136,24 @@ function getScopeDelta(token: Token): number {
   return SCOPE_DELTAS[token.value] ?? 0
 }
 
+function peek(tokens: Token[], offset: number = 0): Token | null {
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i]
+    if (token.type !== 'whitespace' && token.type !== 'comment') {
+      if (offset === 0) return token
+      else offset--
+    }
+  }
+
+  return null
+}
+
 function consume(tokens: Token[], expected?: string): Token {
-  const token = tokens.shift()
+  // TODO: use token cursor for performance and store for sourcemaps
+  let token = tokens.shift()
+  while (token && (token.type === 'whitespace' || token.type === 'comment')) {
+    token = tokens.shift()
+  }
 
   if (token === undefined && expected !== undefined) {
     throw new SyntaxError(`Expected "${expected}"`)
@@ -174,7 +190,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   }
 
   while (tokens.length) {
-    token = tokens[0]
+    token = peek(tokens)!
 
     if (token.value in POSTFIX_OPERATOR_PRECEDENCE) {
       const leftBindingPower = POSTFIX_OPERATOR_PRECEDENCE[token.value]
@@ -185,24 +201,24 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
       if (token.value === '(') {
         const args: Expression[] = []
 
-        while (tokens[0]?.value !== ')') {
+        while (peek(tokens)?.value !== ')') {
           args.push(parseExpression(tokens, 0))
-          if (tokens[0]?.value !== ')') consume(tokens, ',')
+          if (peek(tokens)?.value !== ')') consume(tokens, ',')
         }
         consume(tokens, ')')
 
         lhs = { type: 'CallExpression', callee: lhs, arguments: args }
       } else if (token.value === '[') {
-        const rhs = tokens[0]?.value !== ']' ? parseExpression(tokens, 0) : null
+        const rhs = peek(tokens)?.value !== ']' ? parseExpression(tokens, 0) : null
         consume(tokens, ']')
 
-        if (tokens[0]?.value === '(') {
+        if (peek(tokens)?.value === '(') {
           consume(tokens, '(')
           const elements: Expression[] = []
 
-          while ((tokens[0] as Token | undefined)?.value !== ')') {
+          while (peek(tokens)?.value !== ')') {
             elements.push(parseExpression(tokens, 0))
-            if ((tokens[0] as Token | undefined)?.value !== ')') consume(tokens, ',')
+            if (peek(tokens)?.value !== ')') consume(tokens, ',')
           }
           consume(tokens, ')')
 
@@ -268,13 +284,13 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
 function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
   let typeSpecifier: Identifier | ArraySpecifier = { type: 'Identifier', name: consume(tokens).value }
 
-  if (tokens[0]?.value === '[') {
+  if (peek(tokens)?.value === '[') {
     const dimensions: (Literal | Identifier | null)[] = []
 
-    while (tokens[0]?.value === '[') {
+    while (peek(tokens)?.value === '[') {
       consume(tokens, '[')
 
-      if ((tokens[0]?.value as string) !== ']') {
+      if (peek(tokens)?.value !== ']') {
         dimensions.push(parseExpression(tokens) as Literal | Identifier)
       } else {
         dimensions.push(null)
@@ -303,7 +319,7 @@ function parseVariableDeclarator(
 
   let init: Expression | null = null
 
-  if (tokens[0]?.value === '=') {
+  if (peek(tokens)?.value === '=') {
     consume(tokens, '=')
     init = parseExpression(tokens)
   }
@@ -319,11 +335,11 @@ function parseVariable(
 ): VariableDeclaration {
   const declarations: VariableDeclarator[] = []
 
-  if (tokens[0]?.value !== ';') {
+  if (peek(tokens)?.value !== ';') {
     while (tokens.length) {
       declarations.push(parseVariableDeclarator(tokens, typeSpecifier, qualifiers, layout))
 
-      if (tokens[0]?.value === ',') {
+      if (peek(tokens)?.value === ',') {
         consume(tokens, ',')
       } else {
         break
@@ -345,7 +361,7 @@ function parseBufferInterface(
   const members = parseBlock(tokens).body as VariableDeclaration[]
 
   let id: Identifier | null = null
-  if (tokens[0]?.value !== ';') id = parseExpression(tokens) as Identifier
+  if (peek(tokens)?.value !== ';') id = parseExpression(tokens) as Identifier
   consume(tokens, ';')
 
   return { type: 'StructuredBufferDeclaration', id, qualifiers, typeSpecifier, layout, members }
@@ -361,25 +377,28 @@ function parseFunction(
   consume(tokens, '(')
 
   const params: FunctionParameter[] = []
-  while (tokens[0] && tokens[0].value !== ')') {
+  while (true) {
+    const token = peek(tokens)
+    if (!token || token.value === ')') break
+
     const qualifiers: (ConstantQualifier | ParameterQualifier | PrecisionQualifier)[] = []
-    while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
+    while (peek(tokens) && QUALIFIER_REGEX.test(peek(tokens)!.value)) {
       qualifiers.push(consume(tokens).value as ConstantQualifier | ParameterQualifier | PrecisionQualifier)
     }
     const typeSpecifier = parseTypeSpecifier(tokens)
 
     let id: Identifier | null = null
-    if (tokens[0]?.type !== 'symbol') id = parseTypeSpecifier(tokens) as Identifier
+    if (peek(tokens)?.type !== 'symbol') id = parseTypeSpecifier(tokens) as Identifier
 
     params.push({ type: 'FunctionParameter', id, qualifiers, typeSpecifier })
 
-    if (tokens[0]?.value === ',') consume(tokens, ',')
+    if (peek(tokens)?.value === ',') consume(tokens, ',')
   }
 
   consume(tokens, ')')
 
   let body = null
-  if (tokens[0].value === ';') consume(tokens, ';')
+  if (peek(tokens)?.value === ';') consume(tokens, ';')
   else body = parseBlock(tokens)
 
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
@@ -407,13 +426,13 @@ function parseIndeterminate(
   | LayoutQualifierStatement
   | InvariantQualifierStatement {
   let layout: Record<string, string | boolean> | null = null
-  if (tokens[0].value === 'layout') {
+  if (peek(tokens)?.value === 'layout') {
     consume(tokens, 'layout')
     consume(tokens, '(')
 
     layout = {}
 
-    while (tokens[0] && (tokens[0] as Token).value !== ')') {
+    while (peek(tokens) && peek(tokens)!.value !== ')') {
       const expression = parseExpression(tokens)
 
       if (
@@ -428,33 +447,33 @@ function parseIndeterminate(
         throw new TypeError('Unexpected expression')
       }
 
-      if (tokens[0] && (tokens[0] as Token).value !== ')') consume(tokens, ',')
+      if (peek(tokens) && peek(tokens)!.value !== ')') consume(tokens, ',')
     }
 
     consume(tokens, ')')
   }
 
   // Input qualifiers will suddenly terminate
-  if (layout !== null && tokens[1]?.value === ';') {
+  if (layout !== null && peek(tokens, 1)?.value === ';') {
     return parseLayoutQualifier(tokens, layout)
   }
 
   // Invariant qualifiers will terminate with an identifier
-  if (layout === null && tokens[0]?.value === 'invariant' && tokens[1]?.type === 'identifier') {
+  if (layout === null && peek(tokens)?.value === 'invariant' && peek(tokens, 1)?.type === 'identifier') {
     return parseInvariant(tokens)
   }
 
   // TODO: only precision qualifier valid for function return type
   const qualifiers: string[] = []
-  while (tokens[0] && QUALIFIER_REGEX.test(tokens[0].value)) {
+  while (peek(tokens) && QUALIFIER_REGEX.test(peek(tokens)!.value)) {
     qualifiers.push(consume(tokens).value)
   }
 
   const typeSpecifier = parseTypeSpecifier(tokens)
 
-  if (tokens[0]?.value === '{') {
+  if (peek(tokens)?.value === '{') {
     return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
-  } else if (tokens[1]?.value === '(') {
+  } else if (peek(tokens, 1)?.value === '(') {
     return parseFunction(tokens, typeSpecifier, qualifiers as PrecisionQualifier[])
   } else {
     return parseVariable(
@@ -471,16 +490,16 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
-  while (tokens[0] && tokens[0].value !== '}') {
+  while (peek(tokens) && peek(tokens)!.value !== '}') {
     members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
   }
   consume(tokens, '}')
 
   // Hack to append a separate variable declaration in the next iterator
   // `struct a {} name;` is parsed as `struct a {}; a name;`
-  if (tokens[0]?.type === 'identifier') {
+  if (peek(tokens)?.type === 'identifier') {
     const type = id.name
-    const name = tokens.shift()!.value
+    const name = consume(tokens).value
     tokens.push(
       { type: 'identifier', value: type },
       { type: 'identifier', value: name },
@@ -518,7 +537,7 @@ function parseReturn(tokens: Token[]): ReturnStatement {
   consume(tokens, 'return')
 
   let argument: Expression | null = null
-  if (tokens[0]?.value !== ';') argument = parseExpression(tokens)
+  if (peek(tokens)?.value !== ';') argument = parseExpression(tokens)
   consume(tokens, ';')
 
   return { type: 'ReturnStatement', argument }
@@ -533,11 +552,11 @@ function parseIf(tokens: Token[]): IfStatement {
   const consequent = parseBlockOrStatement(tokens)
 
   let alternate = null
-  const elseToken = tokens[0]
+  const elseToken = peek(tokens)
   if (elseToken && elseToken.value === 'else') {
     consume(tokens, 'else')
 
-    if (tokens[0] && (tokens[0] as Token).value === 'if') {
+    if (peek(tokens) && peek(tokens)!.value === 'if') {
       alternate = parseIf(tokens)
     } else {
       alternate = parseBlockOrStatement(tokens)
@@ -623,29 +642,29 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   let name = '' // name can be unset for the # directive which is ignored
   let value: Expression[] | null = null
 
-  if (tokens[0]?.value !== '\\') {
+  if (peek(tokens)?.value !== '\\') {
     name = consume(tokens).value
 
     if (name === 'define') {
       const lhs = consume(tokens)
       let left: Expression = { type: 'Identifier', name: lhs.value }
-      const next = tokens[0]
+      const next = peek(tokens)
 
       // Macro definition: #define foo(a, b, c) ...
       if (next && next.value === '(') {
         consume(tokens)
 
         const args: Expression[] = []
-        while (tokens[0]?.value !== ')') {
+        while (peek(tokens)?.value !== ')') {
           args.push(parseExpression(tokens, 0))
-          if (tokens[0]?.value !== ')') consume(tokens, ',')
+          if (peek(tokens)?.value !== ')') consume(tokens, ',')
         }
         consume(tokens, ')')
 
         left = { type: 'CallExpression', callee: left, arguments: args }
       }
 
-      if (tokens[0]?.value === '\\') value = [left]
+      if (peek(tokens)?.value === '\\') value = [left]
       else value = [left, parseExpression(tokens)]
     } else if (name === 'extension') {
       // TODO: extension directives must be before declarations
@@ -659,7 +678,7 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
       consume(tokens, '>')
     } else if (name !== 'else' && name !== 'endif') {
       value = []
-      while (tokens.length && tokens[0].value !== '\\') {
+      while (peek(tokens) && peek(tokens)!.value !== '\\') {
         value.push(parseExpression(tokens))
       }
     }
@@ -671,7 +690,7 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
 }
 
 function isVariable(tokens: Token[]): boolean {
-  const token = tokens[0]
+  let token = peek(tokens, 0)
 
   // Skip first token if EOF or not type qualifier/specifier
   if (!token || (token.type !== 'identifier' && token.type !== 'keyword')) return false
@@ -682,16 +701,23 @@ function isVariable(tokens: Token[]): boolean {
   // Skip to end of possible expression statement (e.g. callexpr -> fndecl)
   let i = 1
   let scopeIndex = 0
-  while (i < tokens.length && (scopeIndex > 0 || getScopeDelta(tokens[i]) > 0)) {
-    scopeIndex += getScopeDelta(tokens[i++])
+  while (true) {
+    token = peek(tokens, i)
+    if (!token) break
+
+    const delta = getScopeDelta(token)
+    if (scopeIndex <= 0 && delta <= 0) break
+
+    scopeIndex += delta
+    i++
   }
 
   // A variable declaration must follow with an identifier or type
-  return tokens[i]?.type !== 'symbol'
+  return peek(tokens, i)?.type !== 'symbol'
 }
 
 function parseStatement(tokens: Token[]): Statement {
-  const token = tokens[0]
+  const token = peek(tokens)!
   let statement: Statement | null = null
 
   if (token.value === '#') statement = parsePreprocessor(tokens)
@@ -721,8 +747,9 @@ function parseStatements(tokens: Token[]): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
 
-  while (tokens.length) {
-    const token = tokens[0]
+  while (true) {
+    const token = peek(tokens)
+    if (!token) break
 
     scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0 || token.value === '}') break
@@ -743,7 +770,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
 
 // TODO: validate block versus sub-statements for GLSL/WGSL
 function parseBlockOrStatement(tokens: Token[]): BlockStatement | Statement {
-  if (tokens[0]?.value === '{') {
+  if (peek(tokens)?.value === '{') {
     return parseBlock(tokens)
   } else {
     return parseStatement(tokens)
@@ -763,8 +790,7 @@ export function parse(code: string): Program {
   // Escape newlines after directives, skip comments
   code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
 
-  // TODO: preserve
-  const tokens = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
+  const tokens = tokenize(code)
 
   return { type: 'Program', body: parseStatements(tokens) }
 }
