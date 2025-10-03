@@ -932,6 +932,16 @@ describe('parser', () => {
         },
       },
     ])
+
+    expect(parse('invariant gl_FragColor;').body).toStrictEqual<[InvariantQualifierStatement]>([
+      {
+        type: 'InvariantQualifierStatement',
+        typeSpecifier: {
+          name: 'gl_FragColor',
+          type: 'Identifier',
+        },
+      },
+    ])
   })
 
   it('parses preprocessor statements', () => {

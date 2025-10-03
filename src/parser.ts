@@ -459,7 +459,11 @@ function parseIndeterminate(
   }
 
   // Invariant qualifiers will terminate with an identifier
-  if (layout === null && peek(tokens)?.value === 'invariant' && peek(tokens, 1)?.type === 'identifier') {
+  if (
+    layout === null &&
+    peek(tokens)?.value === 'invariant' &&
+    (peek(tokens, 1)?.type === 'identifier' || (peek(tokens, 1)?.type === 'keyword' && peek(tokens, 2)?.value === ';'))
+  ) {
     return parseInvariant(tokens)
   }
 
