@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generate, parse, minify } from 'shaderkit'
+import { generate, parse } from 'shaderkit'
 
 const glsl = /* glsl */ `#version 300 es
   precision mediump float;
@@ -252,13 +252,13 @@ describe('generator', () => {
   it('can handle GLSL', () => {
     const program = parse(glsl)
     const output = generate(program, { target: 'GLSL' })
-    expect(output).toBe(minify(glsl))
+    expect(output).toMatchSnapshot()
   })
 
   it('can handle GLSL ES 3.1', () => {
     const program = parse(compute)
     const output = generate(program, { target: 'GLSL' })
-    expect(output).toBe(minify(compute))
+    expect(output).toMatchSnapshot()
   })
 
   it('can generate attribute variable declarations', () => {
