@@ -685,6 +685,7 @@ interface BinaryExpression extends Node {
 
 ```ts
 type BinaryOperator =
+  | ','
   | '=='
   | '!='
   | '<'

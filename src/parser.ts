@@ -83,6 +83,7 @@ const POSTFIX_OPERATOR_PRECEDENCE: Record<string, Precedence> = {
 }
 
 const INFIX_OPERATOR_PRECEDENCE_LEFT: Record<string, Precedence> = {
+  ',': Precedence.COMMA,
   '||': Precedence.LOGICAL_OR,
   '^^': Precedence.LOGICAL_XOR,
   '&&': Precedence.LOGICAL_AND,
@@ -202,7 +203,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
         const args: Expression[] = []
 
         while (peek(tokens)?.value !== ')') {
-          args.push(parseExpression(tokens, 0))
+          args.push(parseExpression(tokens, Precedence.COMMA))
           if (peek(tokens)?.value !== ')') consume(tokens, ',')
         }
         consume(tokens, ')')
@@ -217,7 +218,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
           const elements: Expression[] = []
 
           while (peek(tokens)?.value !== ')') {
-            elements.push(parseExpression(tokens, 0))
+            elements.push(parseExpression(tokens, Precedence.COMMA))
             if (peek(tokens)?.value !== ')') consume(tokens, ',')
           }
           consume(tokens, ')')
@@ -321,7 +322,7 @@ function parseVariableDeclarator(
 
   if (peek(tokens)?.value === '=') {
     consume(tokens, '=')
-    init = parseExpression(tokens)
+    init = parseExpression(tokens, Precedence.COMMA)
   }
 
   return { type: 'VariableDeclarator', id, qualifiers, typeSpecifier, layout, init }
@@ -433,7 +434,7 @@ function parseIndeterminate(
     layout = {}
 
     while (peek(tokens) && peek(tokens)!.value !== ')') {
-      const expression = parseExpression(tokens)
+      const expression = parseExpression(tokens, Precedence.COMMA)
 
       if (
         expression.type === 'AssignmentExpression' &&
@@ -660,7 +661,7 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
 
         const args: Expression[] = []
         while (peek(tokens)?.value !== ')') {
-          args.push(parseExpression(tokens, 0))
+          args.push(parseExpression(tokens, Precedence.COMMA))
           if (peek(tokens)?.value !== ')') consume(tokens, ',')
         }
         consume(tokens, ')')
@@ -740,7 +741,8 @@ function parseStatement(tokens: Token[]): Statement {
   else if (token.value === '{') statement = parseBlock(tokens)
   else {
     const expression = parseExpression(tokens)
-    consume(tokens, ';')
+    if (peek(tokens)?.value === ',') consume(tokens, ';')
+    else consume(tokens, ';')
     statement = { type: 'ExpressionStatement', expression }
   }
 

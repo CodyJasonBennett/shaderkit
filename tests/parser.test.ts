@@ -1242,7 +1242,28 @@ describe('parser', () => {
     ])
   })
 
-  it.skip('can parse comma operator syntax', () => {
-    expect(() => parse('!b, uv3;')).not.toThrow()
+  it('parses the comma operator', () => {
+    expect(parse('!b, uv3;').body).toStrictEqual<[ExpressionStatement]>([
+      {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'BinaryExpression',
+          left: {
+            type: 'UnaryExpression',
+            argument: {
+              type: 'Identifier',
+              name: 'b',
+            },
+            operator: '!',
+            prefix: true,
+          },
+          operator: ',',
+          right: {
+            type: 'Identifier',
+            name: 'uv3',
+          },
+        },
+      },
+    ])
   })
 })

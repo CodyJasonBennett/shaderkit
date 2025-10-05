@@ -100,6 +100,7 @@ export interface BinaryExpression extends Node {
 }
 
 export type BinaryOperator =
+  | ','
   | '=='
   | '!='
   | '<'
