@@ -1,5 +1,9 @@
 import { type Token, tokenize } from './tokenizer.js'
 import { GLSL_KEYWORDS, WGSL_KEYWORDS } from './constants.js'
+import { parse } from './parser.js'
+import { generate } from './generator.js'
+import { visit } from './visitor.js'
+import { ArraySpecifier } from './ast.js'
 
 export type MangleMatcher = (token: Token, index: number, tokens: Token[]) => boolean
 
@@ -13,7 +17,6 @@ export interface MinifyOptions {
 }
 
 const isWord = /* @__PURE__ */ RegExp.prototype.test.bind(/^\w/)
-const isSymbol = /* @__PURE__ */ RegExp.prototype.test.bind(/[^\w\\]/)
 const isName = /* @__PURE__ */ RegExp.prototype.test.bind(/^[_A-Za-z]/)
 const isScoped = /* @__PURE__ */ RegExp.prototype.test.bind(/[;{}\\@]/)
 const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
@@ -23,25 +26,11 @@ const isStorage = /* @__PURE__ */ RegExp.prototype.test.bind(
 // Checks for WGSL-specific `fn foo(`, `var bar =`, `let baz =`, `const qux =`
 const WGSL_REGEX = /\bfn\s+\w+\s*\(|\b(var|let|const)\s+\w+\s*[:=]/
 
-const NEWLINE_REGEX = /\\\s+/gm
-const DIRECTIVE_REGEX = /(^\s*#[^\\]*?)(\n|\/[\/\*])/gm
-
-/**
- * Minifies a string of GLSL or WGSL code.
- */
-export function minify(
+function minifyLegacy(
   code: string,
   { mangle = false, mangleMap = new Map(), mangleExternals = false }: Partial<MinifyOptions> = {},
 ): string {
-  // Fold newlines
-  code = code.replace(NEWLINE_REGEX, '')
-
-  // Escape newlines after directives, skip comments
-  code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
-
-  const KEYWORDS = WGSL_REGEX.test(code) ? WGSL_KEYWORDS : GLSL_KEYWORDS
-
-  const mangleCache = new Map()
+  const mangleCache = new Map<string, string>()
   const tokens: Token[] = tokenize(code).filter((token) => token.type !== 'whitespace' && token.type !== 'comment')
 
   let mangleIndex: number = -1
@@ -61,43 +50,13 @@ export function minify(
     // Pad alphanumeric tokens
     if (isWord(token.value) && isWord(tokens[i - 1]?.value)) minified += ' '
 
-    // Pad symbols around #define and three.js #include (white-space sensitive)
-    if (
-      isSymbol(token.value) &&
-      ((tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'include') ||
-        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'if') ||
-        (tokens[i - 2]?.value === '#' && tokens[i - 1]?.value === 'elif') ||
-        (tokens[i - 3]?.value === '#' && tokens[i - 2]?.value === 'define'))
-    ) {
-      // Move padding after #define arguments
-      if (token.value === '(') {
-        while (i < tokens.length) {
-          const next = tokens[i++]
-          minified += next.value
-
-          if (next.value === ')') break
-        }
-
-        minified += ' ' + tokens[i].value
-
-        continue
-      } else {
-        minified += ' '
-      }
-    }
-
     let prefix = token.value
     if (tokens[i - 1]?.value === '.') {
       prefix = `${tokens[i - 2]?.value}.` + prefix
     }
 
     // Mangle declarations and their references
-    if (
-      token.type === 'identifier' &&
-      // Filter variable names
-      prefix !== 'main' &&
-      (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))
-    ) {
+    if (token.type === 'identifier' && (typeof mangle === 'boolean' ? mangle : mangle(token, i, tokens))) {
       const namespace = tokens[i - 1]?.value === '}' && tokens[i + 1]?.value === ';'
       const storage = isStorage(tokens[lineIndex]?.value)
       const list = storage && tokens[i - 1]?.value === ','
@@ -133,7 +92,7 @@ export function minify(
           (tokens[i - 1]?.value === 'fn' && (tokens[i - 2]?.value === ')' || tokens[i - 3]?.value === '@'))
         const cache = isExternal ? mangleMap : mangleCache
 
-        while (!renamed || cache.has(renamed) || KEYWORDS.includes(renamed)) {
+        while (!renamed || cache.has(renamed) || WGSL_KEYWORDS.includes(renamed)) {
           renamed = ''
           mangleIndex++
 
@@ -149,11 +108,280 @@ export function minify(
 
       minified += renamed ?? token.value
     } else {
-      if (token.value === '#' && tokens[i - 1]?.value !== '\\') minified += '\n#'
-      else if (token.value === '\\') minified += '\n'
+      if (token.value === '\\') minified += '\n'
       else minified += token.value
     }
   }
 
   return minified.trim()
+}
+
+interface Scope {
+  // types: Map<string, string>
+  values: Map<string, string>
+  references: Map<string, string>
+}
+
+/**
+ * Minifies a string of GLSL or WGSL code.
+ */
+export function minify(
+  code: string,
+  { mangle = false, mangleMap = new Map(), mangleExternals = false }: Partial<MinifyOptions> = {},
+): string {
+  const isWGSL = WGSL_REGEX.test(code)
+  const KEYWORDS = isWGSL ? WGSL_KEYWORDS : GLSL_KEYWORDS
+
+  // TODO: remove when WGSL is better supported
+  if (isWGSL) return minifyLegacy(code, { mangle, mangleMap, mangleExternals })
+
+  const program = parse(code)
+
+  if (mangle) {
+    const scopes: Scope[] = []
+
+    function pushScope(): void {
+      scopes.push({ values: new Map(), references: new Map() })
+    }
+    function popScope(): void {
+      scopes.length -= 1
+    }
+
+    function getScopedType(name: string): string | null {
+      for (let i = scopes.length - 1; i >= 0; i--) {
+        const type = scopes[i].references.get(name)
+        if (type) return type
+      }
+
+      return null
+    }
+
+    const prefixes: (string | null)[] = []
+
+    function getPrefix(): string | null {
+      if (prefixes.length > 0 && prefixes.at(-1)) {
+        return prefixes.join('.')
+      }
+
+      return null
+    }
+
+    function getScopedName(name: string): string | null {
+      if (mangleMap.has(name)) {
+        return mangleMap.get(name)!
+      }
+
+      for (let i = scopes.length - 1; i >= 0; i--) {
+        const renamed = scopes[i].values.get(name)
+        if (renamed) return renamed
+      }
+
+      return null
+    }
+
+    let mangleIndex: number = -1
+    function mangleName(name: string, isExternal: boolean): string {
+      let renamed = (isExternal && mangleMap.get(name)) || getScopedName(name)
+
+      while (
+        !renamed ||
+        getScopedName(renamed) !== null ||
+        (isExternal && mangleMap.has(renamed)) ||
+        KEYWORDS.includes(renamed)
+      ) {
+        renamed = ''
+        mangleIndex++
+
+        let j = mangleIndex
+        while (j > 0) {
+          renamed = String.fromCharCode(97 + ((j - 1) % 26)) + renamed
+          j = Math.floor(j / 26)
+        }
+      }
+
+      scopes.at(-1)!.values.set(name, renamed)
+      if (isExternal) mangleMap.set(name, renamed)
+
+      return renamed
+    }
+
+    const structs = new Set<string>()
+    const externalTypes = new Set<string>()
+
+    // Top-level pass for externals and type definitions
+    for (const statement of program.body) {
+      if (statement.type === 'StructDeclaration') {
+        structs.add(statement.id.name)
+      } else if (statement.type === 'StructuredBufferDeclaration') {
+        const isExternal = statement.qualifiers.some(isStorage)
+
+        if (statement.typeSpecifier.type === 'Identifier') {
+          structs.add(statement.typeSpecifier.name)
+          if (isExternal) externalTypes.add(statement.typeSpecifier.name)
+        } else if (statement.typeSpecifier.type === 'ArraySpecifier') {
+          structs.add(statement.typeSpecifier.typeSpecifier.name)
+          if (isExternal) externalTypes.add(statement.typeSpecifier.typeSpecifier.name)
+        }
+      }
+    }
+
+    visit(program, {
+      Program: {
+        enter() {
+          pushScope()
+        },
+        exit() {
+          popScope()
+        },
+      },
+      BlockStatement: {
+        enter() {
+          pushScope()
+        },
+        exit() {
+          popScope()
+        },
+      },
+      FunctionDeclaration: {
+        enter(node) {
+          // TODO: this might be external in the case of WGSL entrypoints
+          if (node.id.name !== 'main') mangleName(node.id.name, false)
+
+          const scope = scopes.at(-1)!
+          if (node.typeSpecifier.type === 'Identifier') {
+            scope.references.set(node.id.name, node.typeSpecifier.name)
+          } else if (node.typeSpecifier.type === 'ArraySpecifier') {
+            scope.references.set(node.id.name, node.typeSpecifier.typeSpecifier.name)
+          }
+
+          pushScope()
+
+          for (const param of node.params) {
+            if (param.id) mangleName(param.id.name, false)
+          }
+        },
+        exit() {
+          popScope()
+        },
+      },
+      StructDeclaration(node) {
+        const isExternal = externalTypes.has(node.id.name)
+        if (!isExternal || mangleExternals) {
+          mangleName(node.id.name, isExternal)
+
+          // pushScope()
+          for (const member of node.members) {
+            if (member.type !== 'VariableDeclaration') continue
+            for (const decl of member.declarations) {
+              mangleName(node.id.name + '.' + decl.id.name, isExternal)
+            }
+          }
+          // popScope()
+        }
+      },
+      StructuredBufferDeclaration(node) {
+        if (node.typeSpecifier.type !== 'Identifier') return
+
+        // When an instance name is not defined, the type specifier can be used as an external reference
+        if (node.id || mangleExternals) {
+          mangleName(node.typeSpecifier.name, false)
+        }
+
+        if (!node.id) return
+
+        const isExternal = externalTypes.has(node.typeSpecifier.name)
+        if (!isExternal || mangleExternals) {
+          mangleName(node.id.name, isExternal)
+
+          const scope = scopes.at(-1)!
+          if (node.typeSpecifier.type === 'Identifier') {
+            scope.references.set(node.id.name, node.typeSpecifier.name)
+          } else if ((node.typeSpecifier as ArraySpecifier).type === 'ArraySpecifier') {
+            scope.references.set(node.id.name, (node.typeSpecifier as ArraySpecifier).typeSpecifier.name)
+          }
+
+          // pushScope()
+          for (const member of node.members) {
+            if (member.type !== 'VariableDeclaration') continue
+            for (const decl of member.declarations) {
+              mangleName(node.typeSpecifier.name + '.' + decl.id.name, isExternal)
+            }
+          }
+          // popScope()
+        }
+      },
+      VariableDeclarator(node, ancestors) {
+        // TODO: ensure uniform decl lists work
+        const containerNode = ancestors.at(-2) // Container -> VariableDecl
+        const isExternal =
+          node.qualifiers.some(isStorage) ||
+          containerNode?.type === 'StructDeclaration' ||
+          (containerNode?.type === 'StructuredBufferDeclaration' && containerNode.qualifiers.some(isStorage))
+
+        if (!isExternal || mangleExternals) {
+          let name: string = ''
+          if (node.id.type === 'Identifier') {
+            name = node.id.name
+            mangleName(name, isExternal)
+          } else if (node.id.type === 'ArraySpecifier') {
+            name = (node.id as unknown as ArraySpecifier).typeSpecifier.name
+          }
+
+          mangleName(name, isExternal)
+
+          const scope = scopes.at(-1)!
+          if (node.typeSpecifier.type === 'Identifier') {
+            scope.references.set(name, node.typeSpecifier.name)
+          } else if (node.typeSpecifier.type === 'ArraySpecifier') {
+            scope.references.set(name, node.typeSpecifier.typeSpecifier.name)
+          }
+        }
+      },
+      PreprocessorStatement(node) {
+        const value = node.value?.[0]
+        if (node.name === 'define' && value) {
+          const isExternal = false
+          if (value.type === 'Identifier') {
+            mangleName(value.name, isExternal)
+          } else if (value.type === 'MemberExpression') {
+            // TODO: this needs to be more robust to handle string replacement
+          } else if (value.type === 'CallExpression' && value.callee.type === 'Identifier') {
+            mangleName(value.callee.name, isExternal)
+          }
+        }
+      },
+      MemberExpression: {
+        enter(node) {
+          let type: string | null = null
+
+          if (node.object.type === 'CallExpression' && node.object.callee.type === 'Identifier') {
+            // TODO: length() should be mangled whereas array.length() should not
+            type = getScopedType(node.object.callee.name)
+          } else if (node.object.type === 'MemberExpression' && node.object.object.type === 'Identifier') {
+            // Only computed member expressions can be parsed this way (e.g., (array[2]).position)
+            type = getScopedType(node.object.object.name)
+            const renamed = getScopedName(node.object.object.name)
+            if (renamed !== null) node.object.object.name = renamed
+          } else if (node.object.type === 'Identifier') {
+            type = getScopedType(node.object.name)
+            const renamed = getScopedName(node.object.name)
+            if (renamed !== null) node.object.name = renamed
+          }
+
+          prefixes.push(type)
+        },
+        exit() {
+          prefixes.length -= 1
+        },
+      },
+      Identifier(node) {
+        // TODO: can this wrongly scope objects inside of member expr?
+        const prefix = getPrefix()
+        const renamed = getScopedName(prefix ? prefix + '.' + node.name : node.name)
+        if (renamed !== null) node.name = renamed
+      },
+    })
+  }
+
+  return generate(program, { target: 'GLSL' })
 }
