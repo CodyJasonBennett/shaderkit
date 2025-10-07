@@ -14,22 +14,16 @@ const bool c=true;
 #endif
 uniform float foo,bar;uniform sampler2D map;in vec2 vUv;out vec4 pc_FragColor;
 #include <three_test>
-layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform Uniforms2{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}d;struct e{
+layout(std140)uniform Uniforms1{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform d{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}globals;struct e{
 #if !defined(BLA)
 int y;
 #else
 float z;
 #endif
-};struct f{float intensity;vec3 position;float one,two;};uniform f Light[4];invariant g;void main(){vec4 h=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 i=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 j=d.projectionMatrix*d.modelViewMatrix*vec4(0,0,0,1);if(false){}g=vec4(texture(map,vUv).rgb,0.0);float k=0.0;g.a+=1.0+k;}"
+};struct f{float intensity;vec3 position;float one,two;};uniform f Light[4];invariant pc_FragColor;void main(){vec4 g=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 h=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 i=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float j=0.0;pc_FragColor.a+=1.0+j;}"
 `;
 
-exports[`minify > can mangle GLSL 2`] = `
-Map {
-  "PLUS" => "a",
-  "TEST" => "b",
-  "globals" => "d",
-}
-`;
+exports[`minify > can mangle GLSL 2`] = `Map {}`;
 
 exports[`minify > can mangle WGSL 1`] = `"struct a{intensity:f32,position:vec3<f32>,one:f32,two:f32,};struct b{projectionMatrix:mat4x4<f32>,modelViewMatrix:mat4x4<f32>,normalMatrix:mat3x3<f32>,one:f32,two:f32,lights:array<a,4>,};@binding(0)@group(0)var<uniform>uniforms:b;@binding(1)@group(0)var sample:sampler;@binding(2)@group(0)var map:texture_2d<f32>;struct c{@location(0)position:vec4<f32>,@location(1)uv:vec2<f32>,};struct d{@builtin(position)position:vec4<f32>,@location(0)uv:vec2<f32>,};@vertex fn e(f:c)->d{var output:d;output.position=f.position;output.uv=f.uv;return output;}@fragment fn g(h:vec2<f32>)->vec4<f32>{var i=vec4<f32>(uniforms.lights[0].position*uniforms.lights[0].intensity,0.0);var j=uniforms.projectionMatrix*uniforms.modelViewMatrix*vec4<f32>(0.0,0.0,0.0,1.0);var k=textureSample(map,sample,h);k.a+=1.0;return k;}"`;
 
@@ -50,28 +44,40 @@ const bool c=true;
 #endif
 uniform float d,e;uniform sampler2D f;in vec2 g;out vec4 h;
 #include <three_test>
-layout(std140)uniform i{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;};layout(std140)uniform j{mat4 projectionMatrix;mat4 modelViewMatrix;mat3 normalMatrix;float one,two;}k;struct l{
+layout(std140)uniform i{mat4 j;mat4 k;mat3 l;float m,n;};layout(std140)uniform o{mat4 j;mat4 k;mat3 l;float m,n;}p;struct q{
 #if !defined(BLA)
-int y;
+int r;
 #else
-float z;
+float s;
 #endif
-};struct m{float intensity;vec3 position;float one,two;};uniform m n[4];invariant h;void main(){vec4 o=vec4(n[0].position.xyz*n[0].intensity,0.0);vec4 p=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 q=k.projectionMatrix*k.modelViewMatrix*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
+};struct t{float u;vec3 v;float m,n;};uniform t w[4];invariant h;void main(){vec4 x=vec4(w[0].v.xyz*w[0].u,0.0);vec4 y=j*k*vec4(0,0,0,1);vec4 az=p.j*p.k*vec4(0,0,0,1);if(false){}h=vec4(texture(f,g).rgb,0.0);float e=0.0;h.a+=1.0+e;}"
 `;
 
 exports[`minify > can mangle externals in GLSL 2`] = `
 Map {
-  "PLUS" => "a",
-  "TEST" => "b",
   "foo" => "d",
   "bar" => "e",
   "map" => "f",
   "vUv" => "g",
   "pc_FragColor" => "h",
-  "Uniforms1" => "i",
-  "Uniforms2" => "j",
-  "globals" => "k",
-  "Light" => "n",
+  "projectionMatrix" => "j",
+  "modelViewMatrix" => "k",
+  "normalMatrix" => "l",
+  "one" => "m",
+  "two" => "n",
+  "globals" => "p",
+  "Uniforms2.projectionMatrix" => "j",
+  "Uniforms2.modelViewMatrix" => "k",
+  "Uniforms2.normalMatrix" => "l",
+  "Uniforms2.one" => "m",
+  "Uniforms2.two" => "n",
+  "X.y" => "r",
+  "X.z" => "s",
+  "LightData.intensity" => "u",
+  "LightData.position" => "v",
+  "LightData.one" => "m",
+  "LightData.two" => "n",
+  "Light" => "w",
 }
 `;
 
