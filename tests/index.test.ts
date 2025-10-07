@@ -200,12 +200,18 @@ describe('minify', () => {
 
     const shader = fs.readFileSync(path.resolve(process.cwd(), 'tests/shaders/test.frag'), { encoding: 'utf-8' })
     const minified = minify(shader, { mangle: true, mangleExternals: true })
+      .replaceAll(';', ';\n')
+      .replaceAll(/\n+/g, '\n')
     fs.writeFileSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'), minified, { encoding: 'utf-8' })
 
     try {
       glslang('tests/shaders/test.min.frag')
     } catch (error: any) {
-      error.message = '\n' + minified + '\n\n' + error.message
+      let i = 1
+      const lines = minified.split('\n')
+      const width = String(lines.length).length
+      error.message =
+        '\n' + minified.replaceAll(/^/gm, () => String(i++).padStart(width, ' ') + ': ') + '\n\n' + error.message
       throw error
     } finally {
       rimrafSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'))
