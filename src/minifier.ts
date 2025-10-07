@@ -160,7 +160,7 @@ export function minify(
     const types: (string | null)[] = []
 
     function getScopedName(name: string): string | null {
-      if (mangleMap.has(name)) {
+      if (types.length === 0 && mangleMap.has(name)) {
         return mangleMap.get(name)!
       }
 
