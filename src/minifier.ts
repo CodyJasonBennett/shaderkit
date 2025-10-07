@@ -156,19 +156,17 @@ export function minify(
       return null
     }
 
-    const prefixes: (string | null)[] = []
-
-    function getPrefix(): string | null {
-      if (prefixes.length > 0 && prefixes.at(-1)) {
-        return prefixes.join('.')
-      }
-
-      return null
-    }
+    const typeScopes = new Map<string, Scope>()
+    const types: (string | null)[] = []
 
     function getScopedName(name: string): string | null {
       if (mangleMap.has(name)) {
         return mangleMap.get(name)!
+      }
+
+      if (types[0] != null && typeScopes.has(types[0])) {
+        const renamed = typeScopes.get(types[0])!.values.get(name)
+        if (renamed) return renamed
       }
 
       for (let i = scopes.length - 1; i >= 0; i--) {
@@ -200,7 +198,10 @@ export function minify(
       }
 
       scopes.at(-1)!.values.set(name, renamed)
-      if (isExternal) mangleMap.set(name, renamed)
+      if (isExternal) {
+        if (types[0] != null) mangleMap.set(types[0] + '.' + name, renamed)
+        else mangleMap.set(name, renamed)
+      }
 
       return renamed
     }
@@ -264,76 +265,85 @@ export function minify(
           popScope()
         },
       },
-      StructDeclaration(node) {
-        const isExternal = externalTypes.has(node.id.name)
-        if (!isExternal || mangleExternals) {
-          mangleName(node.id.name, isExternal)
-
-          // pushScope()
-          for (const member of node.members) {
-            if (member.type !== 'VariableDeclaration') continue
-            for (const decl of member.declarations) {
-              mangleName(node.id.name + '.' + decl.id.name, isExternal)
-            }
+      StructDeclaration: {
+        enter(node) {
+          const isExternal = externalTypes.has(node.id.name)
+          if (!isExternal || mangleExternals) {
+            mangleName(node.id.name, isExternal)
           }
-          // popScope()
-        }
+
+          pushScope()
+          typeScopes.set(node.id.name, scopes.at(-1)!)
+          types.push(node.id.name)
+        },
+        exit() {
+          types.length -= 1
+          popScope()
+        },
       },
-      StructuredBufferDeclaration(node) {
-        if (node.typeSpecifier.type !== 'Identifier') return
+      StructuredBufferDeclaration: {
+        enter(node) {
+          if (node.typeSpecifier.type !== 'Identifier') return
 
-        // When an instance name is not defined, the type specifier can be used as an external reference
-        if (node.id || mangleExternals) {
-          mangleName(node.typeSpecifier.name, false)
-        }
+          // When an instance name is not defined, the type specifier can be used as an external reference
+          if (node.id || mangleExternals) {
+            mangleName(node.typeSpecifier.name, false)
+          }
 
-        if (!node.id) return
+          if (!node.id) return
 
-        const isExternal = externalTypes.has(node.typeSpecifier.name)
-        if (!isExternal || mangleExternals) {
-          mangleName(node.id.name, isExternal)
+          const isExternal = externalTypes.has(node.typeSpecifier.name)
+          if (!isExternal || mangleExternals) {
+            mangleName(node.id.name, isExternal)
+          }
 
           const scope = scopes.at(-1)!
           if (node.typeSpecifier.type === 'Identifier') {
             scope.references.set(node.id.name, node.typeSpecifier.name)
+            types.push(node.typeSpecifier.name)
           } else if ((node.typeSpecifier as ArraySpecifier).type === 'ArraySpecifier') {
             scope.references.set(node.id.name, (node.typeSpecifier as ArraySpecifier).typeSpecifier.name)
+            types.push((node.typeSpecifier as ArraySpecifier).typeSpecifier.name)
           }
 
-          // pushScope()
-          for (const member of node.members) {
-            if (member.type !== 'VariableDeclaration') continue
-            for (const decl of member.declarations) {
-              mangleName(node.typeSpecifier.name + '.' + decl.id.name, isExternal)
-            }
+          pushScope()
+          typeScopes.set(node.id.name, scopes.at(-1)!)
+        },
+        exit(node) {
+          if (node.id) {
+            types.length -= 1
+            popScope()
           }
-          // popScope()
-        }
+        },
       },
-      VariableDeclarator(node, ancestors) {
+      VariableDeclaration(node, ancestors) {
         // TODO: ensure uniform decl lists work
-        const containerNode = ancestors.at(-2) // Container -> VariableDecl
-        const isExternal =
-          node.qualifiers.some(isStorage) ||
-          containerNode?.type === 'StructDeclaration' ||
-          (containerNode?.type === 'StructuredBufferDeclaration' && containerNode.qualifiers.some(isStorage))
+        const parent = ancestors.at(-1) // Container -> VariableDecl
+        const isParentExternal =
+          parent?.type === 'StructDeclaration' ||
+          (parent?.type === 'StructuredBufferDeclaration' && parent.qualifiers.some(isStorage))
 
-        if (!isExternal || mangleExternals) {
-          let name: string = ''
-          if (node.id.type === 'Identifier') {
-            name = node.id.name
+        for (const decl of node.declarations) {
+          // Skip preprocessor
+          if (decl.type !== 'VariableDeclarator') continue
+
+          const isExternal = isParentExternal || decl.qualifiers.some(isStorage)
+          if (!isExternal || mangleExternals) {
+            let name: string = ''
+            if (decl.id.type === 'Identifier') {
+              name = decl.id.name
+            } else if (decl.id.type === 'ArraySpecifier') {
+              name = (decl.id as unknown as ArraySpecifier).typeSpecifier.name
+            }
+
             mangleName(name, isExternal)
-          } else if (node.id.type === 'ArraySpecifier') {
-            name = (node.id as unknown as ArraySpecifier).typeSpecifier.name
-          }
 
-          mangleName(name, isExternal)
-
-          const scope = scopes.at(-1)!
-          if (node.typeSpecifier.type === 'Identifier') {
-            scope.references.set(name, node.typeSpecifier.name)
-          } else if (node.typeSpecifier.type === 'ArraySpecifier') {
-            scope.references.set(name, node.typeSpecifier.typeSpecifier.name)
+            const scope = scopes.at(-1)!
+            if (decl.typeSpecifier.type === 'Identifier') {
+              scope.references.set(name, decl.typeSpecifier.name)
+            } else if (decl.typeSpecifier.type === 'ArraySpecifier') {
+              scope.references.set(name, decl.typeSpecifier.typeSpecifier.name)
+            }
           }
         }
       },
@@ -352,7 +362,7 @@ export function minify(
       },
       MemberExpression: {
         enter(node) {
-          let type: string | null = null
+          let type: string | null = ''
 
           if (node.object.type === 'CallExpression' && node.object.callee.type === 'Identifier') {
             // TODO: length() should be mangled whereas array.length() should not
@@ -368,16 +378,14 @@ export function minify(
             if (renamed !== null) node.object.name = renamed
           }
 
-          prefixes.push(type)
+          types.push(type)
         },
         exit() {
-          prefixes.length -= 1
+          types.length -= 1
         },
       },
       Identifier(node) {
-        // TODO: can this wrongly scope objects inside of member expr?
-        const prefix = getPrefix()
-        const renamed = getScopedName(prefix ? prefix + '.' + node.name : node.name)
+        const renamed = getScopedName(node.name)
         if (renamed !== null) node.name = renamed
       },
     })

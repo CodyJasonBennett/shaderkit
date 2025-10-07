@@ -46,7 +46,7 @@ if (!fs.existsSync(dstBinPath)) {
 
 export function glslang(...args: string[]): void {
   try {
-    execFileSync(dstBinPath, args.length === 0 ? ['--version'] : args, { encoding: 'utf-8' })
+    execFileSync(dstBinPath, args, { encoding: 'utf-8' })
   } catch (error: any) {
     throw new Error(error.stdout)
   }
