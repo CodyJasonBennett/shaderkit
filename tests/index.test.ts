@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { tokenize, minify } from 'shaderkit'
+import { glslang } from './shaders/glslang'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+import { rimrafSync } from 'rimraf'
 
 const glsl = /* glsl */ `#version 300 es
   precision mediump float;
@@ -189,5 +193,22 @@ describe('minify', () => {
     const shader = /* glsl */ `${Array.from({ length: 53 }, (_, i) => `var u${i} = 0;`).join('')}`
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
+  })
+
+  it('validates mangling works correctly with glslang', () => {
+    glslang('tests/shaders/test.frag')
+
+    const shader = fs.readFileSync(path.resolve(process.cwd(), 'tests/shaders/test.frag'), { encoding: 'utf-8' })
+    const minified = minify(shader, { mangle: true, mangleExternals: true })
+    fs.writeFileSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'), minified, { encoding: 'utf-8' })
+
+    try {
+      glslang('tests/shaders/test.min.frag')
+    } catch (error: any) {
+      error.message = '\n' + minified + '\n\n' + error.message
+      throw error
+    } finally {
+      rimrafSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'))
+    }
   })
 })

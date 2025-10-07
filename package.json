@@ -26,7 +26,13 @@
   "exports": "./dist/index.js",
   "sideEffects": false,
   "devDependencies": {
+    "@types/decompress": "^4.2.7",
+    "@types/download": "^8.0.5",
     "@types/node": "^24.6.2",
+    "decompress": "^4.2.1",
+    "download": "^8.0.0",
+    "rimraf": "^6.0.1",
+    "temp-dir": "^3.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.8",
     "vitest": "^3.2.4"
