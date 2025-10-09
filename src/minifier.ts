@@ -165,8 +165,10 @@ export function minify(
       }
 
       if (types[0] != null && typeScopes.has(types[0])) {
-        const renamed = typeScopes.get(types[0])!.values.get(name)
+        const scope = typeScopes.get(types[0])!
+        const renamed = scope.values.get(name)
         if (renamed) return renamed
+        if (scope.references.has(name)) return null
       }
 
       for (let i = scopes.length - 1; i >= 0; i--) {
@@ -327,23 +329,23 @@ export function minify(
           // Skip preprocessor
           if (decl.type !== 'VariableDeclarator') continue
 
+          let name: string = ''
+          if (decl.id.type === 'Identifier') {
+            name = decl.id.name
+          } else if (decl.id.type === 'ArraySpecifier') {
+            name = (decl.id as unknown as ArraySpecifier).typeSpecifier.name
+          }
+
+          const scope = scopes.at(-1)!
+          if (decl.typeSpecifier.type === 'Identifier') {
+            scope.references.set(name, decl.typeSpecifier.name)
+          } else if (decl.typeSpecifier.type === 'ArraySpecifier') {
+            scope.references.set(name, decl.typeSpecifier.typeSpecifier.name)
+          }
+
           const isExternal = isParentExternal || decl.qualifiers.some(isStorage)
           if (!isExternal || mangleExternals) {
-            let name: string = ''
-            if (decl.id.type === 'Identifier') {
-              name = decl.id.name
-            } else if (decl.id.type === 'ArraySpecifier') {
-              name = (decl.id as unknown as ArraySpecifier).typeSpecifier.name
-            }
-
             mangleName(name, isExternal)
-
-            const scope = scopes.at(-1)!
-            if (decl.typeSpecifier.type === 'Identifier') {
-              scope.references.set(name, decl.typeSpecifier.name)
-            } else if (decl.typeSpecifier.type === 'ArraySpecifier') {
-              scope.references.set(name, decl.typeSpecifier.typeSpecifier.name)
-            }
           }
         }
       },
