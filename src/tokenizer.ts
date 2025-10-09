@@ -29,12 +29,12 @@ const STAR = 42
 const HASH = 35
 const AT = 64
 
-const isDigit = (c: number) => ZERO <= c && c <= NINE
-const isAlpha = (c: number) => ((c &= ~32), A <= c && c <= Z)
-const isLine = (c: number) => c === LF || c === CR
-const isSpace = (c: number) => isLine(c) || c === TAB || c === SPACE
-const isIdent = (c: number) => isAlpha(c) || isDigit(c) || c === UNDERSCORE
-const isMacro = (c: number) => c === HASH || c === AT
+const isDigit = (c: number): boolean => ZERO <= c && c <= NINE
+const isAlpha = (c: number): boolean => ((c &= ~32), A <= c && c <= Z)
+const isLine = (c: number): boolean => c === LF || c === CR
+const isSpace = (c: number): boolean => isLine(c) || c === TAB || c === SPACE
+const isIdent = (c: number): boolean => isAlpha(c) || isDigit(c) || c === UNDERSCORE
+const isMacro = (c: number): boolean => c === HASH || c === AT
 
 // https://mrale.ph/blog/2016/11/23/making-less-dart-faster.html
 function matchAsPrefix(regex: RegExp, string: string, start: number): string | undefined {
@@ -46,43 +46,59 @@ function matchAsPrefix(regex: RegExp, string: string, start: number): string | u
  * Tokenizes a string of GLSL or WGSL code.
  */
 export function tokenize(code: string, index: number = 0): Token[] {
+  const [KEYWORDS, SYMBOLS] = WGSL_REGEX.test(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
+
+  const KEYWORDS_LIST = new Set(KEYWORDS)
+  const SYMBOLS_REGEX = new RegExp(
+    SYMBOLS.sort((a, b) => b.length - a.length)
+      .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('|'),
+    'y',
+  )
+
   const tokens: Token[] = []
 
-  let prev: number = -1
-  const [KEYWORDS, SYMBOLS] = WGSL_REGEX.test(code) ? [WGSL_KEYWORDS, WGSL_SYMBOLS] : [GLSL_KEYWORDS, GLSL_SYMBOLS]
+  let value: string | undefined
+  let start: number
+  let char: number
+
   while (index < code.length) {
-    let value = code[index]
-    const char = code.charCodeAt(index++)
+    start = index
+    char = code.charCodeAt(index++)
 
     if (isSpace(char)) {
-      while (isSpace(code.charCodeAt(index))) value += code[index++]
+      while (isSpace(code.charCodeAt(index))) index++
+      value = code.slice(start, index)
       tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char) || (char === DOT && isDigit(code.charCodeAt(index)))) {
-      if ((value = matchAsPrefix(FLOAT_REGEX, code, index - 1)!)) {
+      if ((value = matchAsPrefix(FLOAT_REGEX, code, start))) {
         index = FLOAT_REGEX.lastIndex
         tokens.push({ type: 'float', value })
-      } else if ((value = matchAsPrefix(INT_REGEX, code, index - 1)!)) {
+      } else if ((value = matchAsPrefix(INT_REGEX, code, start))) {
         index = INT_REGEX.lastIndex
         tokens.push({ type: 'int', value })
       }
     } else if (isIdent(char)) {
-      while (isIdent(code.charCodeAt(index))) value += code[index++]
+      while (isIdent(code.charCodeAt(index))) index++
+      value = code.slice(start, index)
       if (BOOL_REGEX.test(value)) tokens.push({ type: 'bool', value })
-      else if (KEYWORDS.includes(isMacro(prev) ? String.fromCharCode(prev) + value : value))
+      else if (KEYWORDS_LIST.has(isMacro(code.charCodeAt(start - 1)) ? code[start - 1] + value : value))
         tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
-    } else if (char === SLASH && (code.charCodeAt(index) === SLASH || code.charCodeAt(index) === STAR)) {
-      const terminator = code.charCodeAt(index) === STAR ? '*/' : '\n'
-      while (index < code.length && !value.endsWith(terminator)) value += code[index++]
-      tokens.push({ type: 'comment', value: value.trim() })
-    } else {
-      for (const symbol of SYMBOLS) {
-        if (symbol.length > value.length && code.startsWith(symbol, index - 1)) value = symbol
-      }
+    } else if (char === SLASH && code.charCodeAt(index) === SLASH) {
+      while (index < code.length && code.charCodeAt(index) !== LF) index++
+      value = code.slice(start, index)
+      index++ // consume LF
+      tokens.push({ type: 'comment', value })
+    } else if (char === SLASH && code.charCodeAt(index) === STAR) {
+      while (index < code.length && (code.charCodeAt(index - 2) !== STAR || code.charCodeAt(index - 1) !== SLASH))
+        index++
+      value = code.slice(start, index)
+      tokens.push({ type: 'comment', value })
+    } else if ((value = matchAsPrefix(SYMBOLS_REGEX, code, start))) {
       index += value.length - 1
       tokens.push({ type: 'symbol', value })
     }
-    prev = char
   }
 
   return tokens
