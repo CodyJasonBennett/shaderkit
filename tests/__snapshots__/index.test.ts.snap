@@ -1,5 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`minify > avoids mangling scoped methods 1`] = `"void a(){}struct b{};b c;c.test();a();"`;
+
 exports[`minify > avoids reserved words like as during mangle 1`] = `"var a=0;var b=0;var c=0;var d=0;var e=0;var f=0;var g=0;var h=0;var u8=0;var i=0;var j=0;var k=0;var l=0;var m=0;var n=0;var o=0;var u16=0;var p=0;var q=0;var r=0;var s=0;var t=0;var u=0;var v=0;var w=0;var x=0;var y=0;var az=0;var aa=0;var ab=0;var ac=0;var ad=0;var u32=0;var ae=0;var af=0;var ag=0;var ah=0;var ai=0;var aj=0;var ak=0;var al=0;var am=0;var an=0;var ao=0;var ap=0;var aq=0;var ar=0;var at=0;var au=0;var av=0;var aw=0;var ax=0;var ay=0;"`;
 
 exports[`minify > avoids reserved words like as during mangle 2`] = `Map {}`;

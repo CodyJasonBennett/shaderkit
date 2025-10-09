@@ -195,6 +195,10 @@ describe('minify', () => {
     expect(mangleMap).toMatchSnapshot()
   })
 
+  it('avoids mangling scoped methods', () => {
+    expect(minify('void test() {}struct Test {};Test test2;test2.test();test();', { mangle: true })).toMatchSnapshot()
+  })
+
   it('ensures minification works correctly with glslang', () => {
     glslang('tests/shaders/test.frag')
 

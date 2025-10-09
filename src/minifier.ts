@@ -168,12 +168,11 @@ export function minify(
         const scope = typeScopes.get(types[0])!
         const renamed = scope.values.get(name)
         if (renamed) return renamed
-        if (scope.references.has(name)) return null
-      }
-
-      for (let i = scopes.length - 1; i >= 0; i--) {
-        const renamed = scopes[i].values.get(name)
-        if (renamed) return renamed
+      } else {
+        for (let i = scopes.length - 1; i >= 0; i--) {
+          const renamed = scopes[i].values.get(name)
+          if (renamed) return renamed
+        }
       }
 
       return null
@@ -277,20 +276,22 @@ export function minify(
       },
       FunctionDeclaration: {
         enter(node) {
+          const name = node.id.name
+
           // TODO: this might be external in the case of WGSL entrypoints
-          if (node.id.name !== 'main') mangleName(node.id.name, false)
+          if (name !== 'main') node.id.name = mangleName(name, false)
 
           const scope = scopes.at(-1)!
           if (node.typeSpecifier.type === 'Identifier') {
-            scope.references.set(node.id.name, node.typeSpecifier.name)
+            scope.references.set(name, node.typeSpecifier.name)
           } else if (node.typeSpecifier.type === 'ArraySpecifier') {
-            scope.references.set(node.id.name, node.typeSpecifier.typeSpecifier.name)
+            scope.references.set(name, node.typeSpecifier.typeSpecifier.name)
           }
 
           pushScope()
 
           for (const param of node.params) {
-            if (param.id) mangleName(param.id.name, false)
+            if (param.id) param.id.name = mangleName(param.id.name, false)
           }
         },
         exit() {
@@ -299,14 +300,16 @@ export function minify(
       },
       StructDeclaration: {
         enter(node) {
+          const name = node.id.name
+
           const isExternal = externalTypes.has(node.id.name)
           if (!isExternal || mangleExternals) {
-            mangleName(node.id.name, isExternal)
+            node.id.name = mangleName(name, isExternal)
           }
 
           pushScope()
-          typeScopes.set(node.id.name, scopes.at(-1)!)
-          types.push(node.id.name)
+          typeScopes.set(name, scopes.at(-1)!)
+          types.push(name)
         },
         exit() {
           types.length -= 1
@@ -318,28 +321,26 @@ export function minify(
           if (node.typeSpecifier.type !== 'Identifier') return
 
           // When an instance name is not defined, the type specifier can be used as an external reference
+          const typeName = node.typeSpecifier.name
           if (node.id || mangleExternals) {
-            mangleName(node.typeSpecifier.name, false)
+            node.typeSpecifier.name = mangleName(typeName, false)
           }
 
           if (!node.id) return
 
-          const isExternal = externalTypes.has(node.typeSpecifier.name)
+          const name = node.id.name
+
+          const isExternal = externalTypes.has(typeName)
           if (!isExternal || mangleExternals) {
-            mangleName(node.id.name, isExternal)
+            node.id.name = mangleName(name, isExternal)
           }
 
           const scope = scopes.at(-1)!
-          if (node.typeSpecifier.type === 'Identifier') {
-            scope.references.set(node.id.name, node.typeSpecifier.name)
-            types.push(node.typeSpecifier.name)
-          } else if ((node.typeSpecifier as ArraySpecifier).type === 'ArraySpecifier') {
-            scope.references.set(node.id.name, (node.typeSpecifier as ArraySpecifier).typeSpecifier.name)
-            types.push((node.typeSpecifier as ArraySpecifier).typeSpecifier.name)
-          }
+          scope.references.set(name, typeName)
+          types.push(typeName)
 
           pushScope()
-          typeScopes.set(node.id.name, scopes.at(-1)!)
+          typeScopes.set(name, scopes.at(-1)!)
         },
         exit(node) {
           if (node.id) {
@@ -388,23 +389,24 @@ export function minify(
           if (value) {
             if (value.type === 'Identifier') {
               isExternal ||= externals.has(value.name) || externalTypes.has(value.name)
-              if (!isExternal || mangleExternals) mangleName(value.name, isExternal)
+              if (!isExternal || mangleExternals) value.name = mangleName(value.name, isExternal)
             } else if (value.type === 'MemberExpression') {
               // TODO: this needs to be more robust to handle string replacement
             } else if (value.type === 'CallExpression' && value.callee.type === 'Identifier') {
               isExternal ||= externals.has(value.callee.name)
-              if (!isExternal || mangleExternals) mangleName(value.callee.name, isExternal)
+              if (!isExternal || mangleExternals) value.callee.name = mangleName(value.callee.name, isExternal)
+              // TODO: locally mangle arguments
             }
           }
 
           if (name.type === 'Identifier') {
             isExternal ||= externals.has(name.name) || externalTypes.has(name.name)
-            if (!isExternal || mangleExternals) mangleName(name.name, isExternal)
+            if (!isExternal || mangleExternals) name.name = mangleName(name.name, isExternal)
           } else if (name.type === 'MemberExpression') {
             // TODO: this needs to be more robust to handle string replacement
           } else if (name.type === 'CallExpression' && name.callee.type === 'Identifier') {
             isExternal ||= externals.has(name.callee.name)
-            if (!isExternal || mangleExternals) mangleName(name.callee.name, isExternal)
+            if (!isExternal || mangleExternals) name.callee.name = mangleName(name.callee.name, isExternal)
           }
         }
       },
