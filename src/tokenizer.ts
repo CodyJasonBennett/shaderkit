@@ -58,51 +58,47 @@ export function tokenize(code: string, index: number = 0): Token[] {
 
   const tokens: Token[] = []
 
-  let value: string
-  let prev: number = -1
+  let value: string | undefined
+  let start: number
   let char: number
 
   while (index < code.length) {
+    start = index
     char = code.charCodeAt(index++)
 
     if (isSpace(char)) {
-      const start = index - 1
       while (isSpace(code.charCodeAt(index))) index++
       value = code.slice(start, index)
       tokens.push({ type: 'whitespace', value })
     } else if (isDigit(char) || (char === DOT && isDigit(code.charCodeAt(index)))) {
-      if ((value = matchAsPrefix(FLOAT_REGEX, code, index - 1)!)) {
+      if ((value = matchAsPrefix(FLOAT_REGEX, code, start))) {
         index = FLOAT_REGEX.lastIndex
         tokens.push({ type: 'float', value })
-      } else if ((value = matchAsPrefix(INT_REGEX, code, index - 1)!)) {
+      } else if ((value = matchAsPrefix(INT_REGEX, code, start))) {
         index = INT_REGEX.lastIndex
         tokens.push({ type: 'int', value })
       }
     } else if (isIdent(char)) {
-      const start = index - 1
       while (isIdent(code.charCodeAt(index))) index++
       value = code.slice(start, index)
       if (BOOL_REGEX.test(value)) tokens.push({ type: 'bool', value })
-      else if (KEYWORDS_LIST.has(isMacro(prev) ? String.fromCharCode(prev) + value : value))
+      else if (KEYWORDS_LIST.has(isMacro(code.charCodeAt(start - 1)) ? code[start - 1] + value : value))
         tokens.push({ type: 'keyword', value })
       else tokens.push({ type: 'identifier', value })
     } else if (char === SLASH && code.charCodeAt(index) === SLASH) {
-      const start = index - 1
       while (index < code.length && code.charCodeAt(index) !== LF) index++
       value = code.slice(start, index)
       index++ // consume LF
       tokens.push({ type: 'comment', value })
     } else if (char === SLASH && code.charCodeAt(index) === STAR) {
-      const start = index - 1
       while (index < code.length && (code.charCodeAt(index - 2) !== STAR || code.charCodeAt(index - 1) !== SLASH))
         index++
       value = code.slice(start, index)
       tokens.push({ type: 'comment', value })
-    } else if ((value = matchAsPrefix(SYMBOLS_REGEX, code, index - 1)!)) {
+    } else if ((value = matchAsPrefix(SYMBOLS_REGEX, code, start))) {
       index += value.length - 1
       tokens.push({ type: 'symbol', value })
     }
-    prev = char
   }
 
   return tokens
