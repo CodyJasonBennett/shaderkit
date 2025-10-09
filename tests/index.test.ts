@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { tokenize, minify } from 'shaderkit'
+import { glslang } from './shaders/glslang'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+import { rimrafSync } from 'rimraf'
 
 const glsl = /* glsl */ `#version 300 es
   precision mediump float;
@@ -179,7 +183,7 @@ describe('minify', () => {
 
   it('can wrap large mangle indices', () => {
     const mangleMap = new Map()
-    const shader = /* glsl */ `uniform float ${Array.from({ length: 53 }, (_, i) => `u${i}`)}`
+    const shader = /* glsl */ `uniform float ${Array.from({ length: 53 }, (_, i) => `u${i}`)};`
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
   })
@@ -189,5 +193,78 @@ describe('minify', () => {
     const shader = /* glsl */ `${Array.from({ length: 53 }, (_, i) => `var u${i} = 0;`).join('')}`
     expect(minify(shader, { mangle: true, mangleExternals: true, mangleMap })).toMatchSnapshot()
     expect(mangleMap).toMatchSnapshot()
+  })
+
+  it('avoids mangling scoped methods', () => {
+    expect(minify('void test() {}struct Test {};Test test2;test2.test();test();', { mangle: true })).toMatchSnapshot()
+  })
+
+  it('ensures minification works correctly with glslang', () => {
+    glslang('tests/shaders/test.frag')
+
+    const shader = fs.readFileSync(path.resolve(process.cwd(), 'tests/shaders/test.frag'), { encoding: 'utf-8' })
+    const minified = minify(shader, { mangle: false, mangleExternals: false })
+      .replaceAll(';', ';\n')
+      .replaceAll(/\n+/g, '\n')
+    fs.writeFileSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'), minified, { encoding: 'utf-8' })
+
+    try {
+      glslang('tests/shaders/test.min.frag')
+    } catch (error: any) {
+      let i = 1
+      const lines = minified.split('\n')
+      const width = String(lines.length).length
+      error.message =
+        '\n' + minified.replaceAll(/^/gm, () => String(i++).padStart(width, ' ') + ': ') + '\n\n' + error.message
+      throw error
+    } finally {
+      rimrafSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'))
+    }
+  })
+
+  it('ensures local mangling works correctly with glslang', () => {
+    glslang('tests/shaders/test.frag')
+
+    const shader = fs.readFileSync(path.resolve(process.cwd(), 'tests/shaders/test.frag'), { encoding: 'utf-8' })
+    const minified = minify(shader, { mangle: true, mangleExternals: false })
+      .replaceAll(';', ';\n')
+      .replaceAll(/\n+/g, '\n')
+    fs.writeFileSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'), minified, { encoding: 'utf-8' })
+
+    try {
+      glslang('tests/shaders/test.min.frag')
+    } catch (error: any) {
+      let i = 1
+      const lines = minified.split('\n')
+      const width = String(lines.length).length
+      error.message =
+        '\n' + minified.replaceAll(/^/gm, () => String(i++).padStart(width, ' ') + ': ') + '\n\n' + error.message
+      throw error
+    } finally {
+      rimrafSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'))
+    }
+  })
+
+  it('ensures full mangling works correctly with glslang', () => {
+    glslang('tests/shaders/test.frag')
+
+    const shader = fs.readFileSync(path.resolve(process.cwd(), 'tests/shaders/test.frag'), { encoding: 'utf-8' })
+    const minified = minify(shader, { mangle: true, mangleExternals: true })
+      .replaceAll(';', ';\n')
+      .replaceAll(/\n+/g, '\n')
+    fs.writeFileSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'), minified, { encoding: 'utf-8' })
+
+    try {
+      glslang('tests/shaders/test.min.frag')
+    } catch (error: any) {
+      let i = 1
+      const lines = minified.split('\n')
+      const width = String(lines.length).length
+      error.message =
+        '\n' + minified.replaceAll(/^/gm, () => String(i++).padStart(width, ' ') + ': ') + '\n\n' + error.message
+      throw error
+    } finally {
+      rimrafSync(path.resolve(process.cwd(), 'tests/shaders/test.min.frag'))
+    }
   })
 })
