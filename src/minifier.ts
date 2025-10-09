@@ -209,6 +209,7 @@ export function minify(
     }
 
     const structs = new Set<string>()
+    const externals = new Set<string>()
     const externalTypes = new Set<string>()
 
     // Top-level pass for externals and type definitions
@@ -224,6 +225,35 @@ export function minify(
         } else if (statement.typeSpecifier.type === 'ArraySpecifier') {
           structs.add(statement.typeSpecifier.typeSpecifier.name)
           if (isExternal) externalTypes.add(statement.typeSpecifier.typeSpecifier.name)
+        }
+
+        if (isExternal) {
+          if (statement.id) {
+            externals.add(statement.id.name)
+          } else {
+            for (const member of statement.members) {
+              if (member.type !== 'VariableDeclaration') continue
+
+              for (const decl of member.declarations) {
+                if (decl.id.type === 'Identifier') {
+                  externals.add(decl.id.name)
+                } else if (decl.id.type === 'ArraySpecifier') {
+                  externals.add((decl.id as unknown as ArraySpecifier).typeSpecifier.name)
+                }
+              }
+            }
+          }
+        }
+      } else if (statement.type === 'VariableDeclaration') {
+        for (const decl of statement.declarations) {
+          const isExternal = decl.qualifiers.some(isStorage)
+          if (isExternal) {
+            if (decl.id.type === 'Identifier') {
+              externals.add(decl.id.name)
+            } else if (decl.id.type === 'ArraySpecifier') {
+              externals.add((decl.id as unknown as ArraySpecifier).typeSpecifier.name)
+            }
+          }
         }
       }
     }
@@ -350,15 +380,31 @@ export function minify(
         }
       },
       PreprocessorStatement(node) {
-        const value = node.value?.[0]
-        if (node.name === 'define' && value) {
-          const isExternal = false
-          if (value.type === 'Identifier') {
-            mangleName(value.name, isExternal)
-          } else if (value.type === 'MemberExpression') {
+        if (node.name === 'define' && node.value) {
+          const [name, value] = node.value
+
+          let isExternal = false
+
+          if (value) {
+            if (value.type === 'Identifier') {
+              isExternal ||= externals.has(value.name) || externalTypes.has(value.name)
+              if (!isExternal || mangleExternals) mangleName(value.name, isExternal)
+            } else if (value.type === 'MemberExpression') {
+              // TODO: this needs to be more robust to handle string replacement
+            } else if (value.type === 'CallExpression' && value.callee.type === 'Identifier') {
+              isExternal ||= externals.has(value.callee.name)
+              if (!isExternal || mangleExternals) mangleName(value.callee.name, isExternal)
+            }
+          }
+
+          if (name.type === 'Identifier') {
+            isExternal ||= externals.has(name.name) || externalTypes.has(name.name)
+            if (!isExternal || mangleExternals) mangleName(name.name, isExternal)
+          } else if (name.type === 'MemberExpression') {
             // TODO: this needs to be more robust to handle string replacement
-          } else if (value.type === 'CallExpression' && value.callee.type === 'Identifier') {
-            mangleName(value.callee.name, isExternal)
+          } else if (name.type === 'CallExpression' && name.callee.type === 'Identifier') {
+            isExternal ||= externals.has(name.callee.name)
+            if (!isExternal || mangleExternals) mangleName(name.callee.name, isExternal)
           }
         }
       },

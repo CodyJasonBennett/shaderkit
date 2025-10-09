@@ -35,7 +35,9 @@ layout(std140) uniform Uniforms2 {
   mat4 modelViewMatrix;
   mat3 normalMatrix;
   float one, two;
-} globals;
+} globals2;
+
+#define globals globals2
 
 struct X {
   #if !defined(BLA)
