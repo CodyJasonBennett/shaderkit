@@ -16,7 +16,15 @@ int y;
 #else
 float z;
 #endif
-};struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];invariant pc_FragColor;void main(){vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}float foo;
+};struct LightData{float intensity;vec3 position;float one,two;};uniform LightData Light[4];invariant pc_FragColor;void main(){
+#if defined(USE_NORMALMAP)
+mat3 tbn=getTangentFrame(-vViewPosition,normal,vNormalMapUv);
+#elif defined(USE_CLEARCOAT_NORMALMAP)
+mat3 tbn=getTangentFrame(-vViewPosition,normal,vClearcoatNormalMapUv);
+#else
+mat3 tbn=getTangentFrame(-vViewPosition,normal,vUv);
+#endif
+vec4 lightNormal=vec4(Light[0].position.xyz*Light[0].intensity,0.0);vec4 clipPosition=projectionMatrix*modelViewMatrix*vec4(0,0,0,1);vec4 clipPositionGlobals=globals.projectionMatrix*globals.modelViewMatrix*vec4(0,0,0,1);if(false){}pc_FragColor=vec4(texture(map,vUv).rgb,0.0);float bar=0.0;pc_FragColor.a+=1.0+bar;}float foo;
 #
 #define test
 #undef test

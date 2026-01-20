@@ -38,6 +38,7 @@ import {
   WhileStatement,
   LayoutQualifierStatement,
 } from './ast.js'
+import { hoistPreprocessorDirectives } from './hoister.js'
 import { type Token, tokenize } from './tokenizer.js'
 
 // https://engineering.desmos.com/articles/pratt-parser
@@ -137,24 +138,87 @@ function getScopeDelta(token: Token): number {
   return SCOPE_DELTAS[token.value] ?? 0
 }
 
-function peek(tokens: Token[], offset: number = 0): Token | null {
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i]
-    if (token.type !== 'whitespace' && token.type !== 'comment') {
-      if (offset === 0) return token
-      else offset--
+interface Tokens {
+  list: Token[]
+  /**
+   * Starts at 0, points at the next token yet to be consumed.
+   */
+  cursor: number
+  /**
+   * If a macro (or preprocessor statement) was encountered
+   * during parsing. Used to workaround expression-level macros
+   * and transform them into statements.
+   */
+  encounteredMacro?: boolean | undefined
+}
+
+function hasNextToken(tokens: Tokens): boolean {
+  return tokens.cursor < tokens.list.length
+}
+
+function skipIrrelevant(tokens: Tokens, ignorePreprocessor: boolean = true): void {
+  let preprocessorScope = 0
+  for (; hasNextToken(tokens); tokens.cursor++) {
+    const token = tokens.list[tokens.cursor]
+
+    if (ignorePreprocessor && token.value === '#') {
+      tokens.encounteredMacro = true
+      let name = ''
+      const nameToken = tokens.list[++tokens.cursor]
+      if (nameToken.value !== '\\') {
+        name = nameToken.value
+      }
+
+      if (name === 'if' || name === 'ifdef' || name === 'ifndef') {
+        preprocessorScope++
+      } else if (name === 'endif') {
+        preprocessorScope--
+        tokens.cursor++
+      } else {
+        // Ignoring everything up until the end of the directive
+        while (hasNextToken(tokens) && tokens.list[tokens.cursor].value !== '\\') tokens.cursor++
+        tokens.cursor++
+      }
+
+      continue
+    }
+
+    if (preprocessorScope > 0) {
+      continue
+    }
+
+    if (token.type === 'whitespace' || token.type === 'comment') {
+      continue
+    }
+
+    // Something relevant
+    return
+  }
+}
+
+function peek(tokens: Tokens, offset: number = 0, ignorePreprocessor: boolean = true): Token | null {
+  const prevCursor = tokens.cursor
+  while (hasNextToken(tokens)) {
+    skipIrrelevant(tokens, ignorePreprocessor)
+
+    if (offset === 0) {
+      const token = tokens.list[tokens.cursor]
+      tokens.cursor = prevCursor
+      return token
+    } else {
+      offset--
+      tokens.cursor++
     }
   }
 
+  tokens.cursor = prevCursor
   return null
 }
 
-function consume(tokens: Token[], expected?: string): Token {
-  // TODO: use token cursor for performance and store for sourcemaps
-  let token = tokens.shift()
-  while (token && (token.type === 'whitespace' || token.type === 'comment')) {
-    token = tokens.shift()
-  }
+function consume(tokens: Tokens, expected?: string, ignorePreprocessor: boolean = true): Token {
+  // TODO: use store for sourcemaps
+  skipIrrelevant(tokens, ignorePreprocessor)
+  const token = tokens.list[tokens.cursor++]
 
   if (token === undefined && expected !== undefined) {
     throw new SyntaxError(`Expected "${expected}"`)
@@ -167,7 +231,7 @@ function consume(tokens: Token[], expected?: string): Token {
   return token
 }
 
-function parseExpression(tokens: Token[], minBindingPower: number = 0): Expression {
+function parseExpression(tokens: Tokens, minBindingPower: number = 0): Expression {
   let token = consume(tokens)
 
   let lhs: Expression
@@ -190,7 +254,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
     throw new SyntaxError(`Unexpected token: "${token.value}"`)
   }
 
-  while (tokens.length) {
+  while (hasNextToken(tokens)) {
     token = peek(tokens)!
 
     if (token.value in POSTFIX_OPERATOR_PRECEDENCE) {
@@ -282,7 +346,7 @@ function parseExpression(tokens: Token[], minBindingPower: number = 0): Expressi
   return lhs
 }
 
-function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
+function parseTypeSpecifier(tokens: Tokens): Identifier | ArraySpecifier {
   let typeSpecifier: Identifier | ArraySpecifier = { type: 'Identifier', name: consume(tokens).value }
 
   if (peek(tokens)?.value === '[') {
@@ -311,7 +375,7 @@ function parseTypeSpecifier(tokens: Token[]): Identifier | ArraySpecifier {
 }
 
 function parseVariableDeclarator(
-  tokens: Token[],
+  tokens: Tokens,
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[],
   layout: Record<string, string | boolean> | null,
@@ -329,7 +393,7 @@ function parseVariableDeclarator(
 }
 
 function parseVariable(
-  tokens: Token[],
+  tokens: Tokens,
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = [],
   layout: Record<string, string | boolean> | null = null,
@@ -337,7 +401,7 @@ function parseVariable(
   const declarations: VariableDeclarator[] = []
 
   if (peek(tokens)?.value !== ';') {
-    while (tokens.length) {
+    while (hasNextToken(tokens)) {
       declarations.push(parseVariableDeclarator(tokens, typeSpecifier, qualifiers, layout))
 
       if (peek(tokens)?.value === ',') {
@@ -354,7 +418,7 @@ function parseVariable(
 }
 
 function parseBufferInterface(
-  tokens: Token[],
+  tokens: Tokens,
   typeSpecifier: Identifier | ArraySpecifier,
   qualifiers: LayoutQualifier[] = [],
   layout: Record<string, string | boolean> | null = null,
@@ -369,7 +433,7 @@ function parseBufferInterface(
 }
 
 function parseFunction(
-  tokens: Token[],
+  tokens: Tokens,
   typeSpecifier: ArraySpecifier | Identifier,
   qualifiers: PrecisionQualifier[] = [],
 ): FunctionDeclaration {
@@ -405,13 +469,13 @@ function parseFunction(
   return { type: 'FunctionDeclaration', id, qualifiers, typeSpecifier, params, body }
 }
 
-function parseLayoutQualifier(tokens: Token[], layout: Record<string, string | boolean>): LayoutQualifierStatement {
+function parseLayoutQualifier(tokens: Tokens, layout: Record<string, string | boolean>): LayoutQualifierStatement {
   const qualifier = consume(tokens).value as StorageQualifier
   consume(tokens, ';')
   return { type: 'LayoutQualifierStatement', layout, qualifier }
 }
 
-function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
+function parseInvariant(tokens: Tokens): InvariantQualifierStatement {
   consume(tokens, 'invariant')
   const typeSpecifier = parseExpression(tokens) as Identifier
   consume(tokens, ';')
@@ -419,7 +483,7 @@ function parseInvariant(tokens: Token[]): InvariantQualifierStatement {
 }
 
 function parseIndeterminate(
-  tokens: Token[],
+  tokens: Tokens,
 ):
   | VariableDeclaration
   | FunctionDeclaration
@@ -490,12 +554,12 @@ function parseIndeterminate(
   }
 }
 
-function parseStruct(tokens: Token[]): StructDeclaration {
+function parseStruct(tokens: Tokens): StructDeclaration {
   consume(tokens, 'struct')
   const id: Identifier = { type: 'Identifier', name: consume(tokens).value }
   consume(tokens, '{')
   const members: VariableDeclaration[] = []
-  while (peek(tokens) && peek(tokens)!.value !== '}') {
+  while (peek(tokens, 0, false) && peek(tokens, 0, false)!.value !== '}') {
     members.push(...(parseStatements(tokens) as unknown as VariableDeclaration[]))
   }
   consume(tokens, '}')
@@ -505,7 +569,7 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   if (peek(tokens)?.type === 'identifier') {
     const type = id.name
     const name = consume(tokens).value
-    tokens.push(
+    tokens.list.push(
       { type: 'identifier', value: type },
       { type: 'identifier', value: name },
       { type: 'symbol', value: ';' },
@@ -517,28 +581,28 @@ function parseStruct(tokens: Token[]): StructDeclaration {
   return { type: 'StructDeclaration', id, members }
 }
 
-function parseContinue(tokens: Token[]): ContinueStatement {
+function parseContinue(tokens: Tokens): ContinueStatement {
   consume(tokens, 'continue')
   consume(tokens, ';')
 
   return { type: 'ContinueStatement' }
 }
 
-function parseBreak(tokens: Token[]): BreakStatement {
+function parseBreak(tokens: Tokens): BreakStatement {
   consume(tokens, 'break')
   consume(tokens, ';')
 
   return { type: 'BreakStatement' }
 }
 
-function parseDiscard(tokens: Token[]): DiscardStatement {
+function parseDiscard(tokens: Tokens): DiscardStatement {
   consume(tokens, 'discard')
   consume(tokens, ';')
 
   return { type: 'DiscardStatement' }
 }
 
-function parseReturn(tokens: Token[]): ReturnStatement {
+function parseReturn(tokens: Tokens): ReturnStatement {
   consume(tokens, 'return')
 
   let argument: Expression | null = null
@@ -548,7 +612,7 @@ function parseReturn(tokens: Token[]): ReturnStatement {
   return { type: 'ReturnStatement', argument }
 }
 
-function parseIf(tokens: Token[]): IfStatement {
+function parseIf(tokens: Tokens): IfStatement {
   consume(tokens, 'if')
   consume(tokens, '(')
   const test = parseExpression(tokens)
@@ -571,7 +635,7 @@ function parseIf(tokens: Token[]): IfStatement {
   return { type: 'IfStatement', test, consequent, alternate }
 }
 
-function parseWhile(tokens: Token[]): WhileStatement {
+function parseWhile(tokens: Tokens): WhileStatement {
   consume(tokens, 'while')
   consume(tokens, '(')
   const test = parseExpression(tokens)
@@ -581,7 +645,7 @@ function parseWhile(tokens: Token[]): WhileStatement {
   return { type: 'WhileStatement', test, body }
 }
 
-function parseFor(tokens: Token[]): ForStatement {
+function parseFor(tokens: Tokens): ForStatement {
   consume(tokens, 'for')
   consume(tokens, '(')
   const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
@@ -596,7 +660,7 @@ function parseFor(tokens: Token[]): ForStatement {
   return { type: 'ForStatement', init, test, update, body }
 }
 
-function parseDoWhile(tokens: Token[]): DoWhileStatement {
+function parseDoWhile(tokens: Tokens): DoWhileStatement {
   consume(tokens, 'do')
   const body = parseBlockOrStatement(tokens)
   consume(tokens, 'while')
@@ -608,12 +672,12 @@ function parseDoWhile(tokens: Token[]): DoWhileStatement {
   return { type: 'DoWhileStatement', test, body }
 }
 
-function parseSwitch(tokens: Token[]): SwitchStatement {
+function parseSwitch(tokens: Tokens): SwitchStatement {
   consume(tokens, 'switch')
   const discriminant = parseExpression(tokens)
 
   const cases: SwitchCase[] = []
-  while (tokens.length) {
+  while (hasNextToken(tokens)) {
     const token = consume(tokens)
     if (token.value === '}') break
 
@@ -633,7 +697,7 @@ function parseSwitch(tokens: Token[]): SwitchStatement {
   return { type: 'SwitchStatement', discriminant, cases }
 }
 
-function parsePrecision(tokens: Token[]): PrecisionQualifierStatement {
+function parsePrecision(tokens: Tokens): PrecisionQualifierStatement {
   consume(tokens, 'precision')
   const precision = consume(tokens).value as PrecisionQualifier
   const typeSpecifier: Identifier = { type: 'Identifier', name: consume(tokens).value }
@@ -641,8 +705,8 @@ function parsePrecision(tokens: Token[]): PrecisionQualifierStatement {
   return { type: 'PrecisionQualifierStatement', precision, typeSpecifier }
 }
 
-function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
-  consume(tokens, '#')
+function parsePreprocessor(tokens: Tokens): PreprocessorStatement {
+  consume(tokens, '#', false)
 
   let name = '' // name can be unset for the # directive which is ignored
   let value: Expression[] | null = null
@@ -694,7 +758,7 @@ function parsePreprocessor(tokens: Token[]): PreprocessorStatement {
   return { type: 'PreprocessorStatement', name, value }
 }
 
-function isVariable(tokens: Token[]): boolean {
+function isVariable(tokens: Tokens): boolean {
   let token = peek(tokens, 0)
 
   // Skip first token if EOF or not type qualifier/specifier
@@ -721,8 +785,8 @@ function isVariable(tokens: Token[]): boolean {
   return peek(tokens, i)?.type !== 'symbol'
 }
 
-function parseStatement(tokens: Token[]): Statement {
-  const token = peek(tokens)!
+function parseStatement(tokens: Tokens): Statement {
+  const token = peek(tokens, 0, false)!
   let statement: Statement | null = null
 
   if (token.value === '#') statement = parsePreprocessor(tokens)
@@ -749,25 +813,34 @@ function parseStatement(tokens: Token[]): Statement {
   return statement
 }
 
-function parseStatements(tokens: Token[]): Statement[] {
+function parseStatements(tokens: Tokens): Statement[] {
   const body: Statement[] = []
   let scopeIndex = 0
 
   while (true) {
-    const token = peek(tokens)
+    const token = peek(tokens, 0, false)
     if (!token) break
 
     scopeIndex += getScopeDelta(token)
     if (scopeIndex < 0 || token.value === '}') break
 
     if (token.value === 'case' || token.value === 'default') break
-    body.push(parseStatement(tokens))
+
+    tokens.encounteredMacro = false
+    const start = tokens.cursor
+    const statement = parseStatement(tokens)
+    if (tokens.encounteredMacro) {
+      const hoistedTokens = hoistPreprocessorDirectives(tokens.list.slice(start, tokens.cursor))
+      body.push(...parseStatements({ list: hoistedTokens, cursor: 0 }))
+    } else {
+      body.push(statement)
+    }
   }
 
   return body
 }
 
-function parseBlock(tokens: Token[]): BlockStatement {
+function parseBlock(tokens: Tokens): BlockStatement {
   consume(tokens, '{')
   const body = parseStatements(tokens)
   consume(tokens, '}')
@@ -775,7 +848,7 @@ function parseBlock(tokens: Token[]): BlockStatement {
 }
 
 // TODO: validate block versus sub-statements for GLSL/WGSL
-function parseBlockOrStatement(tokens: Token[]): BlockStatement | Statement {
+function parseBlockOrStatement(tokens: Tokens): BlockStatement | Statement {
   if (peek(tokens)?.value === '{') {
     return parseBlock(tokens)
   } else {
@@ -796,7 +869,10 @@ export function parse(code: string): Program {
   // Escape newlines after directives, skip comments
   code = code.replace(DIRECTIVE_REGEX, '$1\\$2')
 
-  const tokens = tokenize(code)
+  const tokens = {
+    list: tokenize(code),
+    cursor: 0,
+  }
 
   return { type: 'Program', body: parseStatements(tokens) }
 }
