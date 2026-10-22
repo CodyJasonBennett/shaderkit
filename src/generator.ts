@@ -51,8 +51,9 @@ function format(node: AST | null): string {
     case 'ContinueStatement':
       return 'continue;'
     case 'IfStatement': {
-      const alternate = node.alternate ? ` else${format(node.consequent)}` : ''
-      return `if(${format(node.test)})${format(node.consequent)}${alternate}`
+      const consequent = format(node.consequent)
+      const alternate = node.alternate ? `else ${format(node.alternate)}` : ''
+      return `if(${format(node.test)})${consequent}${alternate}`
     }
     case 'SwitchStatement':
       return `switch(${format(node.discriminant)}){${node.cases.map(format).join('')}}`
