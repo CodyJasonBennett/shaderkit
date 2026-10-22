@@ -251,12 +251,14 @@ export interface SwitchCase extends Node {
   consequent: Statement[]
 }
 
+export type Condition = Expression | VariableDeclaration
+
 /**
  * A while statement.
  */
 export interface WhileStatement extends Node {
   type: 'WhileStatement'
-  test: Expression
+  test: Condition
   body: Statement
 }
 
@@ -275,7 +277,7 @@ export interface DoWhileStatement extends Node {
 export interface ForStatement extends Node {
   type: 'ForStatement'
   init: VariableDeclaration | Expression | null
-  test: Expression | null
+  test: Condition | null
   update: Expression | null
   body: Statement
 }

@@ -250,6 +250,14 @@ const compute = /* glsl */ `#version 310 es
   }
 
   void main() {
+      while (bool ready = poll()) {}
+  }
+
+  for (int i = 0; bool keepGoing = check(i); ++i) {
+      consume(i);
+  }
+
+  void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
     uint gWidth = gl_WorkGroupSize.x * gl_NumWorkGroups.x;

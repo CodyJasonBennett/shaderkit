@@ -37,6 +37,7 @@ import {
   VariableDeclarator,
   WhileStatement,
   LayoutQualifierStatement,
+  Condition,
 } from './ast.js'
 import { hoistPreprocessorDirectives } from './hoister.js'
 import { type Token, tokenize } from './tokenizer.js'
@@ -392,6 +393,33 @@ function parseVariableDeclarator(
   return { type: 'VariableDeclarator', id, qualifiers, typeSpecifier, layout, init }
 }
 
+function parseCondition(tokens: Tokens): Condition {
+  if (!isVariable(tokens)) return parseExpression(tokens)
+
+  const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
+  while (peek(tokens) && QUALIFIER_REGEX.test(peek(tokens)!.value)) {
+    qualifiers.push(consume(tokens).value as any)
+  }
+
+  const typeSpecifier = parseTypeSpecifier(tokens)
+
+  const declarations: VariableDeclarator[] = []
+
+  if (peek(tokens)?.value !== ';') {
+    while (hasNextToken(tokens)) {
+      declarations.push(parseVariableDeclarator(tokens, typeSpecifier, qualifiers, null))
+
+      if (peek(tokens)?.value === ',') {
+        consume(tokens, ',')
+      } else {
+        break
+      }
+    }
+  }
+
+  return { type: 'VariableDeclaration', declarations }
+}
+
 function parseVariable(
   tokens: Tokens,
   typeSpecifier: Identifier | ArraySpecifier,
@@ -533,15 +561,15 @@ function parseIndeterminate(
   }
 
   // TODO: only precision qualifier valid for function return type
-  const qualifiers: string[] = []
+  const qualifiers: (ConstantQualifier | InterpolationQualifier | StorageQualifier | PrecisionQualifier)[] = []
   while (peek(tokens) && QUALIFIER_REGEX.test(peek(tokens)!.value)) {
-    qualifiers.push(consume(tokens).value)
+    qualifiers.push(consume(tokens).value as any)
   }
 
   const typeSpecifier = parseTypeSpecifier(tokens)
 
   if (peek(tokens)?.value === '{') {
-    return parseBufferInterface(tokens, typeSpecifier, qualifiers as LayoutQualifier[], layout)
+    return parseBufferInterface(tokens, typeSpecifier, qualifiers as unknown as LayoutQualifier[], layout)
   } else if (peek(tokens, 1)?.value === '(') {
     return parseFunction(tokens, typeSpecifier, qualifiers as PrecisionQualifier[])
   } else {
@@ -638,7 +666,7 @@ function parseIf(tokens: Tokens): IfStatement {
 function parseWhile(tokens: Tokens): WhileStatement {
   consume(tokens, 'while')
   consume(tokens, '(')
-  const test = parseExpression(tokens)
+  const test = parseCondition(tokens)
   consume(tokens, ')')
   const body = parseBlockOrStatement(tokens)
 
@@ -671,7 +699,7 @@ function parseFor(tokens: Tokens): ForStatement {
 
   let test: ForStatement['test'] = null
   if (peek(tokens)?.value !== ';') {
-    test = parseExpression(tokens)
+    test = parseCondition(tokens)
   }
   consume(tokens, ';')
 

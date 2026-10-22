@@ -59,11 +59,14 @@ function format(node: AST | null): string {
     case 'SwitchCase':
       return `case ${node.test ? format(node.test) : 'default'}:{${node.consequent.map(format).join(';')}}`
     case 'WhileStatement':
-      return `while (${format(node.test)}) ${format(node.body)}`
+      return `while (${format(node.test).replace(';', '')}) ${format(node.body)}`
     case 'DoWhileStatement':
       return `do ${format(node.body)}while(${format(node.test)})`
     case 'ForStatement':
-      return `for(${format(node.init)};${format(node.test)};${format(node.update)})${format(node.body)}`
+      return `for(${format(node.init)};${format(node.test)};${format(node.update)})${format(node.body)}`.replaceAll(
+        ';;',
+        ';',
+      )
     case 'FunctionDeclaration': {
       const qualifiers = node.qualifiers.length ? `${node.qualifiers.join(' ')} ` : '' // precision
       const body = node.body ? format(node.body) : ';'
