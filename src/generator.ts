@@ -62,7 +62,7 @@ function format(node: AST | null): string {
     case 'WhileStatement':
       return `while (${format(node.test).replace(';', '')}) ${format(node.body)}`
     case 'DoWhileStatement':
-      return `do ${format(node.body)} while(${format(node.test)});`
+      return `do ${format(node.body)}while(${format(node.test)});`
     case 'ForStatement':
       return `for(${format(node.init)};${format(node.test)};${format(node.update)})${format(node.body)}`.replaceAll(
         ';;',
