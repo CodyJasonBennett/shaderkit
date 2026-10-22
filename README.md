@@ -21,6 +21,7 @@ Tools and IntelliSense for GLSL and WGSL.
   - [ArraySpecifier](#arrayspecifier)
   - [Program](#program)
   - Statements
+    - [EmptyStatemnet](#emptystatement)
     - [ExpressionStatement](#expressionstatement)
     - [BlockStatement](#blockstatement)
     - [DiscardStatement](#discardstatement)
@@ -352,6 +353,16 @@ interface Program extends Node {
 }
 ```
 
+### EmptyStatement
+
+An empty statement.
+
+```ts
+interface EmptyStatement extends Node {
+  type: 'EmptyStatement'
+}
+```
+
 ### ExpressionStatement
 
 An expression as a standalone statement.
@@ -506,7 +517,7 @@ A while statement.
 ```ts
 interface WhileStatement extends Node {
   type: 'WhileStatement'
-  test: Expression
+  test: Expression | VariableDeclaration
   body: Statement
 }
 ```
@@ -531,7 +542,7 @@ A for statement.
 interface ForStatement extends Node {
   type: 'ForStatement'
   init: VariableDeclaration | Expression | null
-  test: Expression | null
+  test: Expression | VariableDeclaration | null
   update: Expression | null
   body: Statement
 }
