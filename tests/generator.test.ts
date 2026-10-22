@@ -264,6 +264,10 @@ const compute = /* glsl */ `#version 310 es
           doB();
   }
 
+  do {
+      update();
+  } while (ready);
+
   void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
