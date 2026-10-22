@@ -1464,4 +1464,27 @@ mat3 tbn = getTangentFrame(-vViewPosition, normal,
       },
     ])
   })
+
+  it('parses empty statements', () => {
+    expect(parse('void main() { ; }').body[0]).toMatchObject({
+      type: 'FunctionDeclaration',
+      body: {
+        type: 'BlockStatement',
+        body: [{ type: 'EmptyStatement' }],
+      },
+    })
+
+    expect(parse('void main() { while (true) ; }').body[0]).toMatchObject({
+      type: 'FunctionDeclaration',
+      body: {
+        type: 'BlockStatement',
+        body: [
+          {
+            type: 'WhileStatement',
+            body: { type: 'EmptyStatement' },
+          },
+        ],
+      },
+    })
+  })
 })

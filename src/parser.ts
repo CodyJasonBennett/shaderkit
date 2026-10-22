@@ -803,7 +803,10 @@ function parseStatement(tokens: Tokens): Statement {
   else if (token.value === 'precision') statement = parsePrecision(tokens)
   else if (isVariable(tokens)) statement = parseIndeterminate(tokens)
   else if (token.value === '{') statement = parseBlock(tokens)
-  else {
+  else if (token.value === ';') {
+    consume(tokens, ';')
+    statement = { type: 'EmptyStatement' }
+  } else {
     const expression = parseExpression(tokens)
     if (peek(tokens)?.value === ',') consume(tokens, ';')
     else consume(tokens, ';')

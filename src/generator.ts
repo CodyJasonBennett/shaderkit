@@ -19,6 +19,8 @@ function format(node: AST | null): string {
       return node.value
     case 'ArraySpecifier':
       return `${node.typeSpecifier.name}${node.dimensions.map((d) => `[${format(d)}]`).join('')}`
+    case 'EmptyStatement':
+      return ';'
     case 'ExpressionStatement':
       return `${format(node.expression)};`
     case 'BlockStatement':
@@ -28,7 +30,8 @@ function format(node: AST | null): string {
     case 'PreprocessorStatement': {
       let value = ''
       if (node.value) {
-        if (node.name === 'include') value = ` <${format(node.value[0])}>` // three is whitespace sensitive
+        if (node.name === 'include')
+          value = ` <${format(node.value[0])}>` // three is whitespace sensitive
         else if (node.name === 'extension') value = ` ${node.value.map(format).join(':')}`
         else if (node.value.length) value = ` ${node.value.map(format).join(' ')}`
       }

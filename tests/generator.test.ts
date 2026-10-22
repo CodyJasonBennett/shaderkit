@@ -234,6 +234,8 @@ const compute = /* glsl */ `#version 310 es
   vec4[2] a[3];
   vec4[3][2] a;
 
+  void main() { ; }
+
   void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 

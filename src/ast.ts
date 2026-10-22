@@ -172,6 +172,13 @@ export interface CallExpression extends Node {
 }
 
 /**
+ * An empty statement.
+ */
+export interface EmptyStatement extends Node {
+  type: 'EmptyStatement'
+}
+
+/**
  * An expression as a standalone statement.
  */
 export interface ExpressionStatement extends Node {
@@ -395,6 +402,7 @@ export type Expression =
   | CallExpression
 
 export type Statement =
+  | EmptyStatement
   | ExpressionStatement
   | BlockStatement
   | ReturnStatement
