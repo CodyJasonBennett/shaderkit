@@ -1487,4 +1487,41 @@ mat3 tbn = getTangentFrame(-vViewPosition, normal,
       },
     })
   })
+
+  it('parses empty for clauses', () => {
+    expect(parse('for (;;) break;').body).toStrictEqual([
+      {
+        type: 'ForStatement',
+        init: null,
+        test: null,
+        update: null,
+        body: {
+          type: 'BreakStatement',
+        },
+      },
+    ])
+  })
+
+  it('parses optional for clauses', () => {
+    expect(parse('for (i = 0; i < 4; ++i) break;').body[0]).toMatchObject({
+      type: 'ForStatement',
+      init: {
+        type: 'AssignmentExpression',
+        operator: '=',
+      },
+      test: {
+        type: 'BinaryExpression',
+        operator: '<',
+      },
+      update: {
+        type: 'UpdateExpression',
+        operator: '++',
+      },
+    })
+
+    expect(parse('for (int i = 0; i < 4; ) break;').body[0]).toMatchObject({
+      type: 'ForStatement',
+      update: null,
+    })
+  })
 })

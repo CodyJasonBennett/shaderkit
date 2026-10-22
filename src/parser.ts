@@ -648,13 +648,39 @@ function parseWhile(tokens: Tokens): WhileStatement {
 function parseFor(tokens: Tokens): ForStatement {
   consume(tokens, 'for')
   consume(tokens, '(')
-  const typeSpecifier = parseExpression(tokens) as Identifier | ArraySpecifier
-  const init = parseVariable(tokens, typeSpecifier)
-  // consume(tokens, ';')
-  const test = parseExpression(tokens)
+
+  let init: ForStatement['init'] = null
+
+  if (peek(tokens)?.value === ';') {
+    // Empty initializer
+    consume(tokens, ';')
+  } else if (isVariable(tokens)) {
+    // Declaration initializer; parseIndeterminate consumes its semicolon
+    const declaration = parseIndeterminate(tokens)
+
+    if (declaration.type !== 'VariableDeclaration') {
+      throw new SyntaxError('Expected variable declaration in for initializer')
+    }
+
+    init = declaration
+  } else {
+    // Expression initializer
+    init = parseExpression(tokens)
+    consume(tokens, ';')
+  }
+
+  let test: ForStatement['test'] = null
+  if (peek(tokens)?.value !== ';') {
+    test = parseExpression(tokens)
+  }
   consume(tokens, ';')
-  const update = parseExpression(tokens)
+
+  let update: ForStatement['update'] = null
+  if (peek(tokens)?.value !== ')') {
+    update = parseExpression(tokens)
+  }
   consume(tokens, ')')
+
   const body = parseBlockOrStatement(tokens)
 
   return { type: 'ForStatement', init, test, update, body }

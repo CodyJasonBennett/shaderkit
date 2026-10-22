@@ -237,6 +237,19 @@ const compute = /* glsl */ `#version 310 es
   void main() { ; }
 
   void main() {
+      for (;;) break;
+  }
+
+  void main() {
+      int i = 0;
+      for (i = 0; i < 4; ++i) {}
+  }
+
+  void main() {
+      for (int i = 0; i < 4; ) ++i;
+  }
+
+  void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
     uint gWidth = gl_WorkGroupSize.x * gl_NumWorkGroups.x;
